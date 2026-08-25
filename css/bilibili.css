@@ -1,0 +1,226 @@
+.bili-profile {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  border: 1px solid rgba(251, 114, 153, 0.24);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(251, 114, 153, 0.14), rgba(35, 173, 229, 0.1));
+}
+
+.bili-profile__mark {
+  display: grid;
+  flex: 0 0 72px;
+  width: 72px;
+  height: 72px;
+  place-items: center;
+  border-radius: 22px;
+  color: #fff;
+  background: #fb7299;
+  box-shadow: 0 10px 28px rgba(251, 114, 153, 0.28);
+  font-size: 2rem;
+}
+
+.bili-profile__content {
+  min-width: 0;
+  flex: 1;
+}
+
+.bili-profile__content h2,
+.bili-section-heading h2 {
+  margin: 0.1rem 0 0.3rem;
+  color: var(--font-color);
+}
+
+.bili-profile__content p {
+  margin: 0;
+  color: var(--font-color);
+  opacity: 0.72;
+}
+
+.bili-profile__eyebrow,
+.bili-section-heading__eyebrow {
+  color: #fb7299;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.bili-button {
+  flex: 0 0 auto;
+  padding: 0.72rem 1rem;
+  border-radius: 999px;
+  color: #fff !important;
+  background: #fb7299;
+  font-weight: 600;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bili-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(251, 114, 153, 0.3);
+}
+
+.bili-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.bili-section-heading a {
+  color: #fb7299;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.bili-video-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.bili-video-card {
+  overflow: hidden;
+  border: 1px solid rgba(128, 128, 128, 0.18);
+  border-radius: 14px;
+  color: var(--font-color) !important;
+  background: var(--card-bg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.bili-video-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(251, 114, 153, 0.5);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.13);
+}
+
+.bili-video-card__cover {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #eef0f3;
+}
+
+.bili-video-card__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.bili-video-card:hover .bili-video-card__cover img {
+  transform: scale(1.045);
+}
+
+.bili-video-card__duration,
+.bili-video-card__play {
+  position: absolute;
+  color: #fff;
+}
+
+.bili-video-card__duration {
+  right: 0.55rem;
+  bottom: 0.5rem;
+  padding: 0.12rem 0.38rem;
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.68);
+  font-size: 0.72rem;
+}
+
+.bili-video-card__play {
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(251, 114, 153, 0.9);
+  opacity: 0;
+  transform: translate(-50%, -42%);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.bili-video-card:hover .bili-video-card__play {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+
+.bili-video-card__body {
+  padding: 0.85rem 0.9rem 0.9rem;
+}
+
+.bili-video-card__body h3,
+.bili-video-card__body p {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.bili-video-card__body h3 {
+  min-height: 2.9em;
+  margin: 0 0 0.45rem;
+  color: var(--font-color);
+  font-size: 0.98rem;
+  line-height: 1.45;
+}
+
+.bili-video-card__body p {
+  min-height: 2.8em;
+  margin: 0 0 0.7rem;
+  color: var(--font-color);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  opacity: 0.65;
+}
+
+.bili-video-card__meta {
+  display: flex;
+  justify-content: space-between;
+  color: var(--font-color);
+  font-size: 0.78rem;
+  opacity: 0.58;
+}
+
+.bili-updated {
+  margin: 1rem 0 0 !important;
+  color: var(--font-color);
+  font-size: 0.78rem;
+  text-align: right;
+  opacity: 0.5;
+}
+
+@media (max-width: 900px) {
+  .bili-video-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .bili-profile {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .bili-profile__mark {
+    flex-basis: 58px;
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    font-size: 1.55rem;
+  }
+
+  .bili-button {
+    width: 100%;
+    text-align: center;
+  }
+
+  .bili-video-grid {
+    grid-template-columns: 1fr;
+  }
+}
