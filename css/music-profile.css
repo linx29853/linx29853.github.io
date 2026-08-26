@@ -114,9 +114,25 @@
 
 .music-card-kicker {
   display: block;
-  margin: 0 0 .65rem .2rem;
+  margin: 0 0 .35rem .2rem;
   color: var(--font-color);
   opacity: .55;
+}
+
+.music-playlist-name {
+  margin: 0 .2rem .3rem;
+  color: var(--font-color);
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+
+.music-playlist-desc {
+  min-height: 2.7em;
+  margin: 0 .2rem .85rem;
+  color: var(--font-color);
+  font-size: .84rem;
+  line-height: 1.65;
+  opacity: .68;
 }
 
 .music-player-card .aplayer {
@@ -135,5 +151,9 @@
 
   .music-player-grid {
     grid-template-columns: 1fr;
+  }
+
+  .music-playlist-desc {
+    min-height: 0;
   }
 }
