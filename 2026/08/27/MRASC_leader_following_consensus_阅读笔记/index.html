@@ -1,0 +1,374 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>MRASC 领导者-跟随者一致性论文阅读笔记 | LenoVo的小站</title><meta name="author" content="LenoVo"><meta name="copyright" content="LenoVo"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="阅读 2025 年 MRASC 领导者-跟随者一致性论文，梳理稳定化自适应控制、虚拟参考、钉扎节点条件及其局限。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MRASC 领导者-跟随者一致性论文阅读笔记">
+<meta property="og:url" content="https://linx29853.github.io/2026/08/27/MRASC_leader_following_consensus_%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">
+<meta property="og:site_name" content="LenoVo的小站">
+<meta property="og:description" content="阅读 2025 年 MRASC 领导者-跟随者一致性论文，梳理稳定化自适应控制、虚拟参考、钉扎节点条件及其局限。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linx29853.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-08-27T01:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-27T02:03:56.908Z">
+<meta property="article:author" content="LenoVo">
+<meta property="article:tag" content="自适应控制">
+<meta property="article:tag" content="多智能体系统">
+<meta property="article:tag" content="MRASC">
+<meta property="article:tag" content="Leader-Following Consensus">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linx29853.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "MRASC 领导者-跟随者一致性论文阅读笔记",
+  "url": "https://linx29853.github.io/2026/08/27/MRASC_leader_following_consensus_%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/",
+  "image": "https://linx29853.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-08-27T01:00:00.000Z",
+  "dateModified": "2026-08-27T02:03:56.908Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LenoVo",
+      "url": "https://linx29853.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://linx29853.github.io/2026/08/27/MRASC_leader_following_consensus_%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?aeb05b46d9af3b7840e1a58e05c8aefc";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+btf.addGlobalFn('pjaxComplete', () => {
+  _hmt.push(['_trackPageview',window.location.pathname])
+}, 'baidu_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'MRASC 领导者-跟随者一致性论文阅读笔记',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/bilibili.css"><link rel="stylesheet" href="/css/travel-gallery.css"><link rel="stylesheet" href="/css/music-profile.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">7</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">15</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LenoVo的小站</span></a><a class="nav-page-title" href="/"><span class="site-name">MRASC 领导者-跟随者一致性论文阅读笔记</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">MRASC 领导者-跟随者一致性论文阅读笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-27T01:00:00.000Z" title="发表于 2026-08-27 09:00:00">2026-08-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-27T02:03:56.908Z" title="更新于 2026-08-27 10:03:56">2026-08-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/">技术学习</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>Dongdong Yue, Jiantao Shi, Ling Shi, Paolo Frasca, Simone Baldi.<br><em>IEEE Transactions on Automatic Control</em>, 70(10): 6861-6868, 2025.<br>DOI: <a target="_blank" rel="noopener" href="https://doi.org/10.1109/TAC.2025.3562457">10.1109&#x2F;TAC.2025.3562457</a></p>
+</blockquote>
+<h2 id="1-一句话概括"><a href="#1-一句话概括" class="headerlink" title="1. 一句话概括"></a>1. 一句话概括</h2><p>论文研究未知、异构线性多智能体的领导者-跟随者一致性问题，提出分层的 <strong>MRASC &#x2F; v-MRASC</strong> 自适应控制框架，使全体跟随者能够跟踪一个<strong>本身可不稳定、但可稳定化</strong>的领导者；同时给出针对有向通信图的钉扎节点数量下界。</p>
+<p>它最重要的突破不是“让所有节点同步”本身，而是放松了传统 MRAC 一致性中“领导者参考模型必须稳定或中性稳定”的限制。</p>
+<hr>
+<h2 id="2-研究背景与问题"><a href="#2-研究背景与问题" class="headerlink" title="2. 研究背景与问题"></a>2. 研究背景与问题</h2><h3 id="2-1-传统方法的限制"><a href="#2-1-传统方法的限制" class="headerlink" title="2.1 传统方法的限制"></a>2.1 传统方法的限制</h3><p>在 MRAC 型领导者-跟随者一致性中，常将领导者看作参考模型。传统分析通常要求领导者状态矩阵 <code>A₀</code>：</p>
+<ul>
+<li>Hurwitz 稳定；或</li>
+<li>中性稳定。</li>
+</ul>
+<p>但部分参考行为，例如尖峰、脉冲样模式，可能由不稳定动态产生。仅因参考模型不稳定便无法进行一致性跟踪，并不合理。</p>
+<p>此外，已有方法还常存在：</p>
+<ul>
+<li>需要额外的分布式观测器来估计领导者状态或输入；</li>
+<li>要求跟随者通信图无环，或只能处理很特殊的有环图；</li>
+<li>未系统讨论在一般有向图中如何选择被领导者直接连接的节点（钉扎节点）。</li>
+</ul>
+<h3 id="2-2-本文要解决的问题"><a href="#2-2-本文要解决的问题" class="headerlink" title="2.2 本文要解决的问题"></a>2.2 本文要解决的问题</h3><p>领导者与第 <code>i</code> 个跟随者满足：</p>
+<p>$$<br>\dot{x}_0&#x3D;A_0x_0+B_0r,<br>\qquad<br>\dot{x}_i&#x3D;A_ix_i+B_iu_i.<br>$$</p>
+<p>其中：</p>
+<ul>
+<li><code>x₀</code> 是领导者状态，<code>r</code> 是领导者的连续外部输入；</li>
+<li><code>xᵢ</code>、<code>uᵢ</code> 分别是跟随者状态和控制输入；</li>
+<li>领导者模型 <code>(A₀,B₀)</code> 已知；</li>
+<li>跟随者模型 <code>(Aᵢ,Bᵢ)</code> 未知，且不同节点可以不同。</li>
+</ul>
+<p>目标是设计分布式控制器，使所有跟随者最终满足：</p>
+<p>$$<br>e_i&#x3D;x_i-x_0 \longrightarrow 0.<br>$$</p>
+<hr>
+<h2 id="3-关键假设"><a href="#3-关键假设" class="headerlink" title="3. 关键假设"></a>3. 关键假设</h2><h3 id="假设-1：MRAC-匹配条件"><a href="#假设-1：MRAC-匹配条件" class="headerlink" title="假设 1：MRAC 匹配条件"></a>假设 1：MRAC 匹配条件</h3><p>对每个跟随者，存在未知的理想增益 <code>Kᵢ*</code>、<code>Lᵢ*</code>，使：</p>
+<p>$$<br>A_i+B_iK_i^<em>&#x3D;A_0,<br>\qquad<br>B_iL_i^</em>&#x3D;B_0.<br>$$</p>
+<p>同时，<code>Lᵢ*</code> 是正定或负定的，且其符号已知。</p>
+<p><strong>含义：</strong> 虽然跟随者模型未知，但它在结构上可以经状态反馈和输入变换“匹配”为领导者模型。这是 MRAC 得以工作的核心前提，也是实际应用中较强的限制。</p>
+<h3 id="假设-2：领导者可稳定化"><a href="#假设-2：领导者可稳定化" class="headerlink" title="假设 2：领导者可稳定化"></a>假设 2：领导者可稳定化</h3><p><code>(A₀,B₀)</code> 可稳定化，而不要求 <code>A₀</code> 本身稳定。</p>
+<p>作者由代数 Riccati 方程：</p>
+<p>$$<br>A_0^TP+PA_0-PB_0B_0^TP+I&#x3D;0<br>$$</p>
+<p>求得 <code>P&gt;0</code>，并构造：</p>
+<p>$$<br>G&#x3D;-B_0^TP.<br>$$</p>
+<p>于是 <code>A₀+B₀G</code> 渐近稳定。这个稳定矩阵是后续误差系统稳定性的基础。</p>
+<h3 id="假设-3：增广图含有以领导者为根的有向生成树"><a href="#假设-3：增广图含有以领导者为根的有向生成树" class="headerlink" title="假设 3：增广图含有以领导者为根的有向生成树"></a>假设 3：增广图含有以领导者为根的有向生成树</h3><p>领导者必须能通过直接或间接的通信路径影响所有跟随者。否则某些节点无法获得领导者信息，一致性目标本身不可达。</p>
+<h3 id="假设-4：v-MRASC-子图无环"><a href="#假设-4：v-MRASC-子图无环" class="headerlink" title="假设 4：v-MRASC 子图无环"></a>假设 4：v-MRASC 子图无环</h3><p>对于<strong>未被领导者直接钉扎</strong>的节点，保留其入边后形成的 <code>G_v-MRASC</code> 必须无环。</p>
+<p><strong>作用：</strong> 保证虚拟控制律中涉及邻居控制输入的代数关系可逐层求解，而不会因有向环形成隐式耦合方程。</p>
+<hr>
+<h2 id="4-核心思想：两层自适应控制"><a href="#4-核心思想：两层自适应控制" class="headerlink" title="4. 核心思想：两层自适应控制"></a>4. 核心思想：两层自适应控制</h2><p>论文把跟随者分成两类。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">领导者</span><br><span class="line">  ├─→ 被钉扎节点：直接跟踪领导者（MRASC）</span><br><span class="line">  └─→ 经通信网络传播</span><br><span class="line">          └─→ 未钉扎节点：跟踪邻居加权平均（v-MRASC）</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-1-被钉扎节点：MRASC"><a href="#4-1-被钉扎节点：MRASC" class="headerlink" title="4.1 被钉扎节点：MRASC"></a>4.1 被钉扎节点：MRASC</h3><p>被领导者直接连接的节点能够获得 <code>x₀</code> 和 <code>r</code>。其控制律为：</p>
+<p>$$<br>u_i&#x3D;\hat K_ix_i+\hat L_ir+\hat S_ie_i.<br>$$</p>
+<p>其中：</p>
+<ul>
+<li><code>K̂ᵢxᵢ</code>：自适应状态反馈；</li>
+<li><code>L̂ᵢr</code>：自适应利用领导者外部输入；</li>
+<li><code>Ŝᵢeᵢ</code>：<strong>自适应稳定化项</strong>，是本文区别于常规 MRAC 的关键。</li>
+</ul>
+<p>相应自适应律为：</p>
+<p>$$<br>\dot{\hat K}_i&#x3D;-\gamma\operatorname{sgn}(L_i^*)B_0^TPe_ix_i^T,<br>$$</p>
+<p>$$<br>\dot{\hat L}_i&#x3D;-\gamma\operatorname{sgn}(L_i^*)B_0^TPe_ir^T,<br>$$</p>
+<p>$$<br>\dot{\hat S}_i&#x3D;-\gamma\operatorname{sgn}(L_i^*)B_0^TPe_ie_i^T.<br>$$</p>
+<p>理想情况下 <code>Sᵢ*=Lᵢ*G</code>。该项把 Riccati 设计得到的稳定反馈 <code>G</code> 融入自适应控制，使误差动态中出现稳定矩阵 <code>A₀+B₀G</code>。</p>
+<h3 id="4-2-未钉扎节点：v-MRASC"><a href="#4-2-未钉扎节点：v-MRASC" class="headerlink" title="4.2 未钉扎节点：v-MRASC"></a>4.2 未钉扎节点：v-MRASC</h3><p>未钉扎节点无法直接获得 <code>x₀,r</code>，因此不能直接跟踪领导者。作者以邻居状态的加权平均构造虚拟参考：</p>
+<p>$$<br>x_i^a&#x3D;\frac{\sum_{j\in\mathcal N_i}a_{ij}x_j}{\sum_{j\in\mathcal N_i}a_{ij}}.<br>$$</p>
+<p>定义局部误差：</p>
+<p>$$<br>e_i’&#x3D;x_i-x_i^a.<br>$$</p>
+<p>其控制律为：</p>
+<p>$$<br>u_i&#x3D;<br>\frac{\sum_{j\in\mathcal N_i}a_{ij}<br>(\hat K_{ij}x_j+\hat L_{ij}u_j+\hat S_ie_{ij})}<br>{\sum_{j\in\mathcal N_i}a_{ij}}.<br>$$</p>
+<p>这里控制器使用了邻居的状态 <code>xⱼ</code>、控制输入 <code>uⱼ</code> 和相对状态误差 <code>eᵢⱼ=xᵢ-xⱼ</code>。因此它不需要显式估计领导者，但对通信信息的要求较高。</p>
+<p>其思想是：先使本节点追踪邻居的加权平均，再让领导者信息沿有向图逐层传播。</p>
+<hr>
+<h2 id="5-稳定性证明主线"><a href="#5-稳定性证明主线" class="headerlink" title="5. 稳定性证明主线"></a>5. 稳定性证明主线</h2><h3 id="5-1-钉扎节点的误差稳定"><a href="#5-1-钉扎节点的误差稳定" class="headerlink" title="5.1 钉扎节点的误差稳定"></a>5.1 钉扎节点的误差稳定</h3><p>对 <code>eᵢ=xᵢ-x₀</code> 构造 Lyapunov 函数：</p>
+<p>$$<br>V_i&#x3D;e_i^T P e_i+\gamma^{-1}\operatorname{tr}\left(<br>\tilde K_i^T\Gamma_i\tilde K_i+<br>\tilde L_i^T\Gamma_i\tilde L_i+<br>\tilde S_i^T\Gamma_i\tilde S_i\right).<br>$$</p>
+<p>其中参数误差由“估计值减理想值”定义，<code>Γᵢ=Lᵢ*^&#123;-1&#125;sgn(Lᵢ*)</code>。</p>
+<p>代入自适应律后，交叉项被抵消，得到：</p>
+<p>$$<br>\dot V_i&#x3D;-e_i^T(I+PB_0B_0^TP)e_i\leq0.<br>$$</p>
+<p>因此：</p>
+<ul>
+<li>跟踪误差渐近收敛；</li>
+<li>自适应参数误差全局一致有界；</li>
+<li>但参数估计值<strong>不一定</strong>收敛到理想参数。</li>
+</ul>
+<h3 id="5-2-未钉扎节点的局部误差稳定"><a href="#5-2-未钉扎节点的局部误差稳定" class="headerlink" title="5.2 未钉扎节点的局部误差稳定"></a>5.2 未钉扎节点的局部误差稳定</h3><p>对 <code>eᵢ&#39;</code> 使用类似的 Lyapunov 函数。经匹配关系和自适应律抵消交叉项后，仍可得到：</p>
+<p>$$<br>\dot V_i’&#x3D;-e_i’^T(I+PB_0B_0^TP)e_i’\leq0.<br>$$</p>
+<p>所以每个未钉扎节点最终满足：</p>
+<p>$$<br>x_i-\frac{\sum_{j\in\mathcal N_i}a_{ij}x_j}<br>{\sum_{j\in\mathcal N_i}a_{ij}}<br>\longrightarrow0.<br>$$</p>
+<h3 id="5-3-从局部收敛到全局跟踪"><a href="#5-3-从局部收敛到全局跟踪" class="headerlink" title="5.3 从局部收敛到全局跟踪"></a>5.3 从局部收敛到全局跟踪</h3><p>论文给出一个图论线性代数引理：若被钉扎节点都等于常量 <code>c</code>，其他节点都等于其邻居加权平均，且增广图具有以领导者为根的有向生成树，则这个方程组的唯一解是所有节点都等于 <code>c</code>。</p>
+<p>将 <code>c</code> 换成随时间变化的领导者状态 <code>x₀(t)</code>，并结合：</p>
+<ul>
+<li>钉扎节点有 <code>xᵢ→x₀</code>；</li>
+<li>未钉扎节点有 <code>xᵢ→</code> 邻居加权平均；</li>
+</ul>
+<p>即可推出全体节点 <code>xᵢ→x₀</code>。</p>
+<hr>
+<h2 id="6-钉扎节点数量的结果"><a href="#6-钉扎节点数量的结果" class="headerlink" title="6. 钉扎节点数量的结果"></a>6. 钉扎节点数量的结果</h2><p>针对弱连通跟随者有向图，论文给出最小钉扎节点数的下界：</p>
+<p>$$<br>N_{\min_\mathrm{pin}}<br>\geq N_{\mathrm{s\text{-}LSCCs}}+N_{\max_\mathrm{ICs}}.<br>$$</p>
+<p>其中：</p>
+<ul>
+<li><code>N_s-LSCCs</code>：单节点领导强连通分量的数量；</li>
+<li><code>N_max,ICs</code>：最大独立环数量；独立环指不与其他环共享节点的环。</li>
+</ul>
+<h3 id="直观理解"><a href="#直观理解" class="headerlink" title="直观理解"></a>直观理解</h3><ol>
+<li>每个单节点的源强连通分量必须被钉扎，否则它不受其他节点影响；</li>
+<li>每个独立环至少应钉扎一个节点，以破坏 v-MRASC 中的环状代数依赖；</li>
+<li>该式是<strong>下界</strong>，不是保证达到最优钉扎数的精确公式。稠密强连通子图中，可能需要额外钉扎节点。</li>
+</ol>
+<hr>
+<h2 id="7-仿真设置与结论"><a href="#7-仿真设置与结论" class="headerlink" title="7. 仿真设置与结论"></a>7. 仿真设置与结论</h2><h3 id="仿真设置"><a href="#仿真设置" class="headerlink" title="仿真设置"></a>仿真设置</h3><ul>
+<li><code>N=4</code> 个未知、异构二阶跟随者；</li>
+<li>领导者 <code>A₀</code> 不稳定，但 <code>(A₀,B₀)</code> 可稳定；</li>
+<li>领导者外部输入为 <code>r=sin(t)</code>；</li>
+<li>比较两种通信拓扑，并和文献 [17] 的 MRAC 型方法比较。</li>
+</ul>
+<h3 id="观察结果"><a href="#观察结果" class="headerlink" title="观察结果"></a>观察结果</h3><ul>
+<li>本文方法在两种拓扑下均使所有跟踪误差收敛；</li>
+<li>使用较少钉扎节点的案例，瞬态表现甚至略好；</li>
+<li>去掉稳定化项 <code>Ŝᵢeᵢ</code>、使用已有方法时，存在显著剩余跟踪误差。</li>
+</ul>
+<h3 id="仿真的意义"><a href="#仿真的意义" class="headerlink" title="仿真的意义"></a>仿真的意义</h3><p>仿真支持了“稳定化项有必要”的理论主张，但规模较小，主要展示可行性，未充分测试扰动、噪声、时延或大规模网络性能。</p>
+<hr>
+<h2 id="8-论文贡献总结"><a href="#8-论文贡献总结" class="headerlink" title="8. 论文贡献总结"></a>8. 论文贡献总结</h2><ol>
+<li><strong>放松领导者稳定性要求</strong>：只需领导者可稳定化，不要求其内部动态稳定；</li>
+<li><strong>允许领导者外部输入</strong>：可以跟踪非自治领导者；</li>
+<li><strong>无需额外领导者观测器</strong>：领导者信息的重构内嵌于自适应控制机制；</li>
+<li><strong>分层 MRASC &#x2F; v-MRASC 结构</strong>：让直接节点和间接节点采用不同自适应策略；</li>
+<li><strong>处理更一般的有向图设计问题</strong>：允许原图含环，并给出钉扎选择的结构性下界。</li>
+</ol>
+<hr>
+<h2 id="9-局限与阅读时应关注的问题"><a href="#9-局限与阅读时应关注的问题" class="headerlink" title="9. 局限与阅读时应关注的问题"></a>9. 局限与阅读时应关注的问题</h2><h3 id="9-1-匹配条件强"><a href="#9-1-匹配条件强" class="headerlink" title="9.1 匹配条件强"></a>9.1 匹配条件强</h3><p>论文要求每个跟随者都存在理想增益，使其可以精确匹配领导者模型。真实系统若含不可匹配不确定性，该框架未必适用。</p>
+<h3 id="9-2-需要已知输入增益符号"><a href="#9-2-需要已知输入增益符号" class="headerlink" title="9.2 需要已知输入增益符号"></a>9.2 需要已知输入增益符号</h3><p>要求 <code>Lᵢ*</code> 符号确定、且符号预先已知。多输入系统中，这是不容易满足或验证的先验条件。</p>
+<h3 id="9-3-通信假设理想"><a href="#9-3-通信假设理想" class="headerlink" title="9.3 通信假设理想"></a>9.3 通信假设理想</h3><p>未钉扎节点需要获得邻居的状态和控制输入。论文未处理：</p>
+<ul>
+<li>通信时延；</li>
+<li>丢包与异步采样；</li>
+<li>测量噪声；</li>
+<li>量化；</li>
+<li>带宽受限。</li>
+</ul>
+<h3 id="9-4-有环图仍受限制"><a href="#9-4-有环图仍受限制" class="headerlink" title="9.4 有环图仍受限制"></a>9.4 有环图仍受限制</h3><p>论文并非直接解决任意有向环网络下 v-MRASC 的闭环稳定性，而是通过钉扎节点的选择，要求剩余 v-MRASC 子图无环。</p>
+<h3 id="9-5-参数收敛性没有保证"><a href="#9-5-参数收敛性没有保证" class="headerlink" title="9.5 参数收敛性没有保证"></a>9.5 参数收敛性没有保证</h3><p>结论仅保证误差趋于零和参数误差有界。没有持续激励时，<code>K̂</code>、<code>L̂</code>、<code>Ŝ</code> 通常不会收敛到理想值。</p>
+<h3 id="9-6-工程鲁棒性尚未展开"><a href="#9-6-工程鲁棒性尚未展开" class="headerlink" title="9.6 工程鲁棒性尚未展开"></a>9.6 工程鲁棒性尚未展开</h3><p>不稳定领导者可能导致状态和控制输入幅值增长。论文未讨论控制输入饱和、积分累积、噪声下参数漂移等工程风险。</p>
+<h3 id="9-7-验证规模有限"><a href="#9-7-验证规模有限" class="headerlink" title="9.7 验证规模有限"></a>9.7 验证规模有限</h3><p>仅展示了 4 节点二阶系统的仿真；缺少大规模网络、参数失配和鲁棒性基准对比。</p>
+<hr>
+<h2 id="10-建议的复现顺序"><a href="#10-建议的复现顺序" class="headerlink" title="10. 建议的复现顺序"></a>10. 建议的复现顺序</h2><p>若要真正理解并复现本文，建议按以下顺序推进：</p>
+<ol>
+<li>用单个跟随者复现被钉扎节点的 MRASC，先验证不稳定 <code>A₀</code> 下误差是否收敛；</li>
+<li>验证 Riccati 方程、<code>P</code> 和 <code>G</code> 的计算是否与文中一致；</li>
+<li>构造两个节点的链式网络，验证虚拟参考与 v-MRASC；</li>
+<li>复现文中的 4 节点两个拓扑案例；</li>
+<li>对比去掉 <code>Ŝᵢeᵢ</code> 后的结果，观察稳定化项的作用；</li>
+<li>最后再改变钉扎节点集合，检查图条件与收敛之间的关系。</li>
+</ol>
+<hr>
+<h2 id="11-最终理解"><a href="#11-最终理解" class="headerlink" title="11. 最终理解"></a>11. 最终理解</h2><p>本文可以理解为：</p>
+<blockquote>
+<p>先用 Riccati 设计把“可能不稳定的领导者参考”转化为“误差意义下可稳定的目标”，再让自适应律补偿未知、异构跟随者与领导者之间的匹配增益；对不能直接看见领导者的节点，则通过邻居的虚拟参考逐层传播这一跟踪关系。</p>
+</blockquote>
+<p>因此，MRASC 中的稳定化项与分层图结构是论文的两个真正支点：前者解决不稳定参考，后者解决领导者信息不完全可得。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linx29853.github.io">LenoVo</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linx29853.github.io/2026/08/27/MRASC_leader_following_consensus_%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">https://linx29853.github.io/2026/08/27/MRASC_leader_following_consensus_%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://linx29853.github.io" target="_blank">LenoVo的小站</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6/">自适应控制</a><a class="post-meta__tags" href="/tags/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93%E7%B3%BB%E7%BB%9F/">多智能体系统</a><a class="post-meta__tags" href="/tags/MRASC/">MRASC</a><a class="post-meta__tags" href="/tags/Leader-Following-Consensus/">Leader-Following Consensus</a></div><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/08/26/%E6%9D%8E%E9%9B%85%E6%99%AE%E8%AF%BA%E5%A4%AB%E7%A8%B3%E5%AE%9A%E6%80%A7%E4%B8%8E%E7%BA%BF%E6%80%A7%E7%B3%BB%E7%BB%9F%E6%96%B9%E6%B3%95-%E7%B2%BE%E7%AE%80%E7%AC%94%E8%AE%B0/" title="李雅普诺夫稳定性与线性系统方法：精简笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">李雅普诺夫稳定性与线性系统方法：精简笔记</div></div><div class="info-2"><div class="info-item-1"> 目标：掌握李雅普诺夫稳定性的核心概念，并能用李雅普诺夫方程判断连续时间线性系统的稳定性。   1. 核心思想考虑自治系统： $$\dot{x}&#x3D;f(x),\qquad f(0)&#x3D;0$$ 李雅普诺夫方法不需要求出系统的显式解，而是寻找一个类似“能量”的标量函数： $$V(x)$$ 如果系统运动过程中 V 始终减小，就可以判断状态会向平衡点靠近。 直观理解：  V(x)：系统具有的能量； V(x)&gt;0：离开原点就有正能量； V̇(x)&lt;0：能量不断耗散； 最终状态趋近能量最低点，即原点。   2. 稳定性的基本概念2.1 李雅普诺夫稳定状态从原点附近出发，以后始终不会远离原点。 关键词：不跑远，但不一定回到原点。 2.2 渐近稳定系统不仅稳定，而且满足： $$\lim_{t\to\infty}x(t)&#x3D;0$$ 关键词：不跑远，并且最终回到原点。 2.3 全局渐近稳定无论初始状态从哪里出发，最终都趋于原点。 局部与全局的区别，在于结论适用的初始状态范围。  3. 李雅普诺夫直接法若能找到连续可微函数 V(x)，满足： $$V(0)&#x3D;...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/08/25/2021_MRACon_%E7%B2%BE%E8%AF%BB%E4%B8%8EMRASC_Popov%E7%A0%94%E7%A9%B6%E6%8A%A5%E5%91%8A/" title="2021 MRACon 精读与 MRASC-Popov 研究报告"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-25</div><div class="info-item-2">2021 MRACon 精读与 MRASC-Popov 研究报告</div></div><div class="info-2"><div class="info-item-1"> Jie Mei, Wei Ren, Yongduan Song, IEEE Transactions on Automatic Control, 2021. DOI: 10.1109&#x2F;TAC.2021.3062594  一句话结论这篇论文最值得借鉴的不是某一条自适应律，而是其 MRACon（模型参考自适应一致）分层思想：先为每个不确定智能体配置一个局部线性参考模型，再把难题分解为“单体跟踪参考模型”和“所有参考模型实现一致”两部分。 对正在考虑的 MRASC - Popov 方向而言，它给出一个很好的参照：PI consensus error 可以被理解为一种参考模型；而 Popov 超稳定性可尝试替代单体 MRASC 跟踪环节中的 Lyapunov 证明。 但该文是无领导者的一致性问题，不能直接替代 2025 年的 leader-following MRASC 结论。  1. 论文解决的问题考虑有向图下的一组同构线性系统，存在各自未知的匹配参数不确定性： $$\dot x_i&#x3D;A x_i+B\bigl(u_i+\Phi_i(t,x_i)\Theta_i\b...</div></div></div></a><a class="pagination-related" href="/2026/08/26/MRAC%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AC%94%E8%AE%B0/" title="MRAC 数学基础知识点笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-26</div><div class="info-item-2">MRAC 数学基础知识点笔记</div></div><div class="info-2"><div class="info-item-1">   学习目标：为李雅普诺夫稳定性、模型参考自适应控制（MRAC）和 Popov 超稳定理论打基础。   0. 知识地图学习顺序建议：  会从物理方程建立微分方程； 会把微分方程写成状态空间模型； 会在状态空间模型与传递函数之间转换； 会用极点或特征值判断线性系统稳定性； 理解正定矩阵与二次型，能看懂李雅普诺夫函数； 理解频率响应、正实函数和严格正实函数； 再学习李雅普诺夫方法、KYP 引理、Popov 判据和 MRAC。  它们在 MRAC 中的联系是： 123456789微分方程 → 状态空间模型 → 误差状态方程                         ↓               Hurwitz 矩阵与李雅普诺夫方程                         ↓                  正定二次型 V(x)                         ↓             设计自适应律，使 V̇ ≤ 0误差传递函数 → 严格正实性 → KYP 引理 → Popov 超稳定分析   1. 状态空间模型与传递函数1.1 为什么需要两种模型控...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">LenoVo</div><div class="author-info-description">记录轨道交通、公交与卡车见闻，以及技术学习笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">7</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">15</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/linx29853"><i class="fab fa-github"></i><span>访问 GitHub</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LenoVo 的小站</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%B8%80%E5%8F%A5%E8%AF%9D%E6%A6%82%E6%8B%AC"><span class="toc-number">1.</span> <span class="toc-text">1. 一句话概括</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%A0%94%E7%A9%B6%E8%83%8C%E6%99%AF%E4%B8%8E%E9%97%AE%E9%A2%98"><span class="toc-number">2.</span> <span class="toc-text">2. 研究背景与问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E4%BC%A0%E7%BB%9F%E6%96%B9%E6%B3%95%E7%9A%84%E9%99%90%E5%88%B6"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 传统方法的限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E6%9C%AC%E6%96%87%E8%A6%81%E8%A7%A3%E5%86%B3%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 本文要解决的问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%85%B3%E9%94%AE%E5%81%87%E8%AE%BE"><span class="toc-number">3.</span> <span class="toc-text">3. 关键假设</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%81%87%E8%AE%BE-1%EF%BC%9AMRAC-%E5%8C%B9%E9%85%8D%E6%9D%A1%E4%BB%B6"><span class="toc-number">3.1.</span> <span class="toc-text">假设 1：MRAC 匹配条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%81%87%E8%AE%BE-2%EF%BC%9A%E9%A2%86%E5%AF%BC%E8%80%85%E5%8F%AF%E7%A8%B3%E5%AE%9A%E5%8C%96"><span class="toc-number">3.2.</span> <span class="toc-text">假设 2：领导者可稳定化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%81%87%E8%AE%BE-3%EF%BC%9A%E5%A2%9E%E5%B9%BF%E5%9B%BE%E5%90%AB%E6%9C%89%E4%BB%A5%E9%A2%86%E5%AF%BC%E8%80%85%E4%B8%BA%E6%A0%B9%E7%9A%84%E6%9C%89%E5%90%91%E7%94%9F%E6%88%90%E6%A0%91"><span class="toc-number">3.3.</span> <span class="toc-text">假设 3：增广图含有以领导者为根的有向生成树</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%81%87%E8%AE%BE-4%EF%BC%9Av-MRASC-%E5%AD%90%E5%9B%BE%E6%97%A0%E7%8E%AF"><span class="toc-number">3.4.</span> <span class="toc-text">假设 4：v-MRASC 子图无环</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%A0%B8%E5%BF%83%E6%80%9D%E6%83%B3%EF%BC%9A%E4%B8%A4%E5%B1%82%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6"><span class="toc-number">4.</span> <span class="toc-text">4. 核心思想：两层自适应控制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E8%A2%AB%E9%92%89%E6%89%8E%E8%8A%82%E7%82%B9%EF%BC%9AMRASC"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 被钉扎节点：MRASC</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E6%9C%AA%E9%92%89%E6%89%8E%E8%8A%82%E7%82%B9%EF%BC%9Av-MRASC"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 未钉扎节点：v-MRASC</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E7%A8%B3%E5%AE%9A%E6%80%A7%E8%AF%81%E6%98%8E%E4%B8%BB%E7%BA%BF"><span class="toc-number">5.</span> <span class="toc-text">5. 稳定性证明主线</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E9%92%89%E6%89%8E%E8%8A%82%E7%82%B9%E7%9A%84%E8%AF%AF%E5%B7%AE%E7%A8%B3%E5%AE%9A"><span class="toc-number">5.1.</span> <span class="toc-text">5.1 钉扎节点的误差稳定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E6%9C%AA%E9%92%89%E6%89%8E%E8%8A%82%E7%82%B9%E7%9A%84%E5%B1%80%E9%83%A8%E8%AF%AF%E5%B7%AE%E7%A8%B3%E5%AE%9A"><span class="toc-number">5.2.</span> <span class="toc-text">5.2 未钉扎节点的局部误差稳定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E4%BB%8E%E5%B1%80%E9%83%A8%E6%94%B6%E6%95%9B%E5%88%B0%E5%85%A8%E5%B1%80%E8%B7%9F%E8%B8%AA"><span class="toc-number">5.3.</span> <span class="toc-text">5.3 从局部收敛到全局跟踪</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E9%92%89%E6%89%8E%E8%8A%82%E7%82%B9%E6%95%B0%E9%87%8F%E7%9A%84%E7%BB%93%E6%9E%9C"><span class="toc-number">6.</span> <span class="toc-text">6. 钉扎节点数量的结果</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B4%E8%A7%82%E7%90%86%E8%A7%A3"><span class="toc-number">6.1.</span> <span class="toc-text">直观理解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E4%BB%BF%E7%9C%9F%E8%AE%BE%E7%BD%AE%E4%B8%8E%E7%BB%93%E8%AE%BA"><span class="toc-number">7.</span> <span class="toc-text">7. 仿真设置与结论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%BF%E7%9C%9F%E8%AE%BE%E7%BD%AE"><span class="toc-number">7.1.</span> <span class="toc-text">仿真设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%82%E5%AF%9F%E7%BB%93%E6%9E%9C"><span class="toc-number">7.2.</span> <span class="toc-text">观察结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%BF%E7%9C%9F%E7%9A%84%E6%84%8F%E4%B9%89"><span class="toc-number">7.3.</span> <span class="toc-text">仿真的意义</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E8%AE%BA%E6%96%87%E8%B4%A1%E7%8C%AE%E6%80%BB%E7%BB%93"><span class="toc-number">8.</span> <span class="toc-text">8. 论文贡献总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E5%B1%80%E9%99%90%E4%B8%8E%E9%98%85%E8%AF%BB%E6%97%B6%E5%BA%94%E5%85%B3%E6%B3%A8%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-number">9.</span> <span class="toc-text">9. 局限与阅读时应关注的问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-%E5%8C%B9%E9%85%8D%E6%9D%A1%E4%BB%B6%E5%BC%BA"><span class="toc-number">9.1.</span> <span class="toc-text">9.1 匹配条件强</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-%E9%9C%80%E8%A6%81%E5%B7%B2%E7%9F%A5%E8%BE%93%E5%85%A5%E5%A2%9E%E7%9B%8A%E7%AC%A6%E5%8F%B7"><span class="toc-number">9.2.</span> <span class="toc-text">9.2 需要已知输入增益符号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-3-%E9%80%9A%E4%BF%A1%E5%81%87%E8%AE%BE%E7%90%86%E6%83%B3"><span class="toc-number">9.3.</span> <span class="toc-text">9.3 通信假设理想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-4-%E6%9C%89%E7%8E%AF%E5%9B%BE%E4%BB%8D%E5%8F%97%E9%99%90%E5%88%B6"><span class="toc-number">9.4.</span> <span class="toc-text">9.4 有环图仍受限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-5-%E5%8F%82%E6%95%B0%E6%94%B6%E6%95%9B%E6%80%A7%E6%B2%A1%E6%9C%89%E4%BF%9D%E8%AF%81"><span class="toc-number">9.5.</span> <span class="toc-text">9.5 参数收敛性没有保证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-6-%E5%B7%A5%E7%A8%8B%E9%B2%81%E6%A3%92%E6%80%A7%E5%B0%9A%E6%9C%AA%E5%B1%95%E5%BC%80"><span class="toc-number">9.6.</span> <span class="toc-text">9.6 工程鲁棒性尚未展开</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-7-%E9%AA%8C%E8%AF%81%E8%A7%84%E6%A8%A1%E6%9C%89%E9%99%90"><span class="toc-number">9.7.</span> <span class="toc-text">9.7 验证规模有限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E5%BB%BA%E8%AE%AE%E7%9A%84%E5%A4%8D%E7%8E%B0%E9%A1%BA%E5%BA%8F"><span class="toc-number">10.</span> <span class="toc-text">10. 建议的复现顺序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E6%9C%80%E7%BB%88%E7%90%86%E8%A7%A3"><span class="toc-number">11.</span> <span class="toc-text">11. 最终理解</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/27/MRASC_leader_following_consensus_%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/" title="MRASC 领导者-跟随者一致性论文阅读笔记">MRASC 领导者-跟随者一致性论文阅读笔记</a><time datetime="2026-08-27T01:00:00.000Z" title="发表于 2026-08-27 09:00:00">2026-08-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/26/%E6%9D%8E%E9%9B%85%E6%99%AE%E8%AF%BA%E5%A4%AB%E7%A8%B3%E5%AE%9A%E6%80%A7%E4%B8%8E%E7%BA%BF%E6%80%A7%E7%B3%BB%E7%BB%9F%E6%96%B9%E6%B3%95-%E7%B2%BE%E7%AE%80%E7%AC%94%E8%AE%B0/" title="李雅普诺夫稳定性与线性系统方法：精简笔记">李雅普诺夫稳定性与线性系统方法：精简笔记</a><time datetime="2026-08-26T08:05:00.000Z" title="发表于 2026-08-26 16:05:00">2026-08-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/26/MRAC%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AC%94%E8%AE%B0/" title="MRAC 数学基础知识点笔记">MRAC 数学基础知识点笔记</a><time datetime="2026-08-26T01:00:00.000Z" title="发表于 2026-08-26 09:00:00">2026-08-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/25/2021_MRACon_%E7%B2%BE%E8%AF%BB%E4%B8%8EMRASC_Popov%E7%A0%94%E7%A9%B6%E6%8A%A5%E5%91%8A/" title="2021 MRACon 精读与 MRASC-Popov 研究报告">2021 MRACon 精读与 MRASC-Popov 研究报告</a><time datetime="2026-08-25T08:53:06.000Z" title="发表于 2026-08-25 16:53:06">2026-08-25</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/25/%E6%9C%BA%E5%99%A8%E4%BA%BA%E8%BF%90%E5%8A%A8%E5%AD%A6%E4%B8%A4%E5%91%A8%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" title="机器人运动学两周学习总结">机器人运动学两周学习总结</a><time datetime="2026-08-25T08:40:34.000Z" title="发表于 2026-08-25 16:40:34">2026-08-25</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2025 - 2026 By LenoVo</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
