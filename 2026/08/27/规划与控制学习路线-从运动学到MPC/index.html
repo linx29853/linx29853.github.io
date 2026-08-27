@@ -1,0 +1,739 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>规划与控制学习路线：从运动学到 MPC | LenoVo的小站</title><meta name="author" content="LenoVo"><meta name="copyright" content="LenoVo"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一条从坐标变换、运动学、动力学与轨迹生成，延伸到采样规划、轨迹优化、MPC 和综合机械臂项目的十周学习路线。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="规划与控制学习路线：从运动学到 MPC">
+<meta property="og:url" content="https://linx29853.github.io/2026/08/27/%E8%A7%84%E5%88%92%E4%B8%8E%E6%8E%A7%E5%88%B6%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E4%BB%8E%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%88%B0MPC/">
+<meta property="og:site_name" content="LenoVo的小站">
+<meta property="og:description" content="一条从坐标变换、运动学、动力学与轨迹生成，延伸到采样规划、轨迹优化、MPC 和综合机械臂项目的十周学习路线。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linx29853.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-08-27T02:15:00.000Z">
+<meta property="article:modified_time" content="2026-08-27T02:44:53.713Z">
+<meta property="article:author" content="LenoVo">
+<meta property="article:tag" content="机器人">
+<meta property="article:tag" content="运动规划">
+<meta property="article:tag" content="控制">
+<meta property="article:tag" content="MPC">
+<meta property="article:tag" content="MuJoCo">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linx29853.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "规划与控制学习路线：从运动学到 MPC",
+  "url": "https://linx29853.github.io/2026/08/27/%E8%A7%84%E5%88%92%E4%B8%8E%E6%8E%A7%E5%88%B6%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E4%BB%8E%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%88%B0MPC/",
+  "image": "https://linx29853.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-08-27T02:15:00.000Z",
+  "dateModified": "2026-08-27T02:44:53.713Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LenoVo",
+      "url": "https://linx29853.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://linx29853.github.io/2026/08/27/%E8%A7%84%E5%88%92%E4%B8%8E%E6%8E%A7%E5%88%B6%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E4%BB%8E%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%88%B0MPC/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?aeb05b46d9af3b7840e1a58e05c8aefc";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+btf.addGlobalFn('pjaxComplete', () => {
+  _hmt.push(['_trackPageview',window.location.pathname])
+}, 'baidu_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '规划与控制学习路线：从运动学到 MPC',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/bilibili.css"><link rel="stylesheet" href="/css/travel-gallery.css"><link rel="stylesheet" href="/css/music-profile.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">19</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LenoVo的小站</span></a><a class="nav-page-title" href="/"><span class="site-name">规划与控制学习路线：从运动学到 MPC</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">规划与控制学习路线：从运动学到 MPC</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-27T02:15:00.000Z" title="发表于 2026-08-27 10:15:00">2026-08-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-27T02:44:53.713Z" title="更新于 2026-08-27 10:44:53">2026-08-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/">技术学习</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p><strong>适用人群</strong>：具备 Python、线性代数和基础微积分，希望进入机械臂规划、控制、机器人操作或具身智能方向的学习者。<br><strong>建议周期</strong>：10 周，每周 8–12 小时。<br><strong>主线平台</strong>：Python + MuJoCo；需要 ROS 工程能力时再扩展到 ROS 2、MoveIt 2 与 Gazebo。<br><strong>最终成果</strong>：完成一个机械臂避障运动与轨迹跟踪项目，提交可复现代码、指标曲线、演示视频和实验报告。</p>
+</blockquote>
+<h2 id="1-学习目标"><a href="#1-学习目标" class="headerlink" title="1. 学习目标"></a>1. 学习目标</h2><p>完成本路线后，应能够：</p>
+<ol>
+<li>使用齐次变换描述机器人与物体之间的位姿关系；</li>
+<li>求解机械臂正运动学、逆运动学与雅可比矩阵；</li>
+<li>区分路径、轨迹和控制，生成速度与加速度连续的参考轨迹；</li>
+<li>理解机器人动力学方程，并实现 PID、重力补偿或计算力矩控制；</li>
+<li>使用 A*、RRT、RRT* 或 PRM 生成无碰路径；</li>
+<li>理解 TrajOpt、iLQR、MPC 和 MPPI 的适用边界；</li>
+<li>将“路径规划—轨迹生成—闭环控制—评测”组成完整系统。</li>
+</ol>
+<p>推荐的知识依赖关系如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">坐标变换</span><br><span class="line">   ↓</span><br><span class="line">正/逆运动学 → 雅可比与奇异点</span><br><span class="line">   ↓</span><br><span class="line">轨迹生成 → 刚体动力学</span><br><span class="line">   ↓</span><br><span class="line">PID / LQR / 阻抗控制</span><br><span class="line">   ↓</span><br><span class="line">搜索与采样规划 → 轨迹优化</span><br><span class="line">   ↓</span><br><span class="line">MPC / MPPI</span><br><span class="line">   ↓</span><br><span class="line">机械臂避障与轨迹跟踪综合项目</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-开始前的先修检查"><a href="#2-开始前的先修检查" class="headerlink" title="2. 开始前的先修检查"></a>2. 开始前的先修检查</h2><h3 id="2-1-数学"><a href="#2-1-数学" class="headerlink" title="2.1 数学"></a>2.1 数学</h3><ul>
+<li>能进行矩阵乘法、求逆、特征值和线性方程求解；</li>
+<li>理解导数、偏导数、梯度与链式法则；</li>
+<li>知道均值、方差和高斯分布的基本含义；</li>
+<li>能理解常微分方程描述的动态系统。</li>
+</ul>
+<h3 id="2-2-编程与工具"><a href="#2-2-编程与工具" class="headerlink" title="2.2 编程与工具"></a>2.2 编程与工具</h3><ul>
+<li>能用 Python 编写函数、类和简单数值实验；</li>
+<li>熟悉 NumPy、Matplotlib；</li>
+<li>能创建独立环境、安装依赖并保存实验配置；</li>
+<li>了解 Git 的基本使用方法。</li>
+</ul>
+<h3 id="2-3-建议的补课入口"><a href="#2-3-建议的补课入口" class="headerlink" title="2.3 建议的补课入口"></a>2.3 建议的补课入口</h3><ul>
+<li>机器人学打底</li>
+<li>工程环境：Conda、Docker、日志与可视化</li>
+<li><a target="_blank" rel="noopener" href="https://modernrobotics.northwestern.edu/nu-gm-book-resource/modern-robotics-a-free-course/">Modern Robotics 课程与教材</a></li>
+<li><a target="_blank" rel="noopener" href="https://underactuated.csail.mit.edu/">MIT Underactuated Robotics</a></li>
+</ul>
+<p>如果暂时不会 ROS，不需要在开始本路线前专门补完。前 8 周可全部在 Python 和 MuJoCo 中完成。</p>
+<h2 id="3-十周执行计划"><a href="#3-十周执行计划" class="headerlink" title="3. 十周执行计划"></a>3. 十周执行计划</h2><h3 id="第-1-周：坐标系与刚体变换"><a href="#第-1-周：坐标系与刚体变换" class="headerlink" title="第 1 周：坐标系与刚体变换"></a>第 1 周：坐标系与刚体变换</h3><p><strong>目标</strong></p>
+<ul>
+<li>掌握旋转矩阵、欧拉角、轴角与四元数的用途；</li>
+<li>理解齐次变换矩阵以及变换的组合、求逆；</li>
+<li>能在世界、基座、末端和物体坐标系之间转换位姿。</li>
+</ul>
+<p><strong>必学资料</strong></p>
+<ul>
+<li>仓库：机器人学打底——坐标系与齐次变换</li>
+<li>仓库：第三章公式汇总</li>
+<li>Modern Robotics：第 2、3 章</li>
+</ul>
+<p><strong>实践任务</strong></p>
+<ol>
+<li>用 NumPy 实现旋转矩阵和齐次变换矩阵；</li>
+<li>实现 <code>compose(T_ab, T_bc)</code> 与 <code>inverse(T_ab)</code>；</li>
+<li>随机生成 20 组变换，与 <code>scipy.spatial.transform</code> 的结果比较。</li>
+</ol>
+<p><strong>验收标准</strong></p>
+<ul>
+<li>旋转矩阵满足正交性，行列式接近 1；</li>
+<li>组合变换和逆变换的数值误差小于 <code>1e-6</code>；</li>
+<li>能解释左乘、右乘以及变换方向混淆的常见错误。</li>
+</ul>
+<hr>
+<h3 id="第-2-周：正运动学与机器人建模"><a href="#第-2-周：正运动学与机器人建模" class="headerlink" title="第 2 周：正运动学与机器人建模"></a>第 2 周：正运动学与机器人建模</h3><p><strong>目标</strong></p>
+<ul>
+<li>理解串联机械臂的运动链；</li>
+<li>掌握 DH 参数与正运动学；</li>
+<li>能根据关节角计算末端位姿。</li>
+</ul>
+<p><strong>必学资料</strong></p>
+<ul>
+<li>仓库：机器人学打底——正逆运动学与 DH 参数</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/petercorke/robotics-toolbox-python">Robotics Toolbox for Python</a></li>
+<li>Modern Robotics：第 4 章</li>
+</ul>
+<p><strong>实践任务</strong></p>
+<ol>
+<li>实现二维二连杆正运动学；</li>
+<li>绘制不同关节角下的机械臂姿态；</li>
+<li>建立一个 6 自由度机械臂模型，并与工具箱结果交叉验证。</li>
+</ol>
+<p><strong>验收标准</strong></p>
+<ul>
+<li>能由关节角稳定计算末端位置和姿态；</li>
+<li>手写结果与工具箱结果一致；</li>
+<li>能说明 DH 参数的四个量分别描述什么。</li>
+</ul>
+<hr>
+<h3 id="第-3-周：逆运动学、雅可比与奇异点"><a href="#第-3-周：逆运动学、雅可比与奇异点" class="headerlink" title="第 3 周：逆运动学、雅可比与奇异点"></a>第 3 周：逆运动学、雅可比与奇异点</h3><p><strong>目标</strong></p>
+<ul>
+<li>理解逆运动学的多解、无解和数值求解；</li>
+<li>掌握雅可比矩阵的几何意义；</li>
+<li>能识别不可达目标和奇异构型。</li>
+</ul>
+<p><strong>必学资料</strong></p>
+<ul>
+<li>仓库：机器人学打底——逆运动学与雅可比</li>
+<li>Modern Robotics：第 5、6 章</li>
+</ul>
+<p><strong>实践任务</strong></p>
+<ol>
+<li>推导二维二连杆的肘上、肘下解析 IK；</li>
+<li>实现基于雅可比伪逆的数值 IK；</li>
+<li>绘制工作空间，并标记不可达区域和奇异位置；</li>
+<li>比较解析法、普通伪逆和阻尼最小二乘法。</li>
+</ol>
+<p><strong>验收标准</strong></p>
+<ul>
+<li>可到达目标的末端位置误差小于设定阈值；</li>
+<li>不可达目标能够正确退出，而不是无限迭代；</li>
+<li>能通过雅可比秩或条件数解释奇异性。</li>
+</ul>
+<p><strong>阶段里程碑 A</strong>：完成一个可交互的二维机械臂 FK&#x2F;IK 可视化程序。</p>
+<hr>
+<h3 id="第-4-周：路径、时间参数化与轨迹生成"><a href="#第-4-周：路径、时间参数化与轨迹生成" class="headerlink" title="第 4 周：路径、时间参数化与轨迹生成"></a>第 4 周：路径、时间参数化与轨迹生成</h3><p><strong>目标</strong></p>
+<ul>
+<li>区分路径、轨迹和控制；</li>
+<li>掌握关节空间与笛卡尔空间规划的差异；</li>
+<li>实现三次、五次多项式和梯形速度曲线。</li>
+</ul>
+<p><strong>必学资料</strong></p>
+<ul>
+<li>仓库：机器人学打底——轨迹规划对比</li>
+<li>Modern Robotics：第 9 章</li>
+<li><a target="_blank" rel="noopener" href="https://moveit.picknik.ai/main/doc/examples/time_parameterization/time_parameterization_tutorial.html">MoveIt 时间参数化教程</a></li>
+</ul>
+<p><strong>实践任务</strong></p>
+<ol>
+<li>为单关节生成三次与五次多项式轨迹；</li>
+<li>扩展到多关节同步运动；</li>
+<li>绘制位置、速度、加速度曲线；</li>
+<li>对比关节空间插值和笛卡尔空间插值的末端路径。</li>
+</ol>
+<p><strong>验收标准</strong></p>
+<ul>
+<li>满足起止位置、速度和加速度边界条件；</li>
+<li>轨迹没有数值跳变；</li>
+<li>能解释为什么几何路径不能直接发送给机器人执行。</li>
+</ul>
+<hr>
+<h3 id="第-5-周：机器人动力学"><a href="#第-5-周：机器人动力学" class="headerlink" title="第 5 周：机器人动力学"></a>第 5 周：机器人动力学</h3><p><strong>目标</strong></p>
+<ul>
+<li>理解惯性矩阵、科氏&#x2F;离心项、重力项和执行器力矩；</li>
+<li>掌握前向动力学与逆动力学的区别；</li>
+<li>理解模型参数误差如何影响控制效果。</li>
+</ul>
+<p>机器人动力学的一般形式为：</p>
+<p>$$<br>M(q)\ddot q + C(q,\dot q)\dot q + g(q) + f(\dot q) &#x3D; \tau + J(q)^T F_{ext}<br>$$</p>
+<p><strong>必学资料</strong></p>
+<ul>
+<li>Modern Robotics：第 8 章</li>
+<li><a target="_blank" rel="noopener" href="https://underactuated.csail.mit.edu/multibody.html">MIT Underactuated Robotics：Multi-Body Dynamics</a></li>
+<li><a target="_blank" rel="noopener" href="https://mujoco.readthedocs.io/">MuJoCo 文档</a></li>
+</ul>
+<p><strong>实践任务</strong></p>
+<ol>
+<li>在二连杆模型上观察重力、惯量和阻尼的影响；</li>
+<li>比较零力矩、重力补偿和指定力矩下的系统响应；</li>
+<li>在 MuJoCo 中读取关节位置、速度和执行器输入并记录日志。</li>
+</ol>
+<p><strong>验收标准</strong></p>
+<ul>
+<li>能说明动力学方程中每一项的物理意义；</li>
+<li>能区分运动学误差和动力学&#x2F;控制误差；</li>
+<li>能从实验曲线判断阻尼不足、控制饱和等问题。</li>
+</ul>
+<hr>
+<h3 id="第-6-周：PID、前馈与计算力矩控制"><a href="#第-6-周：PID、前馈与计算力矩控制" class="headerlink" title="第 6 周：PID、前馈与计算力矩控制"></a>第 6 周：PID、前馈与计算力矩控制</h3><p><strong>目标</strong></p>
+<ul>
+<li>掌握闭环反馈、稳定性、稳态误差和超调等概念；</li>
+<li>能完成单关节和多关节轨迹跟踪；</li>
+<li>理解反馈与模型前馈的分工。</li>
+</ul>
+<p><strong>必学资料</strong></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlPID">Control Tutorials for MATLAB and Simulink：PID</a></li>
+<li>Modern Robotics：第 11 章</li>
+<li>MuJoCo 入门资料</li>
+</ul>
+<p><strong>实践任务</strong></p>
+<p>依次实现并比较：</p>
+<ol>
+<li>P 控制；</li>
+<li>PD&#x2F;PID 控制；</li>
+<li>PD + 重力补偿；</li>
+<li>计算力矩控制。</li>
+</ol>
+<p>每组实验记录峰值误差、均方根误差、超调量和稳定时间。</p>
+<p><strong>验收标准</strong></p>
+<ul>
+<li>在不发生持续震荡的情况下完成轨迹跟踪；</li>
+<li>能根据误差曲线调整增益；</li>
+<li>加入模型前馈后，跟踪误差有可解释的改善。</li>
+</ul>
+<hr>
+<h3 id="第-7-周：搜索与采样式路径规划"><a href="#第-7-周：搜索与采样式路径规划" class="headerlink" title="第 7 周：搜索与采样式路径规划"></a>第 7 周：搜索与采样式路径规划</h3><p><strong>目标</strong></p>
+<ul>
+<li>理解配置空间、碰撞检测和可行路径；</li>
+<li>掌握 A*、PRM、RRT 与 RRT* 的基本思想；</li>
+<li>能对规划器进行可重复的量化比较。</li>
+</ul>
+<p><strong>必学资料</strong></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://lavalle.pl/planning/">Planning Algorithms（Steven M. LaValle）</a></li>
+<li><a target="_blank" rel="noopener" href="https://ompl.kavrakilab.org/">OMPL 官方文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://moveit.picknik.ai/main/doc/examples/ompl_interface/ompl_interface_tutorial.html">MoveIt 2：OMPL 规划器</a></li>
+</ul>
+<p><strong>实践任务</strong></p>
+<ol>
+<li>在二维障碍环境实现 A*；</li>
+<li>实现或调用 RRT 与 RRT*；</li>
+<li>将规划问题扩展到机械臂关节空间；</li>
+<li>以固定随机种子重复至少 20 次实验。</li>
+</ol>
+<p><strong>验收标准</strong></p>
+<ul>
+<li>生成的路径无碰撞且满足关节限位；</li>
+<li>报告成功率、平均规划时间、路径长度和路径平滑度；</li>
+<li>能解释 RRT 与 RRT* 在速度和路径质量上的取舍。</li>
+</ul>
+<hr>
+<h3 id="第-8-周：轨迹优化与-iLQR"><a href="#第-8-周：轨迹优化与-iLQR" class="headerlink" title="第 8 周：轨迹优化与 iLQR"></a>第 8 周：轨迹优化与 iLQR</h3><p><strong>目标</strong></p>
+<ul>
+<li>理解将规划写成优化问题的方法；</li>
+<li>掌握代价函数、约束、初始轨迹和局部最优；</li>
+<li>理解 TrajOpt 与 iLQR 的差异。</li>
+</ul>
+<p><strong>必学资料</strong></p>
+<ul>
+<li>仓库：轨迹优化与实时控制</li>
+<li><a target="_blank" rel="noopener" href="https://underactuated.csail.mit.edu/trajopt.html">MIT Underactuated Robotics：Trajectory Optimization</a></li>
+<li><a target="_blank" rel="noopener" href="https://drake.mit.edu/doxygen_cxx/group__planning__trajectory__optimization.html">Drake：Trajectory Optimization</a></li>
+</ul>
+<p><strong>实践任务</strong></p>
+<ol>
+<li>对第 7 周生成的路径加入长度、平滑度和障碍距离代价；</li>
+<li>比较原始 RRT 路径与优化后轨迹；</li>
+<li>在二连杆或小车模型上运行 iLQR；</li>
+<li>改变初始轨迹，观察收敛结果。</li>
+</ol>
+<p><strong>验收标准</strong></p>
+<ul>
+<li>优化后的轨迹仍然满足碰撞和关节约束；</li>
+<li>至少一个平滑度或路径长度指标得到改善；</li>
+<li>能解释初始值为什么会影响局部优化结果。</li>
+</ul>
+<p><strong>阶段里程碑 B</strong>：形成“采样规划器给初值，轨迹优化器做平滑”的完整管线。</p>
+<hr>
+<h3 id="第-9-周：LQR、MPC-与-MPPI"><a href="#第-9-周：LQR、MPC-与-MPPI" class="headerlink" title="第 9 周：LQR、MPC 与 MPPI"></a>第 9 周：LQR、MPC 与 MPPI</h3><p><strong>目标</strong></p>
+<ul>
+<li>理解有限时域代价、滚动优化与反馈控制；</li>
+<li>掌握 MPC “预测—优化—执行第一步—重新规划”的循环；</li>
+<li>理解优化型 MPC 与采样型 MPPI 的差异。</li>
+</ul>
+<p><strong>必学资料</strong></p>
+<ul>
+<li>仓库：iLQR、MPPI、MPC 与 TrajOpt</li>
+<li><a target="_blank" rel="noopener" href="https://underactuated.csail.mit.edu/lqr.html">MIT Underactuated Robotics：LQR</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.do-mpc.com/">do-mpc 文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://web.casadi.org/docs/">CasADi 文档</a></li>
+</ul>
+<p><strong>实践任务</strong></p>
+<ol>
+<li>在线性小车或二连杆局部线性模型上实现 LQR；</li>
+<li>使用 CasADi 或 do-mpc 实现带输入限制的 MPC；</li>
+<li>比较 PID 与 MPC 的跟踪误差、求解时间和扰动恢复；</li>
+<li>选修：实现简化 MPPI，研究采样数和预测时域的影响。</li>
+</ol>
+<p><strong>验收标准</strong></p>
+<ul>
+<li>MPC 显式满足输入或状态约束；</li>
+<li>平均求解时间满足所设控制周期；</li>
+<li>能根据系统非线性、约束和实时性选择 iLQR、MPC 或 MPPI。</li>
+</ul>
+<hr>
+<h3 id="第-10-周：综合项目与报告"><a href="#第-10-周：综合项目与报告" class="headerlink" title="第 10 周：综合项目与报告"></a>第 10 周：综合项目与报告</h3><p>完成一个机械臂避障运动与轨迹跟踪系统：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">目标末端位姿</span><br><span class="line">     ↓</span><br><span class="line">逆运动学 / 目标关节状态</span><br><span class="line">     ↓</span><br><span class="line">RRT 或 RRT* 生成无碰路径</span><br><span class="line">     ↓</span><br><span class="line">五次多项式或 TrajOpt 平滑与时间参数化</span><br><span class="line">     ↓</span><br><span class="line">PID、计算力矩或 MPC 闭环跟踪</span><br><span class="line">     ↓</span><br><span class="line">MuJoCo 仿真、指标统计与失败分析</span><br></pre></td></tr></table></figure>
+
+<p><strong>必做对比</strong></p>
+<ol>
+<li>RRT 与 RRT*：成功率、规划时间、路径长度；</li>
+<li>三次与五次轨迹：速度、加速度连续性；</li>
+<li>PID 与 MPC：均方根误差、最大误差、扰动恢复时间；</li>
+<li>至少一种失败情形：窄通道、奇异点、不可达目标、控制饱和或模型误差。</li>
+</ol>
+<p><strong>交付物</strong></p>
+<ul>
+<li><code>README.md</code>：问题、环境、运行步骤和主要结果；</li>
+<li>环境与依赖文件；</li>
+<li>规划、轨迹生成、控制和评测代码；</li>
+<li>位置、速度、加速度、控制量和误差曲线；</li>
+<li>至少一段完整演示视频；</li>
+<li>3–5 页实验报告，包含方法、指标、对比、失败分析与下一步计划。</li>
+</ul>
+<p><strong>建议验收指标</strong></p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th align="right">基础目标</th>
+<th align="right">进阶目标</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>静态场景规划成功率</td>
+<td align="right">≥ 90%</td>
+<td align="right">≥ 98%</td>
+</tr>
+<tr>
+<td>轨迹碰撞率</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr>
+<td>关节限位违规次数</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr>
+<td>归一化轨迹跟踪 RMSE</td>
+<td align="right">≤ 5%</td>
+<td align="right">≤ 2%</td>
+</tr>
+<tr>
+<td>扰动后恢复</td>
+<td align="right">能恢复</td>
+<td align="right">恢复时间可量化并优于基线</td>
+</tr>
+<tr>
+<td>实验可复现性</td>
+<td align="right">固定配置可复现</td>
+<td align="right">多随机种子报告均值与方差</td>
+</tr>
+</tbody></table>
+<p>指标应根据具体机器人、任务尺度和控制周期调整。若调整，需要在报告中写清定义与原因。</p>
+<h2 id="4-仿真与工具选型"><a href="#4-仿真与工具选型" class="headerlink" title="4. 仿真与工具选型"></a>4. 仿真与工具选型</h2><h3 id="4-1-默认选择：MuJoCo"><a href="#4-1-默认选择：MuJoCo" class="headerlink" title="4.1 默认选择：MuJoCo"></a>4.1 默认选择：MuJoCo</h3><p>适合快速验证机械臂动力学、接触和控制算法，依赖相对轻量。推荐完成本路线的前 9 周后，再决定是否迁移平台。</p>
+<ul>
+<li>仓库：MuJoCo 介绍与入门</li>
+<li><a target="_blank" rel="noopener" href="https://mujoco.readthedocs.io/">MuJoCo 官方文档</a></li>
+</ul>
+<h3 id="4-2-ROS-2-MoveIt-2-Gazebo"><a href="#4-2-ROS-2-MoveIt-2-Gazebo" class="headerlink" title="4.2 ROS 2 + MoveIt 2 + Gazebo"></a>4.2 ROS 2 + MoveIt 2 + Gazebo</h3><p>适合希望获得机器人软件工程、通信、硬件接口和完整规划栈经验的学习者。建议在综合项目已经能在 MuJoCo 中运行后再迁移。</p>
+<ul>
+<li>仓库：Gazebo</li>
+<li><a target="_blank" rel="noopener" href="https://moveit.picknik.ai/main/doc/tutorials/tutorials.html">MoveIt 2 Tutorials</a></li>
+<li><a target="_blank" rel="noopener" href="https://gazebosim.org/docs">Gazebo Documentation</a></li>
+</ul>
+<h3 id="4-3-Isaac-Lab"><a href="#4-3-Isaac-Lab" class="headerlink" title="4.3 Isaac Lab"></a>4.3 Isaac Lab</h3><p>适合具备 NVIDIA GPU、后续计划进行大规模强化学习、人形机器人或 Sim2Real 的学习者。它不是本路线的必需平台。</p>
+<ul>
+<li>仓库：Isaac Lab 入门</li>
+<li>仓库：Isaac Lab 任务与日志</li>
+</ul>
+<h3 id="4-4-常用-Python-工具"><a href="#4-4-常用-Python-工具" class="headerlink" title="4.4 常用 Python 工具"></a>4.4 常用 Python 工具</h3><table>
+<thead>
+<tr>
+<th>用途</th>
+<th>工具</th>
+<th>使用建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>数值计算</td>
+<td>NumPy、SciPy</td>
+<td>前 4 周主要工具</td>
+</tr>
+<tr>
+<td>可视化</td>
+<td>Matplotlib</td>
+<td>所有实验必须输出曲线</td>
+</tr>
+<tr>
+<td>机器人学</td>
+<td>Robotics Toolbox for Python</td>
+<td>用于验证手写运动学结果</td>
+</tr>
+<tr>
+<td>仿真</td>
+<td>MuJoCo</td>
+<td>默认物理引擎</td>
+</tr>
+<tr>
+<td>采样规划</td>
+<td>OMPL</td>
+<td>第 7 周后使用</td>
+</tr>
+<tr>
+<td>优化与 MPC</td>
+<td>CasADi、do-mpc</td>
+<td>第 8–9 周使用</td>
+</tr>
+<tr>
+<td>ROS 规划栈</td>
+<td>MoveIt 2</td>
+<td>工程分支选修</td>
+</tr>
+</tbody></table>
+<h2 id="5-方法选择速查"><a href="#5-方法选择速查" class="headerlink" title="5. 方法选择速查"></a>5. 方法选择速查</h2><table>
+<thead>
+<tr>
+<th>方法</th>
+<th>主要用途</th>
+<th>优势</th>
+<th>主要限制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A*</td>
+<td>低维离散空间搜索</td>
+<td>完备、易理解</td>
+<td>高维空间开销大</td>
+</tr>
+<tr>
+<td>PRM</td>
+<td>多次查询的配置空间规划</td>
+<td>路网可复用</td>
+<td>建图成本高</td>
+</tr>
+<tr>
+<td>RRT</td>
+<td>高维空间快速找可行解</td>
+<td>找路快、实现直观</td>
+<td>路径通常不平滑</td>
+</tr>
+<tr>
+<td>RRT*</td>
+<td>渐近最优规划</td>
+<td>路径质量更高</td>
+<td>收敛较慢</td>
+</tr>
+<tr>
+<td>TrajOpt</td>
+<td>带约束轨迹平滑与优化</td>
+<td>轨迹短且平滑</td>
+<td>依赖初始值、局部最优</td>
+</tr>
+<tr>
+<td>iLQR</td>
+<td>已知动力学下的局部轨迹优化</td>
+<td>结构化、收敛较快</td>
+<td>约束处理能力有限</td>
+</tr>
+<tr>
+<td>MPC</td>
+<td>在线多变量约束控制</td>
+<td>能显式考虑预测与约束</td>
+<td>实时求解成本高</td>
+</tr>
+<tr>
+<td>MPPI</td>
+<td>非线性系统采样控制</td>
+<td>无需代价梯度、便于并行</td>
+<td>采样量和调参成本高</td>
+</tr>
+</tbody></table>
+<p>一个实用的机械臂系统通常不是只选一种方法，而是：</p>
+<blockquote>
+<p>RRT&#x2F;RRT* 寻找可行路径 → TrajOpt 平滑 → 时间参数化 → PID&#x2F;计算力矩&#x2F;MPC 闭环执行。</p>
+</blockquote>
+<h2 id="6-每周学习节奏"><a href="#6-每周学习节奏" class="headerlink" title="6. 每周学习节奏"></a>6. 每周学习节奏</h2><p>以每周 10 小时为例：</p>
+<table>
+<thead>
+<tr>
+<th>环节</th>
+<th align="right">建议时间</th>
+<th>要求</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>阅读与推导</td>
+<td align="right">2 小时</td>
+<td>只推导本周实践真正需要的公式</td>
+</tr>
+<tr>
+<td>最小实现</td>
+<td align="right">3 小时</td>
+<td>先在二维或低自由度系统验证</td>
+</tr>
+<tr>
+<td>仿真实验</td>
+<td align="right">3 小时</td>
+<td>固定随机种子，保存配置和日志</td>
+</tr>
+<tr>
+<td>复盘与整理</td>
+<td align="right">2 小时</td>
+<td>输出图表、结论和失败原因</td>
+</tr>
+</tbody></table>
+<p>每周至少保留以下记录：</p>
+<ul>
+<li>本周问题与假设；</li>
+<li>实验配置和随机种子；</li>
+<li>一张结构图或流程图；</li>
+<li>两张以上指标曲线；</li>
+<li>一个成功案例与一个失败案例；</li>
+<li>下周需要解决的一个明确问题。</li>
+</ul>
+<h2 id="7-学习边界与常见误区"><a href="#7-学习边界与常见误区" class="headerlink" title="7. 学习边界与常见误区"></a>7. 学习边界与常见误区</h2><ol>
+<li><strong>不要同时学习所有仿真平台</strong>：先用一个平台完成闭环，再迁移。</li>
+<li><strong>不要把路径直接当轨迹执行</strong>：路径缺少时间、速度和加速度信息。</li>
+<li><strong>不要只看动画判断控制效果</strong>：必须记录误差、控制量、求解时间和约束违规。</li>
+<li><strong>不要只在一个初始状态上测试</strong>：使用多组目标、多随机种子和扰动。</li>
+<li><strong>不要过早追求完整六轴推导</strong>：先在二连杆上理解原理，再调用成熟库处理复杂模型。</li>
+<li><strong>不要忽略单位与坐标系</strong>：角度&#x2F;弧度、毫米&#x2F;米和变换方向是最常见的工程错误。</li>
+<li><strong>不要直接跳到 MPC</strong>：若尚不能稳定实现 PID 轨迹跟踪，很难判断 MPC 的改进来自哪里。</li>
+</ol>
+<h2 id="8-完成后的方向分流"><a href="#8-完成后的方向分流" class="headerlink" title="8. 完成后的方向分流"></a>8. 完成后的方向分流</h2><ul>
+<li><strong>机械臂操作与 VLA</strong>：继续学习模仿学习、Diffusion Policy和VLA，重点理解学习策略输出与底层控制的接口。</li>
+<li><strong>人形机器人运控</strong>：继续学习运控综述、Isaac Lab、全身控制和 Sim2Real。</li>
+<li><strong>移动机器人与导航</strong>：转向状态估计、SLAM、全局&#x2F;局部规划和具身导航综述。</li>
+<li><strong>接触与精密装配</strong>：继续学习阻抗&#x2F;导纳控制、力矩传感、触觉和力控与触觉路线。</li>
+<li><strong>最优控制研究</strong>：深入非线性 MPC、鲁棒 MPC、随机最优控制、系统辨识和安全约束。</li>
+</ul>
+<h2 id="9-最终检查清单"><a href="#9-最终检查清单" class="headerlink" title="9. 最终检查清单"></a>9. 最终检查清单</h2><ul>
+<li><input disabled="" type="checkbox"> 我能独立实现并验证二维机械臂 FK&#x2F;IK；</li>
+<li><input disabled="" type="checkbox"> 我能解释雅可比、奇异点和阻尼伪逆；</li>
+<li><input disabled="" type="checkbox"> 我能生成满足边界条件的平滑轨迹；</li>
+<li><input disabled="" type="checkbox"> 我能在仿真中完成稳定的闭环轨迹跟踪；</li>
+<li><input disabled="" type="checkbox"> 我能生成机械臂无碰路径并进行时间参数化；</li>
+<li><input disabled="" type="checkbox"> 我能解释 RRT、TrajOpt、iLQR、MPC、MPPI 的适用边界；</li>
+<li><input disabled="" type="checkbox"> 我的实验包含量化指标和失败分析；</li>
+<li><input disabled="" type="checkbox"> 其他人可以根据 README 复现实验；</li>
+<li><input disabled="" type="checkbox"> 我已完成综合项目的代码、报告和演示视频。</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linx29853.github.io">LenoVo</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linx29853.github.io/2026/08/27/%E8%A7%84%E5%88%92%E4%B8%8E%E6%8E%A7%E5%88%B6%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E4%BB%8E%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%88%B0MPC/">https://linx29853.github.io/2026/08/27/%E8%A7%84%E5%88%92%E4%B8%8E%E6%8E%A7%E5%88%B6%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E4%BB%8E%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%88%B0MPC/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://linx29853.github.io" target="_blank">LenoVo的小站</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%9C%BA%E5%99%A8%E4%BA%BA/">机器人</a><a class="post-meta__tags" href="/tags/%E8%BF%90%E5%8A%A8%E8%A7%84%E5%88%92/">运动规划</a><a class="post-meta__tags" href="/tags/%E6%8E%A7%E5%88%B6/">控制</a><a class="post-meta__tags" href="/tags/MPC/">MPC</a><a class="post-meta__tags" href="/tags/MuJoCo/">MuJoCo</a></div><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/08/27/MRASC_leader_following_consensus_%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/" title="MRASC 领导者-跟随者一致性论文阅读笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">MRASC 领导者-跟随者一致性论文阅读笔记</div></div><div class="info-2"><div class="info-item-1"> Dongdong Yue, Jiantao Shi, Ling Shi, Paolo Frasca, Simone Baldi.IEEE Transactions on Automatic Control, 70(10): 6861-6868, 2025.DOI: 10.1109&#x2F;TAC.2025.3562457  1. 一句话概括论文研究未知、异构线性多智能体的领导者-跟随者一致性问题，提出分层的 MRASC &#x2F; v-MRASC 自适应控制框架，使全体跟随者能够跟踪一个本身可不稳定、但可稳定化的领导者；同时给出针对有向通信图的钉扎节点数量下界。 它最重要的突破不是“让所有节点同步”本身，而是放松了传统 MRAC 一致性中“领导者参考模型必须稳定或中性稳定”的限制。  2. 研究背景与问题2.1 传统方法的限制在 MRAC 型领导者-跟随者一致性中，常将领导者看作参考模型。传统分析通常要求领导者状态矩阵 A₀：  Hurwitz 稳定；或 中性稳定。  但部分参考行为，例如尖峰、脉冲样模式，可能由不稳定动态产生。仅因参考模型不稳定便无法进行一致性跟踪，并不合...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/08/25/%E6%9C%BA%E5%99%A8%E4%BA%BA%E8%BF%90%E5%8A%A8%E5%AD%A6%E4%B8%A4%E5%91%A8%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" title="机器人运动学两周学习总结"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-25</div><div class="info-item-2">机器人运动学两周学习总结</div></div><div class="info-2"><div class="info-item-1"> 学习主线：位姿表示 → 正运动学 → 逆运动学 → DH 建模 → 雅可比与奇异性 → 综合验证与路径规划  一、两周学习目标经过两周学习，应当能够：  看懂并计算旋转矩阵、平移矩阵和齐次变换矩阵； 根据机器人 DH 参数建立正运动学模型； 使用几何法求解平面 2R 机械臂的逆运动学； 使用数值迭代法求解一般机器人的逆运动学； 理解逆解多解、初值依赖、关节限位和解的选择； 理解雅可比的速度映射意义，并能判断奇异性； 使用“逆解后代回正解”的方式验证计算结果； 理解运动学在机器人完整软件系统中的位置。   第一周：通过仿真建立直觉Day 1–2：工具准备与数学热身1. 工具 RoboDK：拖动机器人、查看关节角和末端位姿、验证运动学结果； Python：实现矩阵运算和运动学算法； NumPy：处理向量、矩阵、三角函数和线性方程。  建议统一使用弧度参与程序内部计算： 1234import numpy as npq_deg = 30.0q_rad = np.deg2rad(q_deg)  2. 齐次变换矩阵刚体位姿由位置和姿态组成： $${}^A T_B&#x3D;\begin{b...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">LenoVo</div><div class="author-info-description">记录轨道交通、公交与卡车见闻，以及技术学习笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">8</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">19</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">1</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/linx29853"><i class="fab fa-github"></i><span>访问 GitHub</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LenoVo 的小站</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%AD%A6%E4%B9%A0%E7%9B%AE%E6%A0%87"><span class="toc-number">1.</span> <span class="toc-text">1. 学习目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%BC%80%E5%A7%8B%E5%89%8D%E7%9A%84%E5%85%88%E4%BF%AE%E6%A3%80%E6%9F%A5"><span class="toc-number">2.</span> <span class="toc-text">2. 开始前的先修检查</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%95%B0%E5%AD%A6"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 数学</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E7%BC%96%E7%A8%8B%E4%B8%8E%E5%B7%A5%E5%85%B7"><span class="toc-number">2.2.</span> <span class="toc-text">2.2 编程与工具</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E5%BB%BA%E8%AE%AE%E7%9A%84%E8%A1%A5%E8%AF%BE%E5%85%A5%E5%8F%A3"><span class="toc-number">2.3.</span> <span class="toc-text">2.3 建议的补课入口</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%8D%81%E5%91%A8%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92"><span class="toc-number">3.</span> <span class="toc-text">3. 十周执行计划</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-1-%E5%91%A8%EF%BC%9A%E5%9D%90%E6%A0%87%E7%B3%BB%E4%B8%8E%E5%88%9A%E4%BD%93%E5%8F%98%E6%8D%A2"><span class="toc-number">3.1.</span> <span class="toc-text">第 1 周：坐标系与刚体变换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-2-%E5%91%A8%EF%BC%9A%E6%AD%A3%E8%BF%90%E5%8A%A8%E5%AD%A6%E4%B8%8E%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%BB%BA%E6%A8%A1"><span class="toc-number">3.2.</span> <span class="toc-text">第 2 周：正运动学与机器人建模</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-3-%E5%91%A8%EF%BC%9A%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6%E3%80%81%E9%9B%85%E5%8F%AF%E6%AF%94%E4%B8%8E%E5%A5%87%E5%BC%82%E7%82%B9"><span class="toc-number">3.3.</span> <span class="toc-text">第 3 周：逆运动学、雅可比与奇异点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-4-%E5%91%A8%EF%BC%9A%E8%B7%AF%E5%BE%84%E3%80%81%E6%97%B6%E9%97%B4%E5%8F%82%E6%95%B0%E5%8C%96%E4%B8%8E%E8%BD%A8%E8%BF%B9%E7%94%9F%E6%88%90"><span class="toc-number">3.4.</span> <span class="toc-text">第 4 周：路径、时间参数化与轨迹生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-5-%E5%91%A8%EF%BC%9A%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%8A%A8%E5%8A%9B%E5%AD%A6"><span class="toc-number">3.5.</span> <span class="toc-text">第 5 周：机器人动力学</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-6-%E5%91%A8%EF%BC%9APID%E3%80%81%E5%89%8D%E9%A6%88%E4%B8%8E%E8%AE%A1%E7%AE%97%E5%8A%9B%E7%9F%A9%E6%8E%A7%E5%88%B6"><span class="toc-number">3.6.</span> <span class="toc-text">第 6 周：PID、前馈与计算力矩控制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-7-%E5%91%A8%EF%BC%9A%E6%90%9C%E7%B4%A2%E4%B8%8E%E9%87%87%E6%A0%B7%E5%BC%8F%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92"><span class="toc-number">3.7.</span> <span class="toc-text">第 7 周：搜索与采样式路径规划</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-8-%E5%91%A8%EF%BC%9A%E8%BD%A8%E8%BF%B9%E4%BC%98%E5%8C%96%E4%B8%8E-iLQR"><span class="toc-number">3.8.</span> <span class="toc-text">第 8 周：轨迹优化与 iLQR</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-9-%E5%91%A8%EF%BC%9ALQR%E3%80%81MPC-%E4%B8%8E-MPPI"><span class="toc-number">3.9.</span> <span class="toc-text">第 9 周：LQR、MPC 与 MPPI</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC-10-%E5%91%A8%EF%BC%9A%E7%BB%BC%E5%90%88%E9%A1%B9%E7%9B%AE%E4%B8%8E%E6%8A%A5%E5%91%8A"><span class="toc-number">3.10.</span> <span class="toc-text">第 10 周：综合项目与报告</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E4%BB%BF%E7%9C%9F%E4%B8%8E%E5%B7%A5%E5%85%B7%E9%80%89%E5%9E%8B"><span class="toc-number">4.</span> <span class="toc-text">4. 仿真与工具选型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E9%BB%98%E8%AE%A4%E9%80%89%E6%8B%A9%EF%BC%9AMuJoCo"><span class="toc-number">4.1.</span> <span class="toc-text">4.1 默认选择：MuJoCo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-ROS-2-MoveIt-2-Gazebo"><span class="toc-number">4.2.</span> <span class="toc-text">4.2 ROS 2 + MoveIt 2 + Gazebo</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-Isaac-Lab"><span class="toc-number">4.3.</span> <span class="toc-text">4.3 Isaac Lab</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E5%B8%B8%E7%94%A8-Python-%E5%B7%A5%E5%85%B7"><span class="toc-number">4.4.</span> <span class="toc-text">4.4 常用 Python 工具</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%96%B9%E6%B3%95%E9%80%89%E6%8B%A9%E9%80%9F%E6%9F%A5"><span class="toc-number">5.</span> <span class="toc-text">5. 方法选择速查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%AF%8F%E5%91%A8%E5%AD%A6%E4%B9%A0%E8%8A%82%E5%A5%8F"><span class="toc-number">6.</span> <span class="toc-text">6. 每周学习节奏</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%AD%A6%E4%B9%A0%E8%BE%B9%E7%95%8C%E4%B8%8E%E5%B8%B8%E8%A7%81%E8%AF%AF%E5%8C%BA"><span class="toc-number">7.</span> <span class="toc-text">7. 学习边界与常见误区</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%AE%8C%E6%88%90%E5%90%8E%E7%9A%84%E6%96%B9%E5%90%91%E5%88%86%E6%B5%81"><span class="toc-number">8.</span> <span class="toc-text">8. 完成后的方向分流</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E6%9C%80%E7%BB%88%E6%A3%80%E6%9F%A5%E6%B8%85%E5%8D%95"><span class="toc-number">9.</span> <span class="toc-text">9. 最终检查清单</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/27/%E8%A7%84%E5%88%92%E4%B8%8E%E6%8E%A7%E5%88%B6%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E4%BB%8E%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%88%B0MPC/" title="规划与控制学习路线：从运动学到 MPC">规划与控制学习路线：从运动学到 MPC</a><time datetime="2026-08-27T02:15:00.000Z" title="发表于 2026-08-27 10:15:00">2026-08-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/27/MRASC_leader_following_consensus_%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/" title="MRASC 领导者-跟随者一致性论文阅读笔记">MRASC 领导者-跟随者一致性论文阅读笔记</a><time datetime="2026-08-27T01:00:00.000Z" title="发表于 2026-08-27 09:00:00">2026-08-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/26/%E6%9D%8E%E9%9B%85%E6%99%AE%E8%AF%BA%E5%A4%AB%E7%A8%B3%E5%AE%9A%E6%80%A7%E4%B8%8E%E7%BA%BF%E6%80%A7%E7%B3%BB%E7%BB%9F%E6%96%B9%E6%B3%95-%E7%B2%BE%E7%AE%80%E7%AC%94%E8%AE%B0/" title="李雅普诺夫稳定性与线性系统方法：精简笔记">李雅普诺夫稳定性与线性系统方法：精简笔记</a><time datetime="2026-08-26T08:05:00.000Z" title="发表于 2026-08-26 16:05:00">2026-08-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/26/MRAC%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AC%94%E8%AE%B0/" title="MRAC 数学基础知识点笔记">MRAC 数学基础知识点笔记</a><time datetime="2026-08-26T01:00:00.000Z" title="发表于 2026-08-26 09:00:00">2026-08-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/25/2021_MRACon_%E7%B2%BE%E8%AF%BB%E4%B8%8EMRASC_Popov%E7%A0%94%E7%A9%B6%E6%8A%A5%E5%91%8A/" title="2021 MRACon 精读与 MRASC-Popov 研究报告">2021 MRACon 精读与 MRASC-Popov 研究报告</a><time datetime="2026-08-25T08:53:06.000Z" title="发表于 2026-08-25 16:53:06">2026-08-25</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2025 - 2026 By LenoVo</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
