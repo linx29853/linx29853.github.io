@@ -39,6 +39,7 @@
 .book-card { display: grid; grid-template-columns: minmax(170px, 31%) 1fr; overflow: hidden; border: 1px solid rgba(103, 128, 151, .16); border-radius: 20px; background: var(--card-bg); box-shadow: 0 10px 35px rgba(41, 56, 74, .09); transition: transform .25s ease, box-shadow .25s ease; }
 .book-card:hover { transform: translateY(-4px); box-shadow: 0 16px 42px rgba(41, 56, 74, .15); }
 .book-cover { display: flex; min-height: 330px; align-items: center; justify-content: center; padding: 1.5rem; background: linear-gradient(145deg, #dbe7eb, #aec4ce); }
+.book-cover-passivity { background: linear-gradient(145deg, #df3b25, #183c62); }
 .book-cover-mrac { background: linear-gradient(145deg, #f4a13a, #b9321f); }
 .book-cover-modern { background: linear-gradient(145deg, #dbe0e8, #8799ad); }
 .book-cover img { width: 100%; max-width: 220px; max-height: 305px; object-fit: contain; border-radius: 4px; box-shadow: 0 14px 30px rgba(22, 35, 48, .25); }
