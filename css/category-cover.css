@@ -1,0 +1,6 @@
+/* 分类总览页：保持图片比例，并优先展示原图上半部分。 */
+.type-categories #page-header {
+  background-size: cover !important;
+  background-position: center 8% !important;
+  background-repeat: no-repeat !important;
+}
