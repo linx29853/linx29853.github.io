@@ -1,0 +1,680 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>线性代数第一章：行列式总结笔记 | LenoVo的小站</title><meta name="author" content="LenoVo"><meta name="copyright" content="LenoVo"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="系统梳理行列式的定义、性质、初等变换、代数余子式、三角化计算、克拉默法则，以及与可逆性、特征值和控制理论的联系。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线性代数第一章：行列式总结笔记">
+<meta property="og:url" content="https://linx29853.github.io/2026/08/31/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%AC%AC%E4%B8%80%E7%AB%A0-%E8%A1%8C%E5%88%97%E5%BC%8F%E6%80%BB%E7%BB%93%E7%AC%94%E8%AE%B0/">
+<meta property="og:site_name" content="LenoVo的小站">
+<meta property="og:description" content="系统梳理行列式的定义、性质、初等变换、代数余子式、三角化计算、克拉默法则，以及与可逆性、特征值和控制理论的联系。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linx29853.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-08-31T02:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-31T02:44:07.960Z">
+<meta property="article:author" content="LenoVo">
+<meta property="article:tag" content="线性代数">
+<meta property="article:tag" content="行列式">
+<meta property="article:tag" content="初等变换">
+<meta property="article:tag" content="克拉默法则">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linx29853.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "线性代数第一章：行列式总结笔记",
+  "url": "https://linx29853.github.io/2026/08/31/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%AC%AC%E4%B8%80%E7%AB%A0-%E8%A1%8C%E5%88%97%E5%BC%8F%E6%80%BB%E7%BB%93%E7%AC%94%E8%AE%B0/",
+  "image": "https://linx29853.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-08-31T02:00:00.000Z",
+  "dateModified": "2026-08-31T02:44:07.960Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LenoVo",
+      "url": "https://linx29853.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://linx29853.github.io/2026/08/31/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%AC%AC%E4%B8%80%E7%AB%A0-%E8%A1%8C%E5%88%97%E5%BC%8F%E6%80%BB%E7%BB%93%E7%AC%94%E8%AE%B0/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?aeb05b46d9af3b7840e1a58e05c8aefc";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+btf.addGlobalFn('pjaxComplete', () => {
+  _hmt.push(['_trackPageview',window.location.pathname])
+}, 'baidu_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '线性代数第一章：行列式总结笔记',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/bilibili.css"><link rel="stylesheet" href="/css/travel-gallery.css"><link rel="stylesheet" href="/css/music-profile.css"><link rel="stylesheet" href="/css/books.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">12</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/books/"><i class="fa-fw fas fa-book-open"></i><span> 资料</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LenoVo的小站</span></a><a class="nav-page-title" href="/"><span class="site-name">线性代数第一章：行列式总结笔记</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/books/"><i class="fa-fw fas fa-book-open"></i><span> 资料</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">线性代数第一章：行列式总结笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-31T02:00:00.000Z" title="发表于 2026-08-31 10:00:00">2026-08-31</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-31T02:44:07.960Z" title="更新于 2026-08-31 10:44:07">2026-08-31</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/">课程学习</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E8%AF%BE%E7%A8%8B%E5%AD%A6%E4%B9%A0/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0/">线性代数</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>适用范围：本科线性代数第一章复习<br>关键词：排列、逆序数、行列式性质、初等变换、余子式、按行列展开、克拉默法则</p>
+</blockquote>
+<hr>
+<h2 id="1-行列式是什么"><a href="#1-行列式是什么" class="headerlink" title="1. 行列式是什么"></a>1. 行列式是什么</h2><h3 id="1-1-基本概念"><a href="#1-1-基本概念" class="headerlink" title="1.1 基本概念"></a>1.1 基本概念</h3><p>行列式是由一个<strong>方阵</strong>中的元素按照特定规则计算得到的一个数。</p>
+<p>对 $n$ 阶方阵</p>
+<p>$$<br>A&#x3D;\begin{pmatrix}<br>a_{11}&amp;a_{12}&amp;\cdots&amp;a_{1n}\<br>a_{21}&amp;a_{22}&amp;\cdots&amp;a_{2n}\<br>\vdots&amp;\vdots&amp;\ddots&amp;\vdots\<br>a_{n1}&amp;a_{n2}&amp;\cdots&amp;a_{nn}<br>\end{pmatrix},<br>$$</p>
+<p>其行列式记作</p>
+<h1 id="det-A-quad-text-或-quad-A"><a href="#det-A-quad-text-或-quad-A" class="headerlink" title="$$\det(A)\quad\text{或}\quad|A|"></a>$$<br>\det(A)<br>\quad\text{或}\quad<br>|A|</h1><p>\begin{vmatrix}<br>a_{11}&amp;a_{12}&amp;\cdots&amp;a_{1n}\<br>a_{21}&amp;a_{22}&amp;\cdots&amp;a_{2n}\<br>\vdots&amp;\vdots&amp;\ddots&amp;\vdots\<br>a_{n1}&amp;a_{n2}&amp;\cdots&amp;a_{nn}<br>\end{vmatrix}.<br>$$</p>
+<p>注意：</p>
+<ul>
+<li>矩阵 $A$ 是一个数表；</li>
+<li>行列式 $\det(A)$ 是一个数；</li>
+<li>只有方阵才有行列式。</li>
+</ul>
+<h3 id="1-2-几何直觉"><a href="#1-2-几何直觉" class="headerlink" title="1.2 几何直觉"></a>1.2 几何直觉</h3><p>在二维平面中，若</p>
+<p>$$<br>A&#x3D;\begin{pmatrix}<br>a&amp;b\<br>c&amp;d<br>\end{pmatrix},<br>$$</p>
+<p>那么 $|\det(A)|$ 表示由两个列向量张成的平行四边形的面积缩放倍数。</p>
+<p>在三维空间中，$|\det(A)|$ 表示平行六面体的体积缩放倍数。更一般地，$n$ 阶行列式的绝对值表示 $n$ 维体积的缩放倍数。</p>
+<p>行列式的符号还记录了方向：</p>
+<ul>
+<li>$\det(A)&gt;0$：变换保持定向；</li>
+<li>$\det(A)&lt;0$：变换反转定向；</li>
+<li>$\det(A)&#x3D;0$：空间被压扁到更低维，面积或体积变为 $0$。</li>
+</ul>
+<p>因此，$\det(A)&#x3D;0$ 的几何含义是：列向量无法张成完整的 $n$ 维空间。</p>
+<hr>
+<h2 id="2-二阶与三阶行列式"><a href="#2-二阶与三阶行列式" class="headerlink" title="2. 二阶与三阶行列式"></a>2. 二阶与三阶行列式</h2><h3 id="2-1-二阶行列式"><a href="#2-1-二阶行列式" class="headerlink" title="2.1 二阶行列式"></a>2.1 二阶行列式</h3><p>$$<br>\begin{vmatrix}<br>a&amp;b\<br>c&amp;d<br>\end{vmatrix}<br>&#x3D;ad-bc.<br>$$</p>
+<p>记忆方式：<strong>主对角线乘积减去副对角线乘积</strong>。</p>
+<p>例：</p>
+<p>$$<br>\begin{vmatrix}<br>3&amp;2\<br>5&amp;4<br>\end{vmatrix}<br>&#x3D;3\times4-2\times5&#x3D;12-10&#x3D;2.<br>$$</p>
+<h3 id="2-2-三阶行列式"><a href="#2-2-三阶行列式" class="headerlink" title="2.2 三阶行列式"></a>2.2 三阶行列式</h3><p>对</p>
+<p>$$<br>D&#x3D;\begin{vmatrix}<br>a_{11}&amp;a_{12}&amp;a_{13}\<br>a_{21}&amp;a_{22}&amp;a_{23}\<br>a_{31}&amp;a_{32}&amp;a_{33}<br>\end{vmatrix},<br>$$</p>
+<p>按第一行展开可得</p>
+<p>$$<br>\begin{aligned}<br>D&#x3D;{}&amp;a_{11}(a_{22}a_{33}-a_{23}a_{32})\<br>&amp;-a_{12}(a_{21}a_{33}-a_{23}a_{31})\<br>&amp;+a_{13}(a_{21}a_{32}-a_{22}a_{31}).<br>\end{aligned}<br>$$</p>
+<p>也可以写成六项：</p>
+<p>$$<br>\begin{aligned}<br>D&#x3D;{}&amp;a_{11}a_{22}a_{33}+a_{12}a_{23}a_{31}+a_{13}a_{21}a_{32}\<br>&amp;-a_{13}a_{22}a_{31}-a_{12}a_{21}a_{33}-a_{11}a_{23}a_{32}.<br>\end{aligned}<br>$$</p>
+<p>三阶行列式可以使用对角线法则（萨鲁斯法则），但要注意：</p>
+<blockquote>
+<p>萨鲁斯法则只适用于三阶行列式，不能直接推广到四阶及以上。</p>
+</blockquote>
+<p>实际计算时，如果某一行或某一列有很多 $0$，优先按该行或该列展开；如果结构适合消元，通常先化为三角形更快。</p>
+<hr>
+<h2 id="3-排列与逆序数"><a href="#3-排列与逆序数" class="headerlink" title="3. 排列与逆序数"></a>3. 排列与逆序数</h2><h3 id="3-1-排列"><a href="#3-1-排列" class="headerlink" title="3.1 排列"></a>3.1 排列</h3><p>将 $1,2,\ldots,n$ 按某种顺序排成一列，称为一个 $n$ 级排列。</p>
+<p>例如，$1,2,3$ 的全部排列共有 $3!&#x3D;6$ 个：</p>
+<p>$$<br>123,\quad132,\quad213,\quad231,\quad312,\quad321.<br>$$</p>
+<h3 id="3-2-逆序与逆序数"><a href="#3-2-逆序与逆序数" class="headerlink" title="3.2 逆序与逆序数"></a>3.2 逆序与逆序数</h3><p>在排列 $j_1j_2\cdots j_n$ 中，如果 $i&lt;k$，但 $j_i&gt;j_k$，则称 $(j_i,j_k)$ 构成一个逆序。</p>
+<p>一个排列中逆序的总数称为该排列的逆序数，记作 $\tau(j_1j_2\cdots j_n)$。</p>
+<p>例：求排列 $312$ 的逆序数。</p>
+<ul>
+<li>$3&gt;1$，构成一个逆序；</li>
+<li>$3&gt;2$，构成一个逆序；</li>
+<li>$1&lt;2$，不构成逆序。</li>
+</ul>
+<p>所以</p>
+<p>$$<br>\tau(312)&#x3D;2.<br>$$</p>
+<h3 id="3-3-奇排列与偶排列"><a href="#3-3-奇排列与偶排列" class="headerlink" title="3.3 奇排列与偶排列"></a>3.3 奇排列与偶排列</h3><ul>
+<li>逆序数为偶数的排列称为偶排列；</li>
+<li>逆序数为奇数的排列称为奇排列。</li>
+</ul>
+<p>排列对应项的符号由</p>
+<p>$$<br>(-1)^{\tau(j_1j_2\cdots j_n)}<br>$$</p>
+<p>决定：偶排列取正号，奇排列取负号。</p>
+<p>交换一个排列中的任意两个元素，排列的奇偶性会改变。这正是“交换行列式的两行，行列式变号”的组合学来源。</p>
+<hr>
+<h2 id="4-n-阶行列式的定义"><a href="#4-n-阶行列式的定义" class="headerlink" title="4. $n$ 阶行列式的定义"></a>4. $n$ 阶行列式的定义</h2><h3 id="4-1-定义"><a href="#4-1-定义" class="headerlink" title="4.1 定义"></a>4.1 定义</h3><p>$n$ 阶行列式定义为</p>
+<h1 id="det-A"><a href="#det-A" class="headerlink" title="$$\det(A)"></a>$$<br>\det(A)</h1><p>\sum_{(j_1j_2\cdots j_n)\in S_n}<br>(-1)^{\tau(j_1j_2\cdots j_n)}<br>a_{1j_1}a_{2j_2}\cdots a_{nj_n},<br>$$</p>
+<p>其中 $S_n$ 表示 $1,2,\ldots,n$ 的所有排列。</p>
+<h3 id="4-2-每一项的结构"><a href="#4-2-每一项的结构" class="headerlink" title="4.2 每一项的结构"></a>4.2 每一项的结构</h3><p>定义中的每一项都满足：</p>
+<ul>
+<li>从每一行恰好选取一个元素；</li>
+<li>从每一列恰好选取一个元素；</li>
+<li>共选取 $n$ 个元素相乘；</li>
+<li>符号由列标排列的逆序数决定。</li>
+</ul>
+<p>总项数为</p>
+<p>$$<br>n!.<br>$$</p>
+<p>因此，直接按定义计算高阶行列式通常效率很低。定义主要用于理解和证明，具体计算更常依赖性质、展开或消元。</p>
+<hr>
+<h2 id="5-行列式的核心性质"><a href="#5-行列式的核心性质" class="headerlink" title="5. 行列式的核心性质"></a>5. 行列式的核心性质</h2><p>下面同时以“行”为例。将“行”全部换成“列”，结论也成立。</p>
+<h3 id="5-1-转置不改变行列式"><a href="#5-1-转置不改变行列式" class="headerlink" title="5.1 转置不改变行列式"></a>5.1 转置不改变行列式</h3><p>$$<br>\det(A^T)&#x3D;\det(A).<br>$$</p>
+<p>因此，关于行的性质与关于列的性质完全对称。</p>
+<h3 id="5-2-交换两行，行列式变号"><a href="#5-2-交换两行，行列式变号" class="headerlink" title="5.2 交换两行，行列式变号"></a>5.2 交换两行，行列式变号</h3><p>若交换第 $i$、$j$ 两行，则</p>
+<p>$$<br>\det(B)&#x3D;-\det(A).<br>$$</p>
+<p>连续交换 $m$ 次，行列式会乘以 $(-1)^m$。</p>
+<h3 id="5-3-某一行乘以-k-，行列式乘以-k"><a href="#5-3-某一行乘以-k-，行列式乘以-k" class="headerlink" title="5.3 某一行乘以 $k$，行列式乘以 $k$"></a>5.3 某一行乘以 $k$，行列式乘以 $k$</h3><p>若只将第 $i$ 行乘以 $k$，则</p>
+<p>$$<br>\det(B)&#x3D;k\det(A).<br>$$</p>
+<p>由此得到</p>
+<p>$$<br>\det(kA)&#x3D;k^n\det(A),<br>$$</p>
+<p>而不是 $k\det(A)$，因为 $n$ 行都乘了 $k$。</p>
+<h3 id="5-4-一行的公因子可以提到行列式外"><a href="#5-4-一行的公因子可以提到行列式外" class="headerlink" title="5.4 一行的公因子可以提到行列式外"></a>5.4 一行的公因子可以提到行列式外</h3><h1 id="begin-vmatrix-ka-11-ka-12-cdots-ka-1n-a-21-a-22-cdots-a-2n-vdots-vdots-ddots-vdots-end-vmatrix"><a href="#begin-vmatrix-ka-11-ka-12-cdots-ka-1n-a-21-a-22-cdots-a-2n-vdots-vdots-ddots-vdots-end-vmatrix" class="headerlink" title="$$\begin{vmatrix}ka_{11}&amp;ka_{12}&amp;\cdots&amp;ka_{1n}\a_{21}&amp;a_{22}&amp;\cdots&amp;a_{2n}\\vdots&amp;\vdots&amp;\ddots&amp;\vdots\end{vmatrix}"></a>$$<br>\begin{vmatrix}<br>ka_{11}&amp;ka_{12}&amp;\cdots&amp;ka_{1n}\<br>a_{21}&amp;a_{22}&amp;\cdots&amp;a_{2n}\<br>\vdots&amp;\vdots&amp;\ddots&amp;\vdots<br>\end{vmatrix}</h1><p>k<br>\begin{vmatrix}<br>a_{11}&amp;a_{12}&amp;\cdots&amp;a_{1n}\<br>a_{21}&amp;a_{22}&amp;\cdots&amp;a_{2n}\<br>\vdots&amp;\vdots&amp;\ddots&amp;\vdots<br>\end{vmatrix}.<br>$$</p>
+<h3 id="5-5-行列式对每一行、列分别具有线性"><a href="#5-5-行列式对每一行、列分别具有线性" class="headerlink" title="5.5 行列式对每一行、列分别具有线性"></a>5.5 行列式对每一行、列分别具有线性</h3><p>固定其他行不变时，如果某一行是两个行向量之和，则行列式可以拆成两个行列式之和。</p>
+<p>用列向量表示更简洁：</p>
+<h1 id="alpha-1-ldots-beta-gamma-ldots-alpha-n"><a href="#alpha-1-ldots-beta-gamma-ldots-alpha-n" class="headerlink" title="$$|\alpha_1,\ldots,\beta+\gamma,\ldots,\alpha_n|"></a>$$<br>|\alpha_1,\ldots,\beta+\gamma,\ldots,\alpha_n|</h1><p>|\alpha_1,\ldots,\beta,\ldots,\alpha_n|<br>+<br>|\alpha_1,\ldots,\gamma,\ldots,\alpha_n|.<br>$$</p>
+<p>同时，</p>
+<h1 id="alpha-1-ldots-k-beta-ldots-alpha-n"><a href="#alpha-1-ldots-k-beta-ldots-alpha-n" class="headerlink" title="$$|\alpha_1,\ldots,k\beta,\ldots,\alpha_n|"></a>$$<br>|\alpha_1,\ldots,k\beta,\ldots,\alpha_n|</h1><p>k|\alpha_1,\ldots,\beta,\ldots,\alpha_n|.<br>$$</p>
+<p>注意：线性是对<strong>某一行或某一列分别成立</strong>，不能把整个行列式随意拆开。</p>
+<h3 id="5-6-两行相同或成比例，行列式为零"><a href="#5-6-两行相同或成比例，行列式为零" class="headerlink" title="5.6 两行相同或成比例，行列式为零"></a>5.6 两行相同或成比例，行列式为零</h3><p>若两行相同，则交换它们既不改变行列式的外观，又应使行列式变号，因此</p>
+<p>$$<br>D&#x3D;-D\quad\Rightarrow\quad D&#x3D;0.<br>$$</p>
+<p>若两行成比例，也可提出比例因子后化为两行相同，所以行列式仍为 $0$。</p>
+<p>更一般地，如果各行或各列线性相关，则</p>
+<p>$$<br>\det(A)&#x3D;0.<br>$$</p>
+<h3 id="5-7-一行的倍数加到另一行，行列式不变"><a href="#5-7-一行的倍数加到另一行，行列式不变" class="headerlink" title="5.7 一行的倍数加到另一行，行列式不变"></a>5.7 一行的倍数加到另一行，行列式不变</h3><p>若</p>
+<p>$$<br>r_i\longrightarrow r_i+kr_j\qquad(i\ne j),<br>$$</p>
+<p>则</p>
+<p>$$<br>\det(B)&#x3D;\det(A).<br>$$</p>
+<p>这是用消元法计算行列式时最重要的性质。</p>
+<h3 id="5-8-三角行列式等于主对角线元素之积"><a href="#5-8-三角行列式等于主对角线元素之积" class="headerlink" title="5.8 三角行列式等于主对角线元素之积"></a>5.8 三角行列式等于主对角线元素之积</h3><p>若 $A$ 是上三角或下三角矩阵，则</p>
+<p>$$<br>\det(A)&#x3D;a_{11}a_{22}\cdots a_{nn}.<br>$$</p>
+<p>特别地，对角矩阵的行列式也是所有对角元的乘积。</p>
+<h3 id="5-9-乘积的行列式"><a href="#5-9-乘积的行列式" class="headerlink" title="5.9 乘积的行列式"></a>5.9 乘积的行列式</h3><p>对同阶方阵 $A,B$，有</p>
+<p>$$<br>\det(AB)&#x3D;\det(A)\det(B).<br>$$</p>
+<p>如果 $A$ 可逆，则</p>
+<p>$$<br>AA^{-1}&#x3D;I,<br>$$</p>
+<p>所以</p>
+<p>$$<br>\det(A^{-1})&#x3D;\frac{1}{\det(A)}.<br>$$</p>
+<hr>
+<h2 id="6-初等行、列变换的影响"><a href="#6-初等行、列变换的影响" class="headerlink" title="6. 初等行、列变换的影响"></a>6. 初等行、列变换的影响</h2><p>三种初等行变换及其影响如下：</p>
+<table>
+<thead>
+<tr>
+<th>初等变换</th>
+<th>记号示例</th>
+<th>行列式的变化</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>交换两行</td>
+<td>$r_i\leftrightarrow r_j$</td>
+<td>变号</td>
+</tr>
+<tr>
+<td>某一行乘以非零数 $k$</td>
+<td>$r_i\to kr_i$</td>
+<td>乘以 $k$</td>
+</tr>
+<tr>
+<td>一行的 $k$ 倍加到另一行</td>
+<td>$r_i\to r_i+kr_j$</td>
+<td>不变</td>
+</tr>
+</tbody></table>
+<p>列变换完全相同：</p>
+<table>
+<thead>
+<tr>
+<th>初等变换</th>
+<th>记号示例</th>
+<th>行列式的变化</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>交换两列</td>
+<td>$c_i\leftrightarrow c_j$</td>
+<td>变号</td>
+</tr>
+<tr>
+<td>某一列乘以非零数 $k$</td>
+<td>$c_i\to kc_i$</td>
+<td>乘以 $k$</td>
+</tr>
+<tr>
+<td>一列的 $k$ 倍加到另一列</td>
+<td>$c_i\to c_i+kc_j$</td>
+<td>不变</td>
+</tr>
+</tbody></table>
+<h3 id="符号跟踪法"><a href="#符号跟踪法" class="headerlink" title="符号跟踪法"></a>符号跟踪法</h3><p>如果已知 $\det(A)&#x3D;5$，先交换第一、二行，再把第三行乘以 $3$，应记录为</p>
+<p>$$<br>5<br>\xrightarrow{r_1\leftrightarrow r_2}<br>-5<br>\xrightarrow{r_3\to3r_3}<br>-15.<br>$$</p>
+<p>因此最后的行列式为</p>
+<p>$$<br>\boxed{-15}.<br>$$</p>
+<p>建议每次交换行或列时，立即在行列式外记录一个负号；每次缩放行或列时，立即记录相应倍数。</p>
+<hr>
+<h2 id="7-余子式、代数余子式与按行列展开"><a href="#7-余子式、代数余子式与按行列展开" class="headerlink" title="7. 余子式、代数余子式与按行列展开"></a>7. 余子式、代数余子式与按行列展开</h2><h3 id="7-1-余子式"><a href="#7-1-余子式" class="headerlink" title="7.1 余子式"></a>7.1 余子式</h3><p>在 $n$ 阶行列式中，划去元素 $a_{ij}$ 所在的第 $i$ 行和第 $j$ 列，剩下的 $n-1$ 阶行列式称为 $a_{ij}$ 的余子式，记作</p>
+<p>$$<br>M_{ij}.<br>$$</p>
+<h3 id="7-2-代数余子式"><a href="#7-2-代数余子式" class="headerlink" title="7.2 代数余子式"></a>7.2 代数余子式</h3><p>$a_{ij}$ 的代数余子式定义为</p>
+<p>$$<br>A_{ij}&#x3D;(-1)^{i+j}M_{ij}.<br>$$</p>
+<p>符号按棋盘格排列：</p>
+<p>$$<br>\begin{pmatrix}<br>+&amp;-&amp;+&amp;\cdots\<br>-&amp;+&amp;-&amp;\cdots\<br>+&amp;-&amp;+&amp;\cdots\<br>\vdots&amp;\vdots&amp;\vdots&amp;\ddots<br>\end{pmatrix}.<br>$$</p>
+<p>因此 $M_{ij}$ 只是删去一行一列后得到的行列式，而 $A_{ij}$ 还要乘上符号 $(-1)^{i+j}$。二者不能混淆。</p>
+<h3 id="7-3-按一行展开"><a href="#7-3-按一行展开" class="headerlink" title="7.3 按一行展开"></a>7.3 按一行展开</h3><p>行列式按第 $i$ 行展开：</p>
+<p>$$<br>D&#x3D;a_{i1}A_{i1}+a_{i2}A_{i2}+\cdots+a_{in}A_{in}<br>&#x3D;\sum_{j&#x3D;1}^{n}a_{ij}A_{ij}.<br>$$</p>
+<h3 id="7-4-按一列展开"><a href="#7-4-按一列展开" class="headerlink" title="7.4 按一列展开"></a>7.4 按一列展开</h3><p>行列式按第 $j$ 列展开：</p>
+<p>$$<br>D&#x3D;a_{1j}A_{1j}+a_{2j}A_{2j}+\cdots+a_{nj}A_{nj}<br>&#x3D;\sum_{i&#x3D;1}^{n}a_{ij}A_{ij}.<br>$$</p>
+<h3 id="7-5-异行、异列乘积之和"><a href="#7-5-异行、异列乘积之和" class="headerlink" title="7.5 异行、异列乘积之和"></a>7.5 异行、异列乘积之和</h3><p>某一行元素与另一行对应元素的代数余子式乘积之和为 $0$：</p>
+<p>$$<br>\sum_{j&#x3D;1}^{n}a_{ij}A_{kj}&#x3D;0\qquad(i\ne k).<br>$$</p>
+<p>结合本行展开公式，可以统一写成</p>
+<h1 id="sum-j-1-n-a-ij-A-kj"><a href="#sum-j-1-n-a-ij-A-kj" class="headerlink" title="$$\sum_{j&#x3D;1}^{n}a_{ij}A_{kj}"></a>$$<br>\sum_{j&#x3D;1}^{n}a_{ij}A_{kj}</h1><p>\begin{cases}<br>\det(A),&amp;i&#x3D;k,\<br>0,&amp;i\ne k.<br>\end{cases}<br>$$</p>
+<p>这组关系是伴随矩阵公式 $A\operatorname{adj}(A)&#x3D;\det(A)I$ 的基础。</p>
+<h3 id="7-6-展开时如何选行或列"><a href="#7-6-展开时如何选行或列" class="headerlink" title="7.6 展开时如何选行或列"></a>7.6 展开时如何选行或列</h3><p>优先选择 $0$ 最多的行或列。必要时可先利用不改变行列式的变换制造更多的 $0$，再展开。</p>
+<p>例：</p>
+<p>$$<br>D&#x3D;\begin{vmatrix}<br>2&amp;1&amp;0\<br>3&amp;4&amp;0\<br>5&amp;6&amp;2<br>\end{vmatrix}.<br>$$</p>
+<p>第三列有两个 $0$，按第三列展开：</p>
+<p>$$<br>D&#x3D;2A_{33}.<br>$$</p>
+<p>因为</p>
+<p>$$<br>A_{33}&#x3D;(-1)^{3+3}<br>\begin{vmatrix}<br>2&amp;1\<br>3&amp;4<br>\end{vmatrix}<br>&#x3D;8-3&#x3D;5,<br>$$</p>
+<p>所以</p>
+<p>$$<br>D&#x3D;2\times5&#x3D;\boxed{10}.<br>$$</p>
+<hr>
+<h2 id="8-上三角化计算"><a href="#8-上三角化计算" class="headerlink" title="8. 上三角化计算"></a>8. 上三角化计算</h2><h3 id="8-1-基本思想"><a href="#8-1-基本思想" class="headerlink" title="8.1 基本思想"></a>8.1 基本思想</h3><p>利用初等行变换把主对角线下方的元素逐步消成 $0$，得到上三角行列式，再把主对角线元素相乘。</p>
+<p>目标形式为</p>
+<p>$$<br>\begin{vmatrix}<br>u_{11}&amp;u_{12}&amp;\cdots&amp;u_{1n}\<br>0&amp;u_{22}&amp;\cdots&amp;u_{2n}\<br>\vdots&amp;\ddots&amp;\ddots&amp;\vdots\<br>0&amp;\cdots&amp;0&amp;u_{nn}<br>\end{vmatrix}<br>&#x3D;u_{11}u_{22}\cdots u_{nn}.<br>$$</p>
+<h3 id="8-2-典型例题"><a href="#8-2-典型例题" class="headerlink" title="8.2 典型例题"></a>8.2 典型例题</h3><p>计算</p>
+<p>$$<br>D&#x3D;\begin{vmatrix}<br>1&amp;2&amp;1\<br>2&amp;5&amp;3\<br>3&amp;8&amp;6<br>\end{vmatrix}.<br>$$</p>
+<p>先做</p>
+<p>$$<br>r_2\to r_2-2r_1,<br>\qquad<br>r_3\to r_3-3r_1.<br>$$</p>
+<p>这两步都是“一行的倍数加到另一行”，所以行列式值不变：</p>
+<p>$$<br>D&#x3D;\begin{vmatrix}<br>1&amp;2&amp;1\<br>0&amp;1&amp;1\<br>0&amp;2&amp;3<br>\end{vmatrix}.<br>$$</p>
+<p>再做</p>
+<p>$$<br>r_3\to r_3-2r_2,<br>$$</p>
+<p>得到</p>
+<p>$$<br>D&#x3D;\begin{vmatrix}<br>1&amp;2&amp;1\<br>0&amp;1&amp;1\<br>0&amp;0&amp;1<br>\end{vmatrix}.<br>$$</p>
+<p>因此</p>
+<p>$$<br>D&#x3D;1\times1\times1&#x3D;\boxed{1}.<br>$$</p>
+<h3 id="8-3-消元时必须同步记账"><a href="#8-3-消元时必须同步记账" class="headerlink" title="8.3 消元时必须同步记账"></a>8.3 消元时必须同步记账</h3><ul>
+<li>使用 $r_i\to r_i+kr_j$：不需要修正；</li>
+<li>交换两行：在结果中补一个负号；</li>
+<li>某一行乘 $k$：新行列式是原行列式的 $k$ 倍；</li>
+<li>如果为方便计算把一行除以 $k$，最后要把相应倍数还原。</li>
+</ul>
+<hr>
+<h2 id="9-行列式计算策略"><a href="#9-行列式计算策略" class="headerlink" title="9. 行列式计算策略"></a>9. 行列式计算策略</h2><p>拿到一个行列式时，可以按下面的顺序判断。</p>
+<h3 id="9-1-第一步：观察结构"><a href="#9-1-第一步：观察结构" class="headerlink" title="9.1 第一步：观察结构"></a>9.1 第一步：观察结构</h3><p>检查是否存在：</p>
+<ul>
+<li>三角形、对角形或分块三角形；</li>
+<li>某行或某列有很多 $0$；</li>
+<li>两行或两列相同、成比例或明显线性相关；</li>
+<li>每行或每列有公因子；</li>
+<li>元素之间存在容易消去的关系；</li>
+<li>各列是已知列向量的线性组合。</li>
+</ul>
+<h3 id="9-2-第二步：选择方法"><a href="#9-2-第二步：选择方法" class="headerlink" title="9.2 第二步：选择方法"></a>9.2 第二步：选择方法</h3><table>
+<thead>
+<tr>
+<th>结构</th>
+<th>首选方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>二阶</td>
+<td>直接用 $ad-bc$</td>
+</tr>
+<tr>
+<td>三阶且数字简单</td>
+<td>按行列展开或萨鲁斯法则</td>
+</tr>
+<tr>
+<td>某行、列有大量 $0$</td>
+<td>沿该行、列展开</td>
+</tr>
+<tr>
+<td>容易通过消元造 $0$</td>
+<td>化为上三角形</td>
+</tr>
+<tr>
+<td>两行、列相同或成比例</td>
+<td>直接判断为 $0$</td>
+</tr>
+<tr>
+<td>各列为原列的线性组合</td>
+<td>多线性或系数矩阵法</td>
+</tr>
+<tr>
+<td>含参数</td>
+<td>先提公因子、造零并保留因式结构</td>
+</tr>
+</tbody></table>
+<h3 id="9-3-第三步：检查符号和倍数"><a href="#9-3-第三步：检查符号和倍数" class="headerlink" title="9.3 第三步：检查符号和倍数"></a>9.3 第三步：检查符号和倍数</h3><p>计算后检查：</p>
+<ol>
+<li>是否交换过行或列？交换了几次？</li>
+<li>是否对某行或列乘过常数？</li>
+<li>代数余子式的 $(-1)^{i+j}$ 是否正确？</li>
+<li>展开时是否漏项？</li>
+<li>三角化后是否只乘了主对角线？</li>
+</ol>
+<h3 id="9-4-一个实用原则"><a href="#9-4-一个实用原则" class="headerlink" title="9.4 一个实用原则"></a>9.4 一个实用原则</h3><blockquote>
+<p>展开会降阶，消元会造零。哪一种能更快减少非零项，就优先用哪一种。</p>
+</blockquote>
+<p>通常不建议对稠密的高阶行列式直接反复展开，因为运算量增长很快。</p>
+<hr>
+<h2 id="10-克拉默法则"><a href="#10-克拉默法则" class="headerlink" title="10. 克拉默法则"></a>10. 克拉默法则</h2><h3 id="10-1-线性方程组"><a href="#10-1-线性方程组" class="headerlink" title="10.1 线性方程组"></a>10.1 线性方程组</h3><p>考虑 $n$ 元线性方程组</p>
+<p>$$<br>A\boldsymbol{x}&#x3D;\boldsymbol{b},<br>$$</p>
+<p>其中</p>
+<p>$$<br>A&#x3D;\begin{pmatrix}<br>a_{11}&amp;\cdots&amp;a_{1n}\<br>\vdots&amp;\ddots&amp;\vdots\<br>a_{n1}&amp;\cdots&amp;a_{nn}<br>\end{pmatrix},<br>\qquad<br>\boldsymbol{x}&#x3D;\begin{pmatrix}x_1\\vdots\x_n\end{pmatrix},<br>\qquad<br>\boldsymbol{b}&#x3D;\begin{pmatrix}b_1\\vdots\b_n\end{pmatrix}.<br>$$</p>
+<p>记</p>
+<p>$$<br>D&#x3D;\det(A).<br>$$</p>
+<p>如果 $D\ne0$，则方程组有唯一解。</p>
+<h3 id="10-2-克拉默法则"><a href="#10-2-克拉默法则" class="headerlink" title="10.2 克拉默法则"></a>10.2 克拉默法则</h3><p>用常数列 $\boldsymbol{b}$ 替换 $A$ 的第 $i$ 列，所得行列式记为 $D_i$，则</p>
+<p>$$<br>x_i&#x3D;\frac{D_i}{D},<br>\qquad i&#x3D;1,2,\ldots,n.<br>$$</p>
+<h3 id="10-3-二元例子"><a href="#10-3-二元例子" class="headerlink" title="10.3 二元例子"></a>10.3 二元例子</h3><p>方程组</p>
+<p>$$<br>\begin{cases}<br>a_{11}x_1+a_{12}x_2&#x3D;b_1,\<br>a_{21}x_1+a_{22}x_2&#x3D;b_2<br>\end{cases}<br>$$</p>
+<p>中，</p>
+<p>$$<br>D&#x3D;\begin{vmatrix}<br>a_{11}&amp;a_{12}\<br>a_{21}&amp;a_{22}<br>\end{vmatrix},<br>$$</p>
+<p>$$<br>D_1&#x3D;\begin{vmatrix}<br>b_1&amp;a_{12}\<br>b_2&amp;a_{22}<br>\end{vmatrix},<br>\qquad<br>D_2&#x3D;\begin{vmatrix}<br>a_{11}&amp;b_1\<br>a_{21}&amp;b_2<br>\end{vmatrix}.<br>$$</p>
+<p>若 $D\ne0$，则</p>
+<p>$$<br>x_1&#x3D;\frac{D_1}{D},<br>\qquad<br>x_2&#x3D;\frac{D_2}{D}.<br>$$</p>
+<h3 id="10-4-使用范围"><a href="#10-4-使用范围" class="headerlink" title="10.4 使用范围"></a>10.4 使用范围</h3><ul>
+<li>$D\ne0$：方程组必有唯一解，可直接使用克拉默法则；</li>
+<li>$D&#x3D;0$：不能用 $D_i&#x2F;D$，此时方程组可能无解，也可能有无穷多解，需要用秩或高斯消元进一步判断。</li>
+</ul>
+<p>克拉默法则理论意义很强，但大型方程组中通常使用高斯消元等更高效的方法。</p>
+<hr>
+<h2 id="11-与后续知识的联系"><a href="#11-与后续知识的联系" class="headerlink" title="11. 与后续知识的联系"></a>11. 与后续知识的联系</h2><h3 id="11-1-行列式与矩阵可逆"><a href="#11-1-行列式与矩阵可逆" class="headerlink" title="11.1 行列式与矩阵可逆"></a>11.1 行列式与矩阵可逆</h3><p>对 $n$ 阶方阵 $A$，以下命题等价：</p>
+<p>$$<br>\det(A)\ne0<br>\Longleftrightarrow<br>A\text{ 可逆}<br>\Longleftrightarrow<br>\operatorname{rank}(A)&#x3D;n.<br>$$</p>
+<p>还等价于：</p>
+<ul>
+<li>$A$ 的行向量线性无关；</li>
+<li>$A$ 的列向量线性无关；</li>
+<li>齐次方程组 $A\boldsymbol{x}&#x3D;\boldsymbol{0}$ 只有零解；</li>
+<li>对任意 $\boldsymbol{b}$，$A\boldsymbol{x}&#x3D;\boldsymbol{b}$ 有唯一解；</li>
+<li>$0$ 不是 $A$ 的特征值。</li>
+</ul>
+<p>如果 $\det(A)&#x3D;0$，则 $A$ 不可逆，行或列线性相关，线性变换会把空间压缩到更低维。</p>
+<h3 id="11-2-行列式与伴随矩阵"><a href="#11-2-行列式与伴随矩阵" class="headerlink" title="11.2 行列式与伴随矩阵"></a>11.2 行列式与伴随矩阵</h3><p>由代数余子式构造伴随矩阵 $\operatorname{adj}(A)$，满足</p>
+<h1 id="A-operatorname-adj-A"><a href="#A-operatorname-adj-A" class="headerlink" title="$$A\operatorname{adj}(A)"></a>$$<br>A\operatorname{adj}(A)</h1><h1 id="operatorname-adj-A-A"><a href="#operatorname-adj-A-A" class="headerlink" title="\operatorname{adj}(A)A"></a>\operatorname{adj}(A)A</h1><p>\det(A)I.<br>$$</p>
+<p>当 $\det(A)\ne0$ 时，</p>
+<p>$$<br>A^{-1}&#x3D;\frac{1}{\det(A)}\operatorname{adj}(A).<br>$$</p>
+<h3 id="11-3-行列式与特征值"><a href="#11-3-行列式与特征值" class="headerlink" title="11.3 行列式与特征值"></a>11.3 行列式与特征值</h3><p>矩阵 $A$ 的特征值由特征方程确定：</p>
+<p>$$<br>\det(\lambda I-A)&#x3D;0.<br>$$</p>
+<p>如果 $\lambda_1,\lambda_2,\ldots,\lambda_n$ 是 $A$ 的全部特征值（按代数重数计），则</p>
+<p>$$<br>\det(A)&#x3D;\lambda_1\lambda_2\cdots\lambda_n.<br>$$</p>
+<p>同时，</p>
+<p>$$<br>\operatorname{tr}(A)&#x3D;\lambda_1+\lambda_2+\cdots+\lambda_n.<br>$$</p>
+<p>因此，行列式从整体上反映了全部特征值的乘积。</p>
+<h3 id="11-4-与控制理论的联系"><a href="#11-4-与控制理论的联系" class="headerlink" title="11.4 与控制理论的联系"></a>11.4 与控制理论的联系</h3><p>在线性定常系统</p>
+<p>$$<br>\dot{\boldsymbol{x}}&#x3D;A\boldsymbol{x}+B\boldsymbol{u}<br>$$</p>
+<p>中，系统矩阵 $A$ 的特征值决定自由响应的基本模式。</p>
+<ul>
+<li>连续时间系统渐近稳定通常要求 $A$ 的全部特征值实部小于 $0$；</li>
+<li>特征值通过 $\det(\lambda I-A)&#x3D;0$ 求得；</li>
+<li>传递函数的极点与 $\det(sI-A)$ 密切相关。</li>
+</ul>
+<p>对单输入 $n$ 维系统，能控性矩阵为</p>
+<p>$$<br>\mathcal{C}&#x3D;<br>\begin{bmatrix}<br>B&amp;AB&amp;A^2B&amp;\cdots&amp;A^{n-1}B<br>\end{bmatrix}.<br>$$</p>
+<p>此时 $\mathcal{C}$ 为 $n\times n$ 方阵，系统完全能控当且仅当</p>
+<p>$$<br>\det(\mathcal{C})\ne0.<br>$$</p>
+<p>对多输入系统，能控性矩阵通常不是方阵，应使用满秩条件</p>
+<p>$$<br>\operatorname{rank}(\mathcal{C})&#x3D;n,<br>$$</p>
+<p>而不能简单地谈其行列式。</p>
+<p>因此，第一章的行列式不仅是计算工具，也是判断可逆性、特征值、稳定性和能控性的基础语言。</p>
+<hr>
+<h2 id="12-已做练习复盘"><a href="#12-已做练习复盘" class="headerlink" title="12. 已做练习复盘"></a>12. 已做练习复盘</h2><h3 id="练习-1：二阶行列式"><a href="#练习-1：二阶行列式" class="headerlink" title="练习 1：二阶行列式"></a>练习 1：二阶行列式</h3><p>$$<br>D&#x3D;\begin{vmatrix}<br>3&amp;2\<br>5&amp;4<br>\end{vmatrix}<br>&#x3D;12-10&#x3D;\boxed{2}.<br>$$</p>
+<p>结论：计算正确。二阶行列式牢记 $ad-bc$。</p>
+<h3 id="练习-2：连续初等变换"><a href="#练习-2：连续初等变换" class="headerlink" title="练习 2：连续初等变换"></a>练习 2：连续初等变换</h3><p>已知</p>
+<p>$$<br>\det(A)&#x3D;5.<br>$$</p>
+<p>先交换第一、二行，再将第三行乘以 $3$：</p>
+<p>$$<br>5<br>\xrightarrow{r_1\leftrightarrow r_2}<br>-5<br>\xrightarrow{r_3\to3r_3}<br>-15.<br>$$</p>
+<p>所以答案为</p>
+<p>$$<br>\boxed{-15}.<br>$$</p>
+<p>易错点：把结果误写成 $15$，说明遗漏了交换两行产生的负号。</p>
+<h3 id="练习-3：按含零较多的列展开"><a href="#练习-3：按含零较多的列展开" class="headerlink" title="练习 3：按含零较多的列展开"></a>练习 3：按含零较多的列展开</h3><p>$$<br>D&#x3D;\begin{vmatrix}<br>2&amp;1&amp;0\<br>3&amp;4&amp;0\<br>5&amp;6&amp;2<br>\end{vmatrix}.<br>$$</p>
+<p>沿第三列展开：</p>
+<p>$$<br>D&#x3D;2A_{33}<br>&#x3D;2(-1)^{3+3}<br>\begin{vmatrix}<br>2&amp;1\<br>3&amp;4<br>\end{vmatrix}<br>&#x3D;2(8-3)&#x3D;\boxed{10}.<br>$$</p>
+<p>结论：方法和答案均正确。主动寻找 $0$ 最多的行或列，是很重要的计算意识。</p>
+<h3 id="练习-4：消元化上三角形"><a href="#练习-4：消元化上三角形" class="headerlink" title="练习 4：消元化上三角形"></a>练习 4：消元化上三角形</h3><p>$$<br>D&#x3D;\begin{vmatrix}<br>1&amp;2&amp;1\<br>2&amp;5&amp;3\<br>3&amp;8&amp;6<br>\end{vmatrix}.<br>$$</p>
+<p>依次做</p>
+<p>$$<br>r_2\to r_2-2r_1,<br>\qquad<br>r_3\to r_3-3r_1,<br>\qquad<br>r_3\to r_3-2r_2,<br>$$</p>
+<p>得到</p>
+<p>$$<br>D&#x3D;\begin{vmatrix}<br>1&amp;2&amp;1\<br>0&amp;1&amp;1\<br>0&amp;0&amp;1<br>\end{vmatrix}<br>&#x3D;1\times1\times1<br>&#x3D;\boxed{1}.<br>$$</p>
+<p>结论：方法和答案均正确。这一题体现了核心思路：<strong>先消元造 $0$，再利用三角形结构计算</strong>。</p>
+<hr>
+<h2 id="13-列向量线性组合型行列式"><a href="#13-列向量线性组合型行列式" class="headerlink" title="13. 列向量线性组合型行列式"></a>13. 列向量线性组合型行列式</h2><h3 id="13-1-题目"><a href="#13-1-题目" class="headerlink" title="13.1 题目"></a>13.1 题目</h3><p>已知</p>
+<p>$$<br>|\alpha_1,\alpha_2,\alpha_3|&#x3D;2,<br>$$</p>
+<p>求</p>
+<p>$$<br>D&#x3D;<br>|\alpha_1+\alpha_2+\alpha_3,<br>\alpha_1+2\alpha_2+4\alpha_3,<br>\alpha_1+3\alpha_2+9\alpha_3|.<br>$$</p>
+<h3 id="13-2-方法一：只用第一章行列式性质"><a href="#13-2-方法一：只用第一章行列式性质" class="headerlink" title="13.2 方法一：只用第一章行列式性质"></a>13.2 方法一：只用第一章行列式性质</h3><p>记新行列式的三列为 $c_1,c_2,c_3$。先进行不改变行列式值的列变换：</p>
+<p>$$<br>c_2\to c_2-c_1,<br>\qquad<br>c_3\to c_3-c_1.<br>$$</p>
+<p>得到</p>
+<p>$$<br>D&#x3D;<br>|\alpha_1+\alpha_2+\alpha_3,<br>\alpha_2+3\alpha_3,<br>2\alpha_2+8\alpha_3|.<br>$$</p>
+<p>再做</p>
+<p>$$<br>c_3\to c_3-2c_2,<br>$$</p>
+<p>于是</p>
+<p>$$<br>D&#x3D;<br>|\alpha_1+\alpha_2+\alpha_3,<br>\alpha_2+3\alpha_3,<br>2\alpha_3|.<br>$$</p>
+<p>第三列提出因子 $2$：</p>
+<p>$$<br>D&#x3D;2|\alpha_1+\alpha_2+\alpha_3,<br>\alpha_2+3\alpha_3,<br>\alpha_3|.<br>$$</p>
+<p>利用第二列的线性性质：</p>
+<p>$$<br>\begin{aligned}<br>D&#x3D;{}&amp;2|\alpha_1+\alpha_2+\alpha_3,\alpha_2,\alpha_3|\<br>&amp;+6|\alpha_1+\alpha_2+\alpha_3,\alpha_3,\alpha_3|.<br>\end{aligned}<br>$$</p>
+<p>第二项有两列相同，等于 $0$，所以</p>
+<p>$$<br>D&#x3D;2|\alpha_1+\alpha_2+\alpha_3,\alpha_2,\alpha_3|.<br>$$</p>
+<p>再按第一列的线性性质拆分：</p>
+<p>$$<br>\begin{aligned}<br>D&#x3D;{}&amp;2|\alpha_1,\alpha_2,\alpha_3|<br>+2|\alpha_2,\alpha_2,\alpha_3|\<br>&amp;+2|\alpha_3,\alpha_2,\alpha_3|.<br>\end{aligned}<br>$$</p>
+<p>后两项分别有两列相同，均为 $0$，故</p>
+<p>$$<br>D&#x3D;2|\alpha_1,\alpha_2,\alpha_3|<br>&#x3D;2\times2<br>&#x3D;\boxed{4}.<br>$$</p>
+<h3 id="13-3-方法二：系数矩阵法"><a href="#13-3-方法二：系数矩阵法" class="headerlink" title="13.3 方法二：系数矩阵法"></a>13.3 方法二：系数矩阵法</h3><p>将原列向量组成矩阵</p>
+<p>$$<br>A&#x3D;[\alpha_1,\alpha_2,\alpha_3].<br>$$</p>
+<p>新列向量组成的矩阵可写为</p>
+<p>$$<br>[\alpha_1+\alpha_2+\alpha_3,<br>\alpha_1+2\alpha_2+4\alpha_3,<br>\alpha_1+3\alpha_2+9\alpha_3]<br>&#x3D;AC,<br>$$</p>
+<p>其中系数矩阵为</p>
+<p>$$<br>C&#x3D;\begin{pmatrix}<br>1&amp;1&amp;1\<br>1&amp;2&amp;3\<br>1&amp;4&amp;9<br>\end{pmatrix}.<br>$$</p>
+<p>由 $\det(AC)&#x3D;\det(A)\det(C)$，有</p>
+<p>$$<br>D&#x3D;|\alpha_1,\alpha_2,\alpha_3|<br>\begin{vmatrix}<br>1&amp;1&amp;1\<br>1&amp;2&amp;3\<br>1&amp;4&amp;9<br>\end{vmatrix}.<br>$$</p>
+<p>计算系数行列式：</p>
+<p>$$<br>\begin{vmatrix}<br>1&amp;1&amp;1\<br>1&amp;2&amp;3\<br>1&amp;4&amp;9<br>\end{vmatrix}<br>\xrightarrow{r_2\to r_2-r_1,\ r_3\to r_3-r_1}<br>\begin{vmatrix}<br>1&amp;1&amp;1\<br>0&amp;1&amp;2\<br>0&amp;3&amp;8<br>\end{vmatrix}<br>\xrightarrow{r_3\to r_3-3r_2}<br>\begin{vmatrix}<br>1&amp;1&amp;1\<br>0&amp;1&amp;2\<br>0&amp;0&amp;2<br>\end{vmatrix}<br>&#x3D;2.<br>$$</p>
+<p>所以</p>
+<p>$$<br>D&#x3D;2\times2&#x3D;\boxed{4}.<br>$$</p>
+<h3 id="13-4-通用结论"><a href="#13-4-通用结论" class="headerlink" title="13.4 通用结论"></a>13.4 通用结论</h3><p>设</p>
+<p>$$<br>A&#x3D;[\alpha_1,\alpha_2,\ldots,\alpha_n],<br>$$</p>
+<p>新列向量 $\beta_1,\ldots,\beta_n$ 都是原列向量的线性组合：</p>
+<p>$$<br>\beta_j&#x3D;\sum_{i&#x3D;1}^{n}c_{ij}\alpha_i.<br>$$</p>
+<p>将组合系数组成矩阵 $C&#x3D;(c_{ij})$，则</p>
+<p>$$<br>[\beta_1,\beta_2,\ldots,\beta_n]&#x3D;AC,<br>$$</p>
+<p>从而</p>
+<h1 id="boxed-beta-1-beta-2-ldots-beta-n"><a href="#boxed-beta-1-beta-2-ldots-beta-n" class="headerlink" title="$$\boxed{|\beta_1,\beta_2,\ldots,\beta_n|"></a>$$<br>\boxed{<br>|\beta_1,\beta_2,\ldots,\beta_n|</h1><p>|\alpha_1,\alpha_2,\ldots,\alpha_n|\det(C)<br>}.<br>$$</p>
+<p>这里必须按“每个新列向量的系数作为系数矩阵的一列”来排布，避免把系数矩阵误写成转置。虽然 $\det(C^T)&#x3D;\det(C)$，本题的数值可能不受影响，但矩阵关系 $[\beta_1,\ldots,\beta_n]&#x3D;AC$ 的方向必须正确。</p>
+<hr>
+<h2 id="14-易错点与自检清单"><a href="#14-易错点与自检清单" class="headerlink" title="14. 易错点与自检清单"></a>14. 易错点与自检清单</h2><h3 id="14-1-高频易错点"><a href="#14-1-高频易错点" class="headerlink" title="14.1 高频易错点"></a>14.1 高频易错点</h3><ol>
+<li><p><strong>交换行或列后漏掉负号</strong><br>交换一次乘 $-1$，交换两次恢复原符号。</p>
+</li>
+<li><p><strong>混淆三种初等变换</strong><br>$r_i\to r_i+kr_j$ 不变，但 $r_i\to kr_i$ 会使行列式乘 $k$。</p>
+</li>
+<li><p><strong>把 $\det(kA)$ 写成 $k\det(A)$</strong><br>对 $n$ 阶方阵，正确结论是 $\det(kA)&#x3D;k^n\det(A)$。</p>
+</li>
+<li><p><strong>混淆余子式和代数余子式</strong><br>$A_{ij}&#x3D;(-1)^{i+j}M_{ij}$，不要漏掉符号。</p>
+</li>
+<li><p><strong>按行、列展开时符号写错</strong><br>使用棋盘格符号：第一行从 $+$ 开始，正负交替。</p>
+</li>
+<li><p><strong>把萨鲁斯法则用于四阶行列式</strong><br>该法则只适用于三阶。</p>
+</li>
+<li><p><strong>看到行列式就直接展开</strong><br>先观察能否造 $0$、提公因子或化三角形。</p>
+</li>
+<li><p><strong>克拉默法则中列替换错误</strong><br>求 $x_i$ 时，应以常数列 $\boldsymbol{b}$ 替换系数矩阵的第 $i$ 列。</p>
+</li>
+<li><p><strong>在 $D&#x3D;0$ 时继续写 $x_i&#x3D;D_i&#x2F;D$</strong><br>此时分母为 $0$，必须改用秩或消元判断解的情况。</p>
+</li>
+<li><p><strong>系数矩阵的列、行方向写反</strong><br>新的第 $j$ 列所用的系数，应放在系数矩阵的第 $j$ 列。</p>
+</li>
+</ol>
+<h3 id="14-2-计算完成后的五问"><a href="#14-2-计算完成后的五问" class="headerlink" title="14.2 计算完成后的五问"></a>14.2 计算完成后的五问</h3><ul>
+<li>我是否交换过行或列？</li>
+<li>我是否放大或缩小过某一行或列？</li>
+<li>代数余子式的符号是否正确？</li>
+<li>是否存在明显的零行、比例行或线性相关关系？</li>
+<li>能否用另一种简单方法快速验算？</li>
+</ul>
+<hr>
+<h2 id="15-一页速记"><a href="#15-一页速记" class="headerlink" title="15. 一页速记"></a>15. 一页速记</h2><h3 id="15-1-基本公式"><a href="#15-1-基本公式" class="headerlink" title="15.1 基本公式"></a>15.1 基本公式</h3><p>$$<br>\begin{vmatrix}<br>a&amp;b\<br>c&amp;d<br>\end{vmatrix}&#x3D;ad-bc.<br>$$</p>
+<p>$$<br>A_{ij}&#x3D;(-1)^{i+j}M_{ij}.<br>$$</p>
+<p>$$<br>\det(A)&#x3D;\sum_{j&#x3D;1}^{n}a_{ij}A_{ij}<br>&#x3D;\sum_{i&#x3D;1}^{n}a_{ij}A_{ij}.<br>$$</p>
+<p>上式中，前一个求和表示固定第 $i$ 行展开，后一个求和表示固定第 $j$ 列展开。</p>
+<p>$$<br>\det(AB)&#x3D;\det(A)\det(B).<br>$$</p>
+<p>$$<br>\det(A^T)&#x3D;\det(A).<br>$$</p>
+<p>$$<br>\det(kA)&#x3D;k^n\det(A).<br>$$</p>
+<p>$$<br>\det(A^{-1})&#x3D;\frac{1}{\det(A)}.<br>$$</p>
+<h3 id="15-2-三种初等变换"><a href="#15-2-三种初等变换" class="headerlink" title="15.2 三种初等变换"></a>15.2 三种初等变换</h3><p>$$<br>r_i\leftrightarrow r_j<br>\quad\Rightarrow\quad<br>D\to-D.<br>$$</p>
+<p>$$<br>r_i\to kr_i<br>\quad\Rightarrow\quad<br>D\to kD.<br>$$</p>
+<p>$$<br>r_i\to r_i+kr_j<br>\quad\Rightarrow\quad<br>D\text{ 不变}.<br>$$</p>
+<h3 id="15-3-关键判定"><a href="#15-3-关键判定" class="headerlink" title="15.3 关键判定"></a>15.3 关键判定</h3><p>$$<br>\det(A)\ne0<br>\Longleftrightarrow<br>A\text{ 可逆}<br>\Longleftrightarrow<br>\operatorname{rank}(A)&#x3D;n<br>\Longleftrightarrow<br>A\text{ 的列向量线性无关}.<br>$$</p>
+<p>$$<br>\det(\lambda I-A)&#x3D;0<br>$$</p>
+<p>用于求特征值。</p>
+<h3 id="15-4-计算口诀"><a href="#15-4-计算口诀" class="headerlink" title="15.4 计算口诀"></a>15.4 计算口诀</h3><blockquote>
+<p>二阶直接算，三阶看结构；<br>零多就展开，稠密先消元；<br>交换要变号，倍乘要记账；<br>同行同列零，三角乘对角。</p>
+</blockquote>
+<hr>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>第一章真正需要形成的能力，不只是会背公式，而是看到一个行列式后能够迅速判断：</p>
+<ol>
+<li>是否可以直接判断为 $0$；</li>
+<li>应该按哪一行或哪一列展开；</li>
+<li>是否应先通过初等变换制造 $0$；</li>
+<li>变换过程中怎样正确跟踪符号和倍数；</li>
+<li>行列式的非零性在可逆、线性无关、特征值和控制系统中意味着什么。</li>
+</ol>
+<p>掌握这套判断顺序后，行列式就不再是一组零散公式，而会成为后续矩阵、线性方程组、特征值与控制理论的统一基础。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linx29853.github.io">LenoVo</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linx29853.github.io/2026/08/31/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%AC%AC%E4%B8%80%E7%AB%A0-%E8%A1%8C%E5%88%97%E5%BC%8F%E6%80%BB%E7%BB%93%E7%AC%94%E8%AE%B0/">https://linx29853.github.io/2026/08/31/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%AC%AC%E4%B8%80%E7%AB%A0-%E8%A1%8C%E5%88%97%E5%BC%8F%E6%80%BB%E7%BB%93%E7%AC%94%E8%AE%B0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://linx29853.github.io" target="_blank">LenoVo的小站</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0/">线性代数</a><a class="post-meta__tags" href="/tags/%E8%A1%8C%E5%88%97%E5%BC%8F/">行列式</a><a class="post-meta__tags" href="/tags/%E5%88%9D%E7%AD%89%E5%8F%98%E6%8D%A2/">初等变换</a><a class="post-meta__tags" href="/tags/%E5%85%8B%E6%8B%89%E9%BB%98%E6%B3%95%E5%88%99/">克拉默法则</a></div><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/08/30/%E7%BA%BF%E6%80%A7%E7%B3%BB%E7%BB%9F%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="线性系统基础学习笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">线性系统基础学习笔记</div></div><div class="info-2"><div class="info-item-1"> 1. 本章学习目标完成本章后，应能够：  将线性微分方程写成状态空间模型； 根据特征值判断连续时间线性系统的稳定性； 区分可控性和可镇定性； 理解 Hurwitz 矩阵的含义； 使用 Lyapunov 方程证明线性系统稳定； 理解连续时间代数 Riccati 方程； 使用状态反馈配置闭环极点； 独立证明：若 $P&gt;0$ 满足适当的 Riccati 方程，则  $$G&#x3D;-B_m^\top P$$ 能够使 $$A_m+B_mG$$ 成为 Hurwitz 矩阵。 这一结论是后续学习 MRAC、MRASC 和 MRASCon 的基础。  2. 状态空间模型2.1 基本形式连续时间线性时不变系统可以写成 $$\dot x(t)&#x3D;Ax(t)+Bu(t),$$ $$y(t)&#x3D;Cx(t)+Du(t).$$ 其中：    符号 含义 维数    $x(t)$ 状态向量 $\mathbb R^n$   $u(t)$ 控制输入 $\mathbb R^m$   $y(t)$ 系统输出 $\mathbb R^p$   $A$ 系统矩阵 $\mathbb R^{n\ti...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">LenoVo</div><div class="author-info-description">记录轨道交通、公交与卡车见闻，以及技术学习笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">12</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">31</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">3</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/linx29853"><i class="fab fa-github"></i><span>访问 GitHub</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LenoVo 的小站</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%A1%8C%E5%88%97%E5%BC%8F%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-number">1.</span> <span class="toc-text">1. 行列式是什么</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">1.1.</span> <span class="toc-text">1.1 基本概念</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#det-A-quad-text-%E6%88%96-quad-A"><span class="toc-number"></span> <span class="toc-text">$$\det(A)\quad\text{或}\quad|A|</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E5%87%A0%E4%BD%95%E7%9B%B4%E8%A7%89"><span class="toc-number">0.1.</span> <span class="toc-text">1.2 几何直觉</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BA%8C%E9%98%B6%E4%B8%8E%E4%B8%89%E9%98%B6%E8%A1%8C%E5%88%97%E5%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">2. 二阶与三阶行列式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E4%BA%8C%E9%98%B6%E8%A1%8C%E5%88%97%E5%BC%8F"><span class="toc-number">1.1.</span> <span class="toc-text">2.1 二阶行列式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E4%B8%89%E9%98%B6%E8%A1%8C%E5%88%97%E5%BC%8F"><span class="toc-number">1.2.</span> <span class="toc-text">2.2 三阶行列式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%8E%92%E5%88%97%E4%B8%8E%E9%80%86%E5%BA%8F%E6%95%B0"><span class="toc-number">2.</span> <span class="toc-text">3. 排列与逆序数</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%8E%92%E5%88%97"><span class="toc-number">2.1.</span> <span class="toc-text">3.1 排列</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E9%80%86%E5%BA%8F%E4%B8%8E%E9%80%86%E5%BA%8F%E6%95%B0"><span class="toc-number">2.2.</span> <span class="toc-text">3.2 逆序与逆序数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%A5%87%E6%8E%92%E5%88%97%E4%B8%8E%E5%81%B6%E6%8E%92%E5%88%97"><span class="toc-number">2.3.</span> <span class="toc-text">3.3 奇排列与偶排列</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-n-%E9%98%B6%E8%A1%8C%E5%88%97%E5%BC%8F%E7%9A%84%E5%AE%9A%E4%B9%89"><span class="toc-number">3.</span> <span class="toc-text">4. $n$ 阶行列式的定义</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E5%AE%9A%E4%B9%89"><span class="toc-number">3.1.</span> <span class="toc-text">4.1 定义</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#det-A"><span class="toc-number"></span> <span class="toc-text">$$\det(A)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E6%AF%8F%E4%B8%80%E9%A1%B9%E7%9A%84%E7%BB%93%E6%9E%84"><span class="toc-number">0.1.</span> <span class="toc-text">4.2 每一项的结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E8%A1%8C%E5%88%97%E5%BC%8F%E7%9A%84%E6%A0%B8%E5%BF%83%E6%80%A7%E8%B4%A8"><span class="toc-number">1.</span> <span class="toc-text">5. 行列式的核心性质</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E8%BD%AC%E7%BD%AE%E4%B8%8D%E6%94%B9%E5%8F%98%E8%A1%8C%E5%88%97%E5%BC%8F"><span class="toc-number">1.1.</span> <span class="toc-text">5.1 转置不改变行列式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E4%BA%A4%E6%8D%A2%E4%B8%A4%E8%A1%8C%EF%BC%8C%E8%A1%8C%E5%88%97%E5%BC%8F%E5%8F%98%E5%8F%B7"><span class="toc-number">1.2.</span> <span class="toc-text">5.2 交换两行，行列式变号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E6%9F%90%E4%B8%80%E8%A1%8C%E4%B9%98%E4%BB%A5-k-%EF%BC%8C%E8%A1%8C%E5%88%97%E5%BC%8F%E4%B9%98%E4%BB%A5-k"><span class="toc-number">1.3.</span> <span class="toc-text">5.3 某一行乘以 $k$，行列式乘以 $k$</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-%E4%B8%80%E8%A1%8C%E7%9A%84%E5%85%AC%E5%9B%A0%E5%AD%90%E5%8F%AF%E4%BB%A5%E6%8F%90%E5%88%B0%E8%A1%8C%E5%88%97%E5%BC%8F%E5%A4%96"><span class="toc-number">1.4.</span> <span class="toc-text">5.4 一行的公因子可以提到行列式外</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#begin-vmatrix-ka-11-ka-12-cdots-ka-1n-a-21-a-22-cdots-a-2n-vdots-vdots-ddots-vdots-end-vmatrix"><span class="toc-number"></span> <span class="toc-text">$$\begin{vmatrix}ka_{11}&amp;ka_{12}&amp;\cdots&amp;ka_{1n}\a_{21}&amp;a_{22}&amp;\cdots&amp;a_{2n}\\vdots&amp;\vdots&amp;\ddots&amp;\vdots\end{vmatrix}</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-5-%E8%A1%8C%E5%88%97%E5%BC%8F%E5%AF%B9%E6%AF%8F%E4%B8%80%E8%A1%8C%E3%80%81%E5%88%97%E5%88%86%E5%88%AB%E5%85%B7%E6%9C%89%E7%BA%BF%E6%80%A7"><span class="toc-number">0.1.</span> <span class="toc-text">5.5 行列式对每一行、列分别具有线性</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#alpha-1-ldots-beta-gamma-ldots-alpha-n"><span class="toc-number"></span> <span class="toc-text">$$|\alpha_1,\ldots,\beta+\gamma,\ldots,\alpha_n|</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#alpha-1-ldots-k-beta-ldots-alpha-n"><span class="toc-number"></span> <span class="toc-text">$$|\alpha_1,\ldots,k\beta,\ldots,\alpha_n|</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-6-%E4%B8%A4%E8%A1%8C%E7%9B%B8%E5%90%8C%E6%88%96%E6%88%90%E6%AF%94%E4%BE%8B%EF%BC%8C%E8%A1%8C%E5%88%97%E5%BC%8F%E4%B8%BA%E9%9B%B6"><span class="toc-number">0.1.</span> <span class="toc-text">5.6 两行相同或成比例，行列式为零</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-7-%E4%B8%80%E8%A1%8C%E7%9A%84%E5%80%8D%E6%95%B0%E5%8A%A0%E5%88%B0%E5%8F%A6%E4%B8%80%E8%A1%8C%EF%BC%8C%E8%A1%8C%E5%88%97%E5%BC%8F%E4%B8%8D%E5%8F%98"><span class="toc-number">0.2.</span> <span class="toc-text">5.7 一行的倍数加到另一行，行列式不变</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-8-%E4%B8%89%E8%A7%92%E8%A1%8C%E5%88%97%E5%BC%8F%E7%AD%89%E4%BA%8E%E4%B8%BB%E5%AF%B9%E8%A7%92%E7%BA%BF%E5%85%83%E7%B4%A0%E4%B9%8B%E7%A7%AF"><span class="toc-number">0.3.</span> <span class="toc-text">5.8 三角行列式等于主对角线元素之积</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-9-%E4%B9%98%E7%A7%AF%E7%9A%84%E8%A1%8C%E5%88%97%E5%BC%8F"><span class="toc-number">0.4.</span> <span class="toc-text">5.9 乘积的行列式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%88%9D%E7%AD%89%E8%A1%8C%E3%80%81%E5%88%97%E5%8F%98%E6%8D%A2%E7%9A%84%E5%BD%B1%E5%93%8D"><span class="toc-number">1.</span> <span class="toc-text">6. 初等行、列变换的影响</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%A6%E5%8F%B7%E8%B7%9F%E8%B8%AA%E6%B3%95"><span class="toc-number">1.1.</span> <span class="toc-text">符号跟踪法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E4%BD%99%E5%AD%90%E5%BC%8F%E3%80%81%E4%BB%A3%E6%95%B0%E4%BD%99%E5%AD%90%E5%BC%8F%E4%B8%8E%E6%8C%89%E8%A1%8C%E5%88%97%E5%B1%95%E5%BC%80"><span class="toc-number">2.</span> <span class="toc-text">7. 余子式、代数余子式与按行列展开</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E4%BD%99%E5%AD%90%E5%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">7.1 余子式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E4%BB%A3%E6%95%B0%E4%BD%99%E5%AD%90%E5%BC%8F"><span class="toc-number">2.2.</span> <span class="toc-text">7.2 代数余子式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E6%8C%89%E4%B8%80%E8%A1%8C%E5%B1%95%E5%BC%80"><span class="toc-number">2.3.</span> <span class="toc-text">7.3 按一行展开</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-4-%E6%8C%89%E4%B8%80%E5%88%97%E5%B1%95%E5%BC%80"><span class="toc-number">2.4.</span> <span class="toc-text">7.4 按一列展开</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-5-%E5%BC%82%E8%A1%8C%E3%80%81%E5%BC%82%E5%88%97%E4%B9%98%E7%A7%AF%E4%B9%8B%E5%92%8C"><span class="toc-number">2.5.</span> <span class="toc-text">7.5 异行、异列乘积之和</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#sum-j-1-n-a-ij-A-kj"><span class="toc-number"></span> <span class="toc-text">$$\sum_{j&#x3D;1}^{n}a_{ij}A_{kj}</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-6-%E5%B1%95%E5%BC%80%E6%97%B6%E5%A6%82%E4%BD%95%E9%80%89%E8%A1%8C%E6%88%96%E5%88%97"><span class="toc-number">0.1.</span> <span class="toc-text">7.6 展开时如何选行或列</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E4%B8%8A%E4%B8%89%E8%A7%92%E5%8C%96%E8%AE%A1%E7%AE%97"><span class="toc-number">1.</span> <span class="toc-text">8. 上三角化计算</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E5%9F%BA%E6%9C%AC%E6%80%9D%E6%83%B3"><span class="toc-number">1.1.</span> <span class="toc-text">8.1 基本思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E5%85%B8%E5%9E%8B%E4%BE%8B%E9%A2%98"><span class="toc-number">1.2.</span> <span class="toc-text">8.2 典型例题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E6%B6%88%E5%85%83%E6%97%B6%E5%BF%85%E9%A1%BB%E5%90%8C%E6%AD%A5%E8%AE%B0%E8%B4%A6"><span class="toc-number">1.3.</span> <span class="toc-text">8.3 消元时必须同步记账</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E8%A1%8C%E5%88%97%E5%BC%8F%E8%AE%A1%E7%AE%97%E7%AD%96%E7%95%A5"><span class="toc-number">2.</span> <span class="toc-text">9. 行列式计算策略</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E8%A7%82%E5%AF%9F%E7%BB%93%E6%9E%84"><span class="toc-number">2.1.</span> <span class="toc-text">9.1 第一步：观察结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E9%80%89%E6%8B%A9%E6%96%B9%E6%B3%95"><span class="toc-number">2.2.</span> <span class="toc-text">9.2 第二步：选择方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-3-%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E6%A3%80%E6%9F%A5%E7%AC%A6%E5%8F%B7%E5%92%8C%E5%80%8D%E6%95%B0"><span class="toc-number">2.3.</span> <span class="toc-text">9.3 第三步：检查符号和倍数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-4-%E4%B8%80%E4%B8%AA%E5%AE%9E%E7%94%A8%E5%8E%9F%E5%88%99"><span class="toc-number">2.4.</span> <span class="toc-text">9.4 一个实用原则</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E5%85%8B%E6%8B%89%E9%BB%98%E6%B3%95%E5%88%99"><span class="toc-number">3.</span> <span class="toc-text">10. 克拉默法则</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-%E7%BA%BF%E6%80%A7%E6%96%B9%E7%A8%8B%E7%BB%84"><span class="toc-number">3.1.</span> <span class="toc-text">10.1 线性方程组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-%E5%85%8B%E6%8B%89%E9%BB%98%E6%B3%95%E5%88%99"><span class="toc-number">3.2.</span> <span class="toc-text">10.2 克拉默法则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-3-%E4%BA%8C%E5%85%83%E4%BE%8B%E5%AD%90"><span class="toc-number">3.3.</span> <span class="toc-text">10.3 二元例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-4-%E4%BD%BF%E7%94%A8%E8%8C%83%E5%9B%B4"><span class="toc-number">3.4.</span> <span class="toc-text">10.4 使用范围</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E4%B8%8E%E5%90%8E%E7%BB%AD%E7%9F%A5%E8%AF%86%E7%9A%84%E8%81%94%E7%B3%BB"><span class="toc-number">4.</span> <span class="toc-text">11. 与后续知识的联系</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11-1-%E8%A1%8C%E5%88%97%E5%BC%8F%E4%B8%8E%E7%9F%A9%E9%98%B5%E5%8F%AF%E9%80%86"><span class="toc-number">4.1.</span> <span class="toc-text">11.1 行列式与矩阵可逆</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-2-%E8%A1%8C%E5%88%97%E5%BC%8F%E4%B8%8E%E4%BC%B4%E9%9A%8F%E7%9F%A9%E9%98%B5"><span class="toc-number">4.2.</span> <span class="toc-text">11.2 行列式与伴随矩阵</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#A-operatorname-adj-A"><span class="toc-number"></span> <span class="toc-text">$$A\operatorname{adj}(A)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#operatorname-adj-A-A"><span class="toc-number"></span> <span class="toc-text">\operatorname{adj}(A)A</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11-3-%E8%A1%8C%E5%88%97%E5%BC%8F%E4%B8%8E%E7%89%B9%E5%BE%81%E5%80%BC"><span class="toc-number">0.1.</span> <span class="toc-text">11.3 行列式与特征值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-4-%E4%B8%8E%E6%8E%A7%E5%88%B6%E7%90%86%E8%AE%BA%E7%9A%84%E8%81%94%E7%B3%BB"><span class="toc-number">0.2.</span> <span class="toc-text">11.4 与控制理论的联系</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E5%B7%B2%E5%81%9A%E7%BB%83%E4%B9%A0%E5%A4%8D%E7%9B%98"><span class="toc-number">1.</span> <span class="toc-text">12. 已做练习复盘</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-1%EF%BC%9A%E4%BA%8C%E9%98%B6%E8%A1%8C%E5%88%97%E5%BC%8F"><span class="toc-number">1.1.</span> <span class="toc-text">练习 1：二阶行列式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-2%EF%BC%9A%E8%BF%9E%E7%BB%AD%E5%88%9D%E7%AD%89%E5%8F%98%E6%8D%A2"><span class="toc-number">1.2.</span> <span class="toc-text">练习 2：连续初等变换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-3%EF%BC%9A%E6%8C%89%E5%90%AB%E9%9B%B6%E8%BE%83%E5%A4%9A%E7%9A%84%E5%88%97%E5%B1%95%E5%BC%80"><span class="toc-number">1.3.</span> <span class="toc-text">练习 3：按含零较多的列展开</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0-4%EF%BC%9A%E6%B6%88%E5%85%83%E5%8C%96%E4%B8%8A%E4%B8%89%E8%A7%92%E5%BD%A2"><span class="toc-number">1.4.</span> <span class="toc-text">练习 4：消元化上三角形</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E5%88%97%E5%90%91%E9%87%8F%E7%BA%BF%E6%80%A7%E7%BB%84%E5%90%88%E5%9E%8B%E8%A1%8C%E5%88%97%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">13. 列向量线性组合型行列式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#13-1-%E9%A2%98%E7%9B%AE"><span class="toc-number">2.1.</span> <span class="toc-text">13.1 题目</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-2-%E6%96%B9%E6%B3%95%E4%B8%80%EF%BC%9A%E5%8F%AA%E7%94%A8%E7%AC%AC%E4%B8%80%E7%AB%A0%E8%A1%8C%E5%88%97%E5%BC%8F%E6%80%A7%E8%B4%A8"><span class="toc-number">2.2.</span> <span class="toc-text">13.2 方法一：只用第一章行列式性质</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-3-%E6%96%B9%E6%B3%95%E4%BA%8C%EF%BC%9A%E7%B3%BB%E6%95%B0%E7%9F%A9%E9%98%B5%E6%B3%95"><span class="toc-number">2.3.</span> <span class="toc-text">13.3 方法二：系数矩阵法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-4-%E9%80%9A%E7%94%A8%E7%BB%93%E8%AE%BA"><span class="toc-number">2.4.</span> <span class="toc-text">13.4 通用结论</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#boxed-beta-1-beta-2-ldots-beta-n"><span class="toc-number"></span> <span class="toc-text">$$\boxed{|\beta_1,\beta_2,\ldots,\beta_n|</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E6%98%93%E9%94%99%E7%82%B9%E4%B8%8E%E8%87%AA%E6%A3%80%E6%B8%85%E5%8D%95"><span class="toc-number">1.</span> <span class="toc-text">14. 易错点与自检清单</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#14-1-%E9%AB%98%E9%A2%91%E6%98%93%E9%94%99%E7%82%B9"><span class="toc-number">1.1.</span> <span class="toc-text">14.1 高频易错点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-2-%E8%AE%A1%E7%AE%97%E5%AE%8C%E6%88%90%E5%90%8E%E7%9A%84%E4%BA%94%E9%97%AE"><span class="toc-number">1.2.</span> <span class="toc-text">14.2 计算完成后的五问</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E4%B8%80%E9%A1%B5%E9%80%9F%E8%AE%B0"><span class="toc-number">2.</span> <span class="toc-text">15. 一页速记</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#15-1-%E5%9F%BA%E6%9C%AC%E5%85%AC%E5%BC%8F"><span class="toc-number">2.1.</span> <span class="toc-text">15.1 基本公式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-2-%E4%B8%89%E7%A7%8D%E5%88%9D%E7%AD%89%E5%8F%98%E6%8D%A2"><span class="toc-number">2.2.</span> <span class="toc-text">15.2 三种初等变换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-3-%E5%85%B3%E9%94%AE%E5%88%A4%E5%AE%9A"><span class="toc-number">2.3.</span> <span class="toc-text">15.3 关键判定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-4-%E8%AE%A1%E7%AE%97%E5%8F%A3%E8%AF%80"><span class="toc-number">2.4.</span> <span class="toc-text">15.4 计算口诀</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AF%AD"><span class="toc-number">3.</span> <span class="toc-text">结语</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/31/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%AC%AC%E4%B8%80%E7%AB%A0-%E8%A1%8C%E5%88%97%E5%BC%8F%E6%80%BB%E7%BB%93%E7%AC%94%E8%AE%B0/" title="线性代数第一章：行列式总结笔记">线性代数第一章：行列式总结笔记</a><time datetime="2026-08-31T02:00:00.000Z" title="发表于 2026-08-31 10:00:00">2026-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/30/%E7%BA%BF%E6%80%A7%E7%B3%BB%E7%BB%9F%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="线性系统基础学习笔记">线性系统基础学习笔记</a><time datetime="2026-08-30T02:00:00.000Z" title="发表于 2026-08-30 10:00:00">2026-08-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/29/%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A-MRACon-MRASCon%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6/" title="同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制">同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制</a><time datetime="2026-08-29T02:50:00.000Z" title="发表于 2026-08-29 10:50:00">2026-08-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/29/Popov%E8%B6%85%E7%A8%B3%E5%AE%9A%E6%96%B9%E6%B3%95%E4%B8%8EMRAC-%E7%B2%BE%E7%AE%80%E7%AC%94%E8%AE%B0/" title="Popov 超稳定方法与 MRAC（精简笔记）">Popov 超稳定方法与 MRAC（精简笔记）</a><time datetime="2026-08-29T01:50:00.000Z" title="发表于 2026-08-29 09:50:00">2026-08-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/27/%E8%A7%84%E5%88%92%E4%B8%8E%E6%8E%A7%E5%88%B6%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E4%BB%8E%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%88%B0MPC/" title="规划与控制学习路线：从运动学到 MPC">规划与控制学习路线：从运动学到 MPC</a><time datetime="2026-08-27T02:15:00.000Z" title="发表于 2026-08-27 10:15:00">2026-08-27</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2025 - 2026 By LenoVo</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
