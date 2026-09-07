@@ -1,0 +1,477 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>二连杆机械臂正逆运动学学习笔记 | LenoVo的小站</title><meta name="author" content="LenoVo"><meta name="copyright" content="LenoVo"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="以平面二自由度旋转关节机械臂为例，系统整理正逆运动学推导、DH 变换、可达性、多解与奇异性，并总结代码验证和调试方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="二连杆机械臂正逆运动学学习笔记">
+<meta property="og:url" content="https://linx29853.github.io/2026/09/07/%E6%AD%A3%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+<meta property="og:site_name" content="LenoVo的小站">
+<meta property="og:description" content="以平面二自由度旋转关节机械臂为例，系统整理正逆运动学推导、DH 变换、可达性、多解与奇异性，并总结代码验证和调试方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linx29853.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-09-07T12:00:04.000Z">
+<meta property="article:modified_time" content="2026-09-07T12:00:41.296Z">
+<meta property="article:author" content="LenoVo">
+<meta property="article:tag" content="机器人">
+<meta property="article:tag" content="运动学">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="正运动学">
+<meta property="article:tag" content="逆运动学">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linx29853.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "二连杆机械臂正逆运动学学习笔记",
+  "url": "https://linx29853.github.io/2026/09/07/%E6%AD%A3%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/",
+  "image": "https://linx29853.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-09-07T12:00:04.000Z",
+  "dateModified": "2026-09-07T12:00:41.296Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LenoVo",
+      "url": "https://linx29853.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://linx29853.github.io/2026/09/07/%E6%AD%A3%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?aeb05b46d9af3b7840e1a58e05c8aefc";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+btf.addGlobalFn('pjaxComplete', () => {
+  _hmt.push(['_trackPageview',window.location.pathname])
+}, 'baidu_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '二连杆机械臂正逆运动学学习笔记',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/bilibili.css"><link rel="stylesheet" href="/css/travel-gallery.css"><link rel="stylesheet" href="/css/music-profile.css"><link rel="stylesheet" href="/css/books.css"><link rel="stylesheet" href="/css/category-cover.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">35</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/books/"><i class="fa-fw fas fa-book-open"></i><span> 资料</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LenoVo的小站</span></a><a class="nav-page-title" href="/"><span class="site-name">二连杆机械臂正逆运动学学习笔记</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/books/"><i class="fa-fw fas fa-book-open"></i><span> 资料</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">二连杆机械臂正逆运动学学习笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-09-07T12:00:04.000Z" title="发表于 2026-09-07 20:00:04">2026-09-07</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-09-07T12:00:41.296Z" title="更新于 2026-09-07 20:00:41">2026-09-07</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/">技术学习</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AD%A6/">机器人学</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>项目：2-Link Manipulator Learning<br>机械臂：平面二自由度旋转关节机械臂（2R）<br>连杆长度：$a_1&#x3D;0.30\,\text{m}$，$a_2&#x3D;0.25\,\text{m}$</p>
+</blockquote>
+<h2 id="1-学习目标"><a href="#1-学习目标" class="headerlink" title="1. 学习目标"></a>1. 学习目标</h2><p>本阶段的目标不是只让原仓库代码运行，而是能够独立完成下面的闭环：</p>
+<ol>
+<li>根据关节角计算末端位置，即正运动学；</li>
+<li>根据目标位置计算关节角，即逆运动学；</li>
+<li>使用正运动学回代逆运动学的结果；</li>
+<li>判断目标点是否可达；</li>
+<li>理解多解、边界状态和数值误差；</li>
+<li>能够发现并定位矩阵运算中的实现错误。</li>
+</ol>
+<hr>
+<h2 id="2-二连杆机械臂模型"><a href="#2-二连杆机械臂模型" class="headerlink" title="2. 二连杆机械臂模型"></a>2. 二连杆机械臂模型</h2><p>机械臂由两个旋转关节组成：</p>
+<ul>
+<li>$q_1$：第一关节相对基坐标系的角度；</li>
+<li>$q_2$：第二关节相对第一连杆的角度；</li>
+<li>$a_1$：第一连杆长度；</li>
+<li>$a_2$：第二连杆长度；</li>
+<li>$(x,y)$：末端执行器在基坐标系中的位置。</li>
+</ul>
+<p>需要特别注意：第二连杆相对基坐标系的绝对角度不是 $q_2$，而是：</p>
+<p>$$<br>q_1+q_2<br>$$</p>
+<p>因此两个关节角共同决定末端位置。</p>
+<hr>
+<h2 id="3-正运动学"><a href="#3-正运动学" class="headerlink" title="3. 正运动学"></a>3. 正运动学</h2><h3 id="3-1-正运动学解决什么问题"><a href="#3-1-正运动学解决什么问题" class="headerlink" title="3.1 正运动学解决什么问题"></a>3.1 正运动学解决什么问题</h3><p>已知关节角和连杆长度：</p>
+<p>$$<br>(q_1,q_2,a_1,a_2)<br>$$</p>
+<p>计算末端位置：</p>
+<p>$$<br>(x,y)<br>$$</p>
+<p>即：</p>
+<p>$$<br>(q_1,q_2) \longrightarrow (x,y)<br>$$</p>
+<h3 id="3-2-几何解析公式"><a href="#3-2-几何解析公式" class="headerlink" title="3.2 几何解析公式"></a>3.2 几何解析公式</h3><p>第一连杆末端位置为：</p>
+<p>$$<br>x_1&#x3D;a_1\cos q_1<br>$$</p>
+<p>$$<br>y_1&#x3D;a_1\sin q_1<br>$$</p>
+<p>第二连杆贡献的位移为：</p>
+<p>$$<br>x_2&#x3D;a_2\cos(q_1+q_2)<br>$$</p>
+<p>$$<br>y_2&#x3D;a_2\sin(q_1+q_2)<br>$$</p>
+<p>因此末端位置为：</p>
+<p>$$<br>x&#x3D;a_1\cos q_1+a_2\cos(q_1+q_2)<br>$$</p>
+<p>$$<br>y&#x3D;a_1\sin q_1+a_2\sin(q_1+q_2)<br>$$</p>
+<p>对应代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">forward_kinematics_closed_form</span>(<span class="params">q1, q2, a1, a2</span>):</span><br><span class="line">    x = a1 * np.cos(q1) + a2 * np.cos(q1 + q2)</span><br><span class="line">    y = a1 * np.sin(q1) + a2 * np.sin(q1 + q2)</span><br><span class="line">    <span class="keyword">return</span> np.array([x, y])</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-标准-DH-变换矩阵"><a href="#3-3-标准-DH-变换矩阵" class="headerlink" title="3.3 标准 DH 变换矩阵"></a>3.3 标准 DH 变换矩阵</h3><p>本实验使用的单节标准 DH 变换矩阵为：</p>
+<p>$$<br>{}^{i-1}T_i&#x3D;<br>\begin{bmatrix}<br>\cos\theta_i &amp; -\sin\theta_i\cos\alpha_i &amp; \sin\theta_i\sin\alpha_i &amp; a_i\cos\theta_i \\<br>\sin\theta_i &amp; \cos\theta_i\cos\alpha_i &amp; -\cos\theta_i\sin\alpha_i &amp; a_i\sin\theta_i \\<br>0 &amp; \sin\alpha_i &amp; \cos\alpha_i &amp; d_i \\<br>0 &amp; 0 &amp; 0 &amp; 1<br>\end{bmatrix}<br>$$</p>
+<p>对于平面二连杆机械臂：</p>
+<p>$$<br>d_1&#x3D;d_2&#x3D;0,\qquad \alpha_1&#x3D;\alpha_2&#x3D;0<br>$$</p>
+<p>且：</p>
+<p>$$<br>\theta_1&#x3D;q_1,\qquad \theta_2&#x3D;q_2<br>$$</p>
+<p>两节连杆的总变换为：</p>
+<p>$$<br>{}^0T_2&#x3D;{}^0T_1{}^1T_2&#x3D;A_1A_2<br>$$</p>
+<p>代码实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">dh_transform</span>(<span class="params">theta, d, a, alpha</span>):</span><br><span class="line">    ct = np.cos(theta)</span><br><span class="line">    st = np.sin(theta)</span><br><span class="line">    ca = np.cos(alpha)</span><br><span class="line">    sa = np.sin(alpha)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> np.array([</span><br><span class="line">        [ct, -st * ca,  st * sa, a * ct],</span><br><span class="line">        [st,  ct * ca, -ct * sa, a * st],</span><br><span class="line">        [<span class="number">0.0</span>,       sa,       ca,      d],</span><br><span class="line">        [<span class="number">0.0</span>,      <span class="number">0.0</span>,      <span class="number">0.0</span>,    <span class="number">1.0</span>],</span><br><span class="line">    ], dtype=<span class="built_in">float</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">forward_kinematics_dh</span>(<span class="params">q1, q2, a1, a2</span>):</span><br><span class="line">    A1 = dh_transform(q1, <span class="number">0.0</span>, a1, <span class="number">0.0</span>)</span><br><span class="line">    A2 = dh_transform(q2, <span class="number">0.0</span>, a2, <span class="number">0.0</span>)</span><br><span class="line">    <span class="keyword">return</span> A1 @ A2</span><br></pre></td></tr></table></figure>
+
+<p>末端位置位于齐次变换矩阵的最后一列：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">T02 = forward_kinematics_dh(q1, q2, a1, a2)</span><br><span class="line">position = T02[:<span class="number">2</span>, <span class="number">3</span>]</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-4-与-的区别"><a href="#3-4-与-的区别" class="headerlink" title="3.4 @ 与 * 的区别"></a>3.4 <code>@</code> 与 <code>*</code> 的区别</h3><p>NumPy 中：</p>
+<ul>
+<li><code>A @ B</code>：矩阵乘法；</li>
+<li><code>A * B</code>：对应元素相乘。</li>
+</ul>
+<p>串联机械臂的坐标变换必须使用矩阵乘法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">T02 = A1 @ A2</span><br></pre></td></tr></table></figure>
+
+<p>原仓库 DH 路径中曾出现使用 <code>*</code> 累乘齐次变换矩阵的问题。这会破坏坐标变换的组合关系，得到错误的末端位置。原仓库的快速解析正运动学路径是正确的，因此默认动画仍可能正常运行，从而隐藏这个问题。</p>
+<p>另外，原仓库控制台虽然输出“modified DH”，但其单节矩阵形式实际对应标准 DH。判断 DH 类型应以矩阵定义和建系规则为准，不能只看输出文字。</p>
+<h3 id="3-5-正运动学验证结果"><a href="#3-5-正运动学验证结果" class="headerlink" title="3.5 正运动学验证结果"></a>3.5 正运动学验证结果</h3><p>取：</p>
+<p>$$<br>q_1&#x3D;30^\circ,\qquad q_2&#x3D;45^\circ<br>$$</p>
+<p>$$<br>a_1&#x3D;0.30,\qquad a_2&#x3D;0.25<br>$$</p>
+<p>计算得到：</p>
+<p>$$<br>(x,y)\approx(0.32451238,\ 0.39148146)<br>$$</p>
+<p>DH 矩阵法与几何解析公式的误差约为：</p>
+<p>$$<br>7.85\times10^{-17}<br>$$</p>
+<p>该误差来自浮点数计算，可以视为数值上一致。</p>
+<p>随机验证方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">verify_random_configurations</span>():</span><br><span class="line">    rng = np.random.default_rng(seed=<span class="number">42</span>)</span><br><span class="line">    a1, a2 = <span class="number">0.30</span>, <span class="number">0.25</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">100</span>):</span><br><span class="line">        q1, q2 = rng.uniform(-np.pi, np.pi, size=<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">        position_dh = forward_kinematics_dh(</span><br><span class="line">            q1, q2, a1, a2</span><br><span class="line">        )[:<span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line"></span><br><span class="line">        position_closed_form = forward_kinematics_closed_form(</span><br><span class="line">            q1, q2, a1, a2</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        <span class="keyword">assert</span> np.allclose(</span><br><span class="line">            position_dh,</span><br><span class="line">            position_closed_form,</span><br><span class="line">            atol=<span class="number">1e-12</span>,</span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+
+<p>验证的意义是：一个样例只能说明代码在一个点上正确，随机测试可以检查不同象限和不同关节姿态。</p>
+<hr>
+<h2 id="4-逆运动学"><a href="#4-逆运动学" class="headerlink" title="4. 逆运动学"></a>4. 逆运动学</h2><h3 id="4-1-逆运动学解决什么问题"><a href="#4-1-逆运动学解决什么问题" class="headerlink" title="4.1 逆运动学解决什么问题"></a>4.1 逆运动学解决什么问题</h3><p>已知目标位置和连杆长度：</p>
+<p>$$<br>(x,y,a_1,a_2)<br>$$</p>
+<p>求关节角：</p>
+<p>$$<br>(q_1,q_2)<br>$$</p>
+<p>即：</p>
+<p>$$<br>(x,y) \longrightarrow (q_1,q_2)<br>$$</p>
+<p>逆运动学通常比正运动学复杂，因为它可能：</p>
+<ul>
+<li>无解：目标点超出工作空间；</li>
+<li>有多个解：不同关节姿态到达同一点；</li>
+<li>在边界处出现重合解；</li>
+<li>在奇异位置附近对误差敏感。</li>
+</ul>
+<h3 id="4-2-工作空间与可达性"><a href="#4-2-工作空间与可达性" class="headerlink" title="4.2 工作空间与可达性"></a>4.2 工作空间与可达性</h3><p>令目标点到基座的距离为：</p>
+<p>$$<br>r&#x3D;\sqrt{x^2+y^2}<br>$$</p>
+<p>二连杆机械臂可达的条件为：</p>
+<p>$$<br>|a_1-a_2|\le r\le a_1+a_2<br>$$</p>
+<p>本实验中：</p>
+<p>$$<br>0.05\le r\le0.55<br>$$</p>
+<p>因此：</p>
+<ul>
+<li>$(0.55,0)$ 位于外边界，可达；</li>
+<li>$(0.05,0)$ 位于内边界，可达；</li>
+<li>$(0.60,0)$ 太远，不可达；</li>
+<li>$(0,0)$ 太近，不可达。</li>
+</ul>
+<h3 id="4-3-求解第二关节角-q-2"><a href="#4-3-求解第二关节角-q-2" class="headerlink" title="4.3 求解第二关节角 $q_2$"></a>4.3 求解第二关节角 $q_2$</h3><p>由余弦定理：</p>
+<p>$$<br>x^2+y^2&#x3D;a_1^2+a_2^2+2a_1a_2\cos q_2<br>$$</p>
+<p>因此：</p>
+<p>$$<br>c_2&#x3D;\cos q_2&#x3D;<br>\frac{x^2+y^2-a_1^2-a_2^2}{2a_1a_2}<br>$$</p>
+<p>若 $c_2\notin[-1,1]$，目标点不可达。</p>
+<p>由于：</p>
+<p>$$<br>\sin q_2&#x3D;\pm\sqrt{1-c_2^2}<br>$$</p>
+<p>所以一般会产生两组解：</p>
+<p>$$<br>q_2&#x3D;\operatorname{atan2}(+\sqrt{1-c_2^2},c_2)<br>$$</p>
+<p>$$<br>q_2&#x3D;\operatorname{atan2}(-\sqrt{1-c_2^2},c_2)<br>$$</p>
+<p>使用 <code>atan2(sin, cos)</code>，能够保留角度所在象限的信息。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">solve_q2</span>(<span class="params">x, y, a1, a2</span>):</span><br><span class="line">    r_squared = x**<span class="number">2</span> + y**<span class="number">2</span></span><br><span class="line">    c2 = (</span><br><span class="line">        r_squared - a1**<span class="number">2</span> - a2**<span class="number">2</span></span><br><span class="line">    ) / (<span class="number">2.0</span> * a1 * a2)</span><br><span class="line"></span><br><span class="line">    tolerance = <span class="number">1e-12</span></span><br><span class="line">    <span class="keyword">if</span> c2 &lt; -<span class="number">1.0</span> - tolerance <span class="keyword">or</span> c2 &gt; <span class="number">1.0</span> + tolerance:</span><br><span class="line">        <span class="keyword">raise</span> ValueError(<span class="string">&quot;目标点不可达&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 消除边界处的浮点误差，例如 1.0000000000000002。</span></span><br><span class="line">    c2 = np.clip(c2, -<span class="number">1.0</span>, <span class="number">1.0</span>)</span><br><span class="line">    s2_abs = np.sqrt(<span class="built_in">max</span>(<span class="number">0.0</span>, <span class="number">1.0</span> - c2**<span class="number">2</span>))</span><br><span class="line"></span><br><span class="line">    q2_positive = np.arctan2(s2_abs, c2)</span><br><span class="line">    q2_negative = np.arctan2(-s2_abs, c2)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> q2_positive, q2_negative</span><br></pre></td></tr></table></figure>
+
+<p>检查可达性和裁剪必须发生在开平方之前，否则边界浮点误差可能造成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RuntimeWarning: invalid value encountered in sqrt</span><br></pre></td></tr></table></figure>
+
+<p>并产生 <code>NaN</code>。</p>
+<h3 id="4-4-求解第一关节角-q-1"><a href="#4-4-求解第一关节角-q-1" class="headerlink" title="4.4 求解第一关节角 $q_1$"></a>4.4 求解第一关节角 $q_1$</h3><p>目标点相对基座的方向角为：</p>
+<p>$$<br>\phi&#x3D;\operatorname{atan2}(y,x)<br>$$</p>
+<p>第二连杆造成的几何修正角为：</p>
+<p>$$<br>\beta&#x3D;\operatorname{atan2}<br>\left(<br>a_2\sin q_2,<br>a_1+a_2\cos q_2<br>\right)<br>$$</p>
+<p>因此：</p>
+<p>$$<br>q_1&#x3D;\phi-\beta<br>$$</p>
+<p>代码实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">solve_q1</span>(<span class="params">x, y, a1, a2, q2</span>):</span><br><span class="line">    target_angle = np.arctan2(y, x)</span><br><span class="line">    correction_angle = np.arctan2(</span><br><span class="line">        a2 * np.sin(q2),</span><br><span class="line">        a1 + a2 * np.cos(q2),</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">return</span> target_angle - correction_angle</span><br></pre></td></tr></table></figure>
+
+<p>每一个 $q_2$ 都必须配对计算对应的 $q_1$，不能把不同分支的角度混合。</p>
+<h3 id="4-5-完整解析逆运动学"><a href="#4-5-完整解析逆运动学" class="headerlink" title="4.5 完整解析逆运动学"></a>4.5 完整解析逆运动学</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">inverse_kinematics</span>(<span class="params">x, y, a1, a2</span>):</span><br><span class="line">    q2_positive, q2_negative = solve_q2(x, y, a1, a2)</span><br><span class="line"></span><br><span class="line">    q1_positive = solve_q1(x, y, a1, a2, q2_positive)</span><br><span class="line">    q1_negative = solve_q1(x, y, a1, a2, q2_negative)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> [</span><br><span class="line">        (q1_positive, q2_positive),</span><br><span class="line">        (q1_negative, q2_negative),</span><br><span class="line">    ]</span><br></pre></td></tr></table></figure>
+
+<p>对于正运动学样例的目标位置：</p>
+<p>$$<br>(x,y)&#x3D;(0.32451238,\ 0.39148146)<br>$$</p>
+<p>逆运动学得到两组解：</p>
+<p>$$<br>(q_1,q_2)\approx(30^\circ,45^\circ)<br>$$</p>
+<p>$$<br>(q_1,q_2)\approx(70.687^\circ,-45^\circ)<br>$$</p>
+<p>这两组姿态通常称为“肘上”和“肘下”解。它们的关节角不同，但末端位置相同。</p>
+<hr>
+<h2 id="5-用正运动学验证逆运动学"><a href="#5-用正运动学验证逆运动学" class="headerlink" title="5. 用正运动学验证逆运动学"></a>5. 用正运动学验证逆运动学</h2><p>逆运动学不能只看求出的角度是否“像是正确的”。最可靠的基础验证是把每组逆解代回正运动学：</p>
+<p>$$<br>(q_1,q_2)\xrightarrow{FK}(x’,y’)<br>$$</p>
+<p>再计算位置误差：</p>
+<p>$$<br>e&#x3D;\sqrt{(x’-x)^2+(y’-y)^2}<br>$$</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">verify_solution</span>(<span class="params">target, solution, a1, a2</span>):</span><br><span class="line">    q1, q2 = solution</span><br><span class="line">    reconstructed = forward_kinematics_closed_form(</span><br><span class="line">        q1, q2, a1, a2</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    error = np.linalg.norm(reconstructed - target)</span><br><span class="line">    <span class="keyword">assert</span> error &lt; <span class="number">1e-9</span></span><br><span class="line">    <span class="keyword">return</span> reconstructed, error</span><br></pre></td></tr></table></figure>
+
+<p>本实验的验证结果为：</p>
+<ul>
+<li>普通目标点的两组解均成功回代；</li>
+<li>回代误差约为 $10^{-16}$；</li>
+<li>外边界点对应完全伸直状态；</li>
+<li>内边界点对应反向折叠状态；</li>
+<li>超出工作空间的点被明确拒绝；</li>
+<li>修正计算顺序后不再出现 <code>NaN</code>。</li>
+</ul>
+<hr>
+<h2 id="6-多解、边界与奇异性"><a href="#6-多解、边界与奇异性" class="headerlink" title="6. 多解、边界与奇异性"></a>6. 多解、边界与奇异性</h2><h3 id="6-1-为什么会有两组逆解"><a href="#6-1-为什么会有两组逆解" class="headerlink" title="6.1 为什么会有两组逆解"></a>6.1 为什么会有两组逆解</h3><p>同一个目标点通常可以由两种弯曲方向到达：</p>
+<ul>
+<li>$\sin q_2&gt;0$；</li>
+<li>$\sin q_2&lt;0$。</li>
+</ul>
+<p>因此位置任务通常不能唯一决定机械臂姿态。真实控制系统还要根据以下条件选择解：</p>
+<ul>
+<li>与当前关节角的距离；</li>
+<li>关节限位；</li>
+<li>是否碰撞；</li>
+<li>轨迹是否连续；</li>
+<li>能耗或运动时间。</li>
+</ul>
+<h3 id="6-2-为什么边界处两解会重合"><a href="#6-2-为什么边界处两解会重合" class="headerlink" title="6.2 为什么边界处两解会重合"></a>6.2 为什么边界处两解会重合</h3><p>外边界：</p>
+<p>$$<br>q_2&#x3D;0<br>$$</p>
+<p>机械臂完全伸直。</p>
+<p>内边界：</p>
+<p>$$<br>q_2&#x3D;\pm\pi<br>$$</p>
+<p>两根连杆反向折叠。</p>
+<p>这时：</p>
+<p>$$<br>\sin q_2&#x3D;0<br>$$</p>
+<p>正负分支代表相同或等价的几何姿态，因此两组解会重合。</p>
+<h3 id="6-3-奇异性的初步理解"><a href="#6-3-奇异性的初步理解" class="headerlink" title="6.3 奇异性的初步理解"></a>6.3 奇异性的初步理解</h3><p>在完全伸直或完全折叠时，机械臂处于奇异位置。此时某些方向上的末端速度无法由有限、稳定的关节速度产生。</p>
+<p>这为下一阶段学习雅可比矩阵提供了入口：</p>
+<p>$$<br>\dot{p}&#x3D;J(q)\dot{q}<br>$$</p>
+<p>当雅可比矩阵失去满秩时，机械臂处于奇异状态。</p>
+<hr>
+<h2 id="7-本次复现中形成的调试方法"><a href="#7-本次复现中形成的调试方法" class="headerlink" title="7. 本次复现中形成的调试方法"></a>7. 本次复现中形成的调试方法</h2><h3 id="7-1-不把“代码能运行”当作复现完成"><a href="#7-1-不把“代码能运行”当作复现完成" class="headerlink" title="7.1 不把“代码能运行”当作复现完成"></a>7.1 不把“代码能运行”当作复现完成</h3><p>一次有效复现至少应当包含：</p>
+<ol>
+<li>能解释输入和输出；</li>
+<li>能独立写出核心公式；</li>
+<li>能使用另一种方法交叉验证；</li>
+<li>能覆盖普通点、边界点和异常点；</li>
+<li>能解释误差来源；</li>
+<li>能定位与修复实现问题。</li>
+</ol>
+<h3 id="7-2-用独立实现交叉验证"><a href="#7-2-用独立实现交叉验证" class="headerlink" title="7.2 用独立实现交叉验证"></a>7.2 用独立实现交叉验证</h3><p>本实验使用了三层验证：</p>
+<ol>
+<li>DH 矩阵法计算正运动学；</li>
+<li>几何解析公式验证 DH 结果；</li>
+<li>正运动学回代验证逆运动学。</li>
+</ol>
+<p>其关系为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">关节角 ──DH 正运动学──&gt; 末端位置</span><br><span class="line">   │                         │</span><br><span class="line">   └──解析正运动学───────────┘</span><br><span class="line"></span><br><span class="line">末端目标 ──逆运动学──&gt; 两组关节角</span><br><span class="line">                         │</span><br><span class="line">                         └──正运动学回代──&gt; 原目标</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-3-数值计算必须考虑容差"><a href="#7-3-数值计算必须考虑容差" class="headerlink" title="7.3 数值计算必须考虑容差"></a>7.3 数值计算必须考虑容差</h3><p>理论上的 $\cos q_2&#x3D;1$，在计算机里可能变成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1.0000000000000002</span><br></pre></td></tr></table></figure>
+
+<p>因此数值程序通常需要：</p>
+<ul>
+<li>容差判断；</li>
+<li><code>np.clip</code>；</li>
+<li>使用 <code>np.allclose</code>，而不是直接用 <code>==</code>；</li>
+<li>对平方根、除法等敏感运算检查定义域。</li>
+</ul>
+<h3 id="7-4-测试代码也可能产生假象"><a href="#7-4-测试代码也可能产生假象" class="headerlink" title="7.4 测试代码也可能产生假象"></a>7.4 测试代码也可能产生假象</h3><p>测试中的 <code>assert</code> 必须放在真正要验证的循环内部。异常分支应使用 <code>continue</code> 或明确返回，避免继续使用上一轮残留的变量。</p>
+<p>推荐结构：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    solutions = inverse_kinematics(...)</span><br><span class="line"><span class="keyword">except</span> ValueError <span class="keyword">as</span> error:</span><br><span class="line">    <span class="built_in">print</span>(error)</span><br><span class="line">    <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> solution <span class="keyword">in</span> solutions:</span><br><span class="line">    reconstructed = forward_kinematics_closed_form(...)</span><br><span class="line">    error = np.linalg.norm(reconstructed - target)</span><br><span class="line">    <span class="keyword">assert</span> error &lt; <span class="number">1e-9</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="8-当前掌握情况"><a href="#8-当前掌握情况" class="headerlink" title="8. 当前掌握情况"></a>8. 当前掌握情况</h2><p>完成这两个实验后，我已经能够：</p>
+<ul>
+<li>写出平面二连杆正运动学解析公式；</li>
+<li>构造标准 DH 齐次变换矩阵；</li>
+<li>使用矩阵连乘得到末端位姿；</li>
+<li>区分矩阵乘法和逐元素乘法；</li>
+<li>使用余弦定理推导解析逆运动学；</li>
+<li>求出并解释肘上、肘下两组逆解；</li>
+<li>判断目标点是否位于工作空间；</li>
+<li>处理边界浮点误差；</li>
+<li>使用正运动学回代验证逆解；</li>
+<li>使用随机样例、边界样例和异常样例进行测试。</li>
+</ul>
+<hr>
+<h2 id="9-下一步学习路径"><a href="#9-下一步学习路径" class="headerlink" title="9. 下一步学习路径"></a>9. 下一步学习路径</h2><p>建议下一步进入雅可比矩阵实验，建立“位置运动学”到“速度控制”的连接：</p>
+<ol>
+<li>手工推导二连杆末端位置对关节角的偏导；</li>
+<li>写出 $2\times2$ 雅可比矩阵；</li>
+<li>用有限差分验证雅可比矩阵；</li>
+<li>学习 $\dot{p}&#x3D;J(q)\dot{q}$；</li>
+<li>观察伸直和折叠状态下的奇异性；</li>
+<li>使用雅可比逆或伪逆实现数值逆运动学；</li>
+<li>对比解析逆运动学与迭代逆运动学。</li>
+</ol>
+<p>雅可比矩阵为：</p>
+<p>$$<br>J(q)&#x3D;<br>\begin{bmatrix}<br>-a_1\sin q_1-a_2\sin(q_1+q_2) &amp; -a_2\sin(q_1+q_2) \\<br>a_1\cos q_1+a_2\cos(q_1+q_2) &amp; a_2\cos(q_1+q_2)<br>\end{bmatrix}<br>$$</p>
+<p>它将成为后续速度控制、数值逆运动学、奇异性分析和轨迹跟踪的共同基础。</p>
+<hr>
+<h2 id="10-核心结论"><a href="#10-核心结论" class="headerlink" title="10. 核心结论"></a>10. 核心结论</h2><blockquote>
+<p>正运动学回答“给定关节角，末端在哪里”；逆运动学回答“希望末端到这里，关节应该怎么转”。</p>
+</blockquote>
+<blockquote>
+<p>DH 方法的核心不是背矩阵，而是通过坐标变换逐节建立机械臂的空间关系。</p>
+</blockquote>
+<blockquote>
+<p>逆运动学求出角度并不代表验证完成，必须使用正运动学回代。</p>
+</blockquote>
+<blockquote>
+<p>机器人算法既要理解几何和公式，也要处理多解、工作空间、奇异性与浮点误差。</p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linx29853.github.io">LenoVo</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linx29853.github.io/2026/09/07/%E6%AD%A3%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">https://linx29853.github.io/2026/09/07/%E6%AD%A3%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://linx29853.github.io" target="_blank">LenoVo的小站</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%9C%BA%E5%99%A8%E4%BA%BA/">机器人</a><a class="post-meta__tags" href="/tags/%E8%BF%90%E5%8A%A8%E5%AD%A6/">运动学</a><a class="post-meta__tags" href="/tags/Python/">Python</a><a class="post-meta__tags" href="/tags/%E6%AD%A3%E8%BF%90%E5%8A%A8%E5%AD%A6/">正运动学</a><a class="post-meta__tags" href="/tags/%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6/">逆运动学</a></div><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/08/31/%E8%8B%B1%E8%AF%AD%E6%88%90%E7%86%9F%E8%AF%AD%E5%8F%A5%E7%A7%AF%E7%B4%AF/" title="英语成熟语句积累"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">英语成熟语句积累</div></div><div class="info-2"><div class="info-item-1">这篇笔记用于持续积累写作与日常表达中常用的英语句型。内容整理自原始 Word 文档，并保留下载版本方便继续补充。 下载原始 Word 文档 常用表达 It is of great necessity for sb. to do sth.某人做某事十分必要。  First and foremost首先；最重要的是。  Take a heavy toll on…对……造成严重损害或沉重负担。  Sb. tends to do sth.某人往往会做某事。  In the face of…面对……；在……面前。  An increasing number of people…越来越多的人……  Provide an effective escape from…为摆脱……提供一种有效的方式。  Work wonders in doing sth.对做某事非常有效；能产生奇效。  Encourage sb. to do sth.鼓励某人做某事。  Gain a deeper understanding of…加深对……的理解。  Cannot help but do…忍不住做……；不得不做…...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/08/25/%E6%9C%BA%E5%99%A8%E4%BA%BA%E8%BF%90%E5%8A%A8%E5%AD%A6%E4%B8%A4%E5%91%A8%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" title="机器人运动学两周学习总结"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-25</div><div class="info-item-2">机器人运动学两周学习总结</div></div><div class="info-2"><div class="info-item-1"> 学习主线：位姿表示 → 正运动学 → 逆运动学 → DH 建模 → 雅可比与奇异性 → 综合验证与路径规划  一、两周学习目标经过两周学习，应当能够：  看懂并计算旋转矩阵、平移矩阵和齐次变换矩阵； 根据机器人 DH 参数建立正运动学模型； 使用几何法求解平面 2R 机械臂的逆运动学； 使用数值迭代法求解一般机器人的逆运动学； 理解逆解多解、初值依赖、关节限位和解的选择； 理解雅可比的速度映射意义，并能判断奇异性； 使用“逆解后代回正解”的方式验证计算结果； 理解运动学在机器人完整软件系统中的位置。   第一周：通过仿真建立直觉Day 1–2：工具准备与数学热身1. 工具 RoboDK：拖动机器人、查看关节角和末端位姿、验证运动学结果； Python：实现矩阵运算和运动学算法； NumPy：处理向量、矩阵、三角函数和线性方程。  建议统一使用弧度参与程序内部计算： 1234import numpy as npq_deg = 30.0q_rad = np.deg2rad(q_deg)  2. 齐次变换矩阵刚体位姿由位置和姿态组成： $${}^A T_B&#x3D;\begin{b...</div></div></div></a><a class="pagination-related" href="/2026/08/27/%E8%A7%84%E5%88%92%E4%B8%8E%E6%8E%A7%E5%88%B6%E5%AD%A6%E4%B9%A0%E8%B7%AF%E7%BA%BF-%E4%BB%8E%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%88%B0MPC/" title="规划与控制学习路线：从运动学到 MPC"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-27</div><div class="info-item-2">规划与控制学习路线：从运动学到 MPC</div></div><div class="info-2"><div class="info-item-1"> 适用人群：具备 Python、线性代数和基础微积分，希望进入机械臂规划、控制、机器人操作或具身智能方向的学习者。建议周期：10 周，每周 8–12 小时。主线平台：Python + MuJoCo；需要 ROS 工程能力时再扩展到 ROS 2、MoveIt 2 与 Gazebo。最终成果：完成一个机械臂避障运动与轨迹跟踪项目，提交可复现代码、指标曲线、演示视频和实验报告。  1. 学习目标完成本路线后，应能够：  使用齐次变换描述机器人与物体之间的位姿关系； 求解机械臂正运动学、逆运动学与雅可比矩阵； 区分路径、轨迹和控制，生成速度与加速度连续的参考轨迹； 理解机器人动力学方程，并实现 PID、重力补偿或计算力矩控制； 使用 A*、RRT、RRT* 或 PRM 生成无碰路径； 理解 TrajOpt、iLQR、MPC 和 MPPI 的适用边界； 将“路径规划—轨迹生成—闭环控制—评测”组成完整系统。  推荐的知识依赖关系如下： 12345678910111213坐标变换   ↓正/逆运动学 → 雅可比与奇异点   ↓轨迹生成 → 刚体动力学   ↓PID / LQR / 阻抗控制 ...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">LenoVo</div><div class="author-info-description">记录轨道交通、公交与卡车见闻，以及技术学习笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">35</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/linx29853"><i class="fab fa-github"></i><span>访问 GitHub</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LenoVo 的小站</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%AD%A6%E4%B9%A0%E7%9B%AE%E6%A0%87"><span class="toc-text">1. 学习目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BA%8C%E8%BF%9E%E6%9D%86%E6%9C%BA%E6%A2%B0%E8%87%82%E6%A8%A1%E5%9E%8B"><span class="toc-text">2. 二连杆机械臂模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%AD%A3%E8%BF%90%E5%8A%A8%E5%AD%A6"><span class="toc-text">3. 正运动学</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%AD%A3%E8%BF%90%E5%8A%A8%E5%AD%A6%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-text">3.1 正运动学解决什么问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E5%87%A0%E4%BD%95%E8%A7%A3%E6%9E%90%E5%85%AC%E5%BC%8F"><span class="toc-text">3.2 几何解析公式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E6%A0%87%E5%87%86-DH-%E5%8F%98%E6%8D%A2%E7%9F%A9%E9%98%B5"><span class="toc-text">3.3 标准 DH 变换矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-%E4%B8%8E-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">3.4 @ 与 * 的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-%E6%AD%A3%E8%BF%90%E5%8A%A8%E5%AD%A6%E9%AA%8C%E8%AF%81%E7%BB%93%E6%9E%9C"><span class="toc-text">3.5 正运动学验证结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6"><span class="toc-text">4. 逆运动学</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-text">4.1 逆运动学解决什么问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-%E5%B7%A5%E4%BD%9C%E7%A9%BA%E9%97%B4%E4%B8%8E%E5%8F%AF%E8%BE%BE%E6%80%A7"><span class="toc-text">4.2 工作空间与可达性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-%E6%B1%82%E8%A7%A3%E7%AC%AC%E4%BA%8C%E5%85%B3%E8%8A%82%E8%A7%92-q-2"><span class="toc-text">4.3 求解第二关节角 $q_2$</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-%E6%B1%82%E8%A7%A3%E7%AC%AC%E4%B8%80%E5%85%B3%E8%8A%82%E8%A7%92-q-1"><span class="toc-text">4.4 求解第一关节角 $q_1$</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-5-%E5%AE%8C%E6%95%B4%E8%A7%A3%E6%9E%90%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6"><span class="toc-text">4.5 完整解析逆运动学</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E7%94%A8%E6%AD%A3%E8%BF%90%E5%8A%A8%E5%AD%A6%E9%AA%8C%E8%AF%81%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6"><span class="toc-text">5. 用正运动学验证逆运动学</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%A4%9A%E8%A7%A3%E3%80%81%E8%BE%B9%E7%95%8C%E4%B8%8E%E5%A5%87%E5%BC%82%E6%80%A7"><span class="toc-text">6. 多解、边界与奇异性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E6%9C%89%E4%B8%A4%E7%BB%84%E9%80%86%E8%A7%A3"><span class="toc-text">6.1 为什么会有两组逆解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BE%B9%E7%95%8C%E5%A4%84%E4%B8%A4%E8%A7%A3%E4%BC%9A%E9%87%8D%E5%90%88"><span class="toc-text">6.2 为什么边界处两解会重合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-3-%E5%A5%87%E5%BC%82%E6%80%A7%E7%9A%84%E5%88%9D%E6%AD%A5%E7%90%86%E8%A7%A3"><span class="toc-text">6.3 奇异性的初步理解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%9C%AC%E6%AC%A1%E5%A4%8D%E7%8E%B0%E4%B8%AD%E5%BD%A2%E6%88%90%E7%9A%84%E8%B0%83%E8%AF%95%E6%96%B9%E6%B3%95"><span class="toc-text">7. 本次复现中形成的调试方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E4%B8%8D%E6%8A%8A%E2%80%9C%E4%BB%A3%E7%A0%81%E8%83%BD%E8%BF%90%E8%A1%8C%E2%80%9D%E5%BD%93%E4%BD%9C%E5%A4%8D%E7%8E%B0%E5%AE%8C%E6%88%90"><span class="toc-text">7.1 不把“代码能运行”当作复现完成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E7%94%A8%E7%8B%AC%E7%AB%8B%E5%AE%9E%E7%8E%B0%E4%BA%A4%E5%8F%89%E9%AA%8C%E8%AF%81"><span class="toc-text">7.2 用独立实现交叉验证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E6%95%B0%E5%80%BC%E8%AE%A1%E7%AE%97%E5%BF%85%E9%A1%BB%E8%80%83%E8%99%91%E5%AE%B9%E5%B7%AE"><span class="toc-text">7.3 数值计算必须考虑容差</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-4-%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81%E4%B9%9F%E5%8F%AF%E8%83%BD%E4%BA%A7%E7%94%9F%E5%81%87%E8%B1%A1"><span class="toc-text">7.4 测试代码也可能产生假象</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%BD%93%E5%89%8D%E6%8E%8C%E6%8F%A1%E6%83%85%E5%86%B5"><span class="toc-text">8. 当前掌握情况</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E4%B8%8B%E4%B8%80%E6%AD%A5%E5%AD%A6%E4%B9%A0%E8%B7%AF%E5%BE%84"><span class="toc-text">9. 下一步学习路径</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E6%A0%B8%E5%BF%83%E7%BB%93%E8%AE%BA"><span class="toc-text">10. 核心结论</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/07/%E6%AD%A3%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="二连杆机械臂正逆运动学学习笔记">二连杆机械臂正逆运动学学习笔记</a><time datetime="2026-09-07T12:00:04.000Z" title="发表于 2026-09-07 20:00:04">2026-09-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/31/%E8%8B%B1%E8%AF%AD%E6%88%90%E7%86%9F%E8%AF%AD%E5%8F%A5%E7%A7%AF%E7%B4%AF/" title="英语成熟语句积累">英语成熟语句积累</a><time datetime="2026-08-31T04:01:17.000Z" title="发表于 2026-08-31 12:01:17">2026-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/31/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%AC%AC%E4%B8%80%E7%AB%A0-%E8%A1%8C%E5%88%97%E5%BC%8F%E6%80%BB%E7%BB%93%E7%AC%94%E8%AE%B0/" title="线性代数第一章：行列式总结笔记">线性代数第一章：行列式总结笔记</a><time datetime="2026-08-31T02:00:00.000Z" title="发表于 2026-08-31 10:00:00">2026-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/30/%E7%BA%BF%E6%80%A7%E7%B3%BB%E7%BB%9F%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="线性系统基础学习笔记">线性系统基础学习笔记</a><time datetime="2026-08-30T02:00:00.000Z" title="发表于 2026-08-30 10:00:00">2026-08-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/29/%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A-MRACon-MRASCon%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6/" title="同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制">同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制</a><time datetime="2026-08-29T02:50:00.000Z" title="发表于 2026-08-29 10:50:00">2026-08-29</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2025 - 2026 By LenoVo</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
