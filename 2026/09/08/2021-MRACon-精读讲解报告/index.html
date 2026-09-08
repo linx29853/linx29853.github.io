@@ -1,0 +1,813 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告 | LenoVo的小站</title><meta name="author" content="LenoVo"><meta name="copyright" content="LenoVo"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="精读 2021 年有向图下不确定多智能体系统的模型参考自适应一致性框架，系统讲解建模、控制器构造、证明逻辑、三类系统分支与适用边界。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告">
+<meta property="og:url" content="https://linx29853.github.io/2026/09/08/2021-MRACon-%E7%B2%BE%E8%AF%BB%E8%AE%B2%E8%A7%A3%E6%8A%A5%E5%91%8A/">
+<meta property="og:site_name" content="LenoVo的小站">
+<meta property="og:description" content="精读 2021 年有向图下不确定多智能体系统的模型参考自适应一致性框架，系统讲解建模、控制器构造、证明逻辑、三类系统分支与适用边界。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linx29853.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-09-08T12:53:45.000Z">
+<meta property="article:modified_time" content="2026-09-08T12:57:50.292Z">
+<meta property="article:author" content="LenoVo">
+<meta property="article:tag" content="自适应控制">
+<meta property="article:tag" content="多智能体系统">
+<meta property="article:tag" content="MRACon">
+<meta property="article:tag" content="有向图">
+<meta property="article:tag" content="一致性控制">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linx29853.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告",
+  "url": "https://linx29853.github.io/2026/09/08/2021-MRACon-%E7%B2%BE%E8%AF%BB%E8%AE%B2%E8%A7%A3%E6%8A%A5%E5%91%8A/",
+  "image": "https://linx29853.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-09-08T12:53:45.000Z",
+  "dateModified": "2026-09-08T12:57:50.292Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LenoVo",
+      "url": "https://linx29853.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://linx29853.github.io/2026/09/08/2021-MRACon-%E7%B2%BE%E8%AF%BB%E8%AE%B2%E8%A7%A3%E6%8A%A5%E5%91%8A/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?aeb05b46d9af3b7840e1a58e05c8aefc";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+btf.addGlobalFn('pjaxComplete', () => {
+  _hmt.push(['_trackPageview',window.location.pathname])
+}, 'baidu_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/bilibili.css"><link rel="stylesheet" href="/css/travel-gallery.css"><link rel="stylesheet" href="/css/music-profile.css"><link rel="stylesheet" href="/css/books.css"><link rel="stylesheet" href="/css/category-cover.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">37</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/books/"><i class="fa-fw fas fa-book-open"></i><span> 资料</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LenoVo的小站</span></a><a class="nav-page-title" href="/"><span class="site-name">有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/books/"><i class="fa-fw fas fa-book-open"></i><span> 资料</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-09-08T12:53:45.000Z" title="发表于 2026-09-08 20:53:45">2026-09-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-09-08T12:57:50.292Z" title="更新于 2026-09-08 20:57:50">2026-09-08</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/">技术学习</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93/">多智能体</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p><strong>论文</strong>：A Unified Framework for Adaptive Leaderless Consensus of Uncertain Multiagent Systems Under Directed Graphs<br><strong>作者</strong>：Jie Mei、Wei Ren、Yongduan Song<br><strong>出处</strong>：IEEE Transactions on Automatic Control，66(12)，6179–6186，2021<br><strong>DOI</strong>：<a target="_blank" rel="noopener" href="https://doi.org/10.1109/TAC.2021.3062594">10.1109&#x2F;TAC.2021.3062594</a><br><strong>阅读依据</strong>：用户提供的完整 8 页 PDF。下文页码使用期刊页码，PDF 页码 &#x3D; 期刊页码 − 6178。<br><strong>报告定位</strong>：中文精读讲解，重点解释建模、控制器构造、证明逻辑及适用边界。标为“补充推导”“阅读辨析”的内容属于本报告分析，不冒充原文结论。本文未独立查阅原文所引参考文献，也未开展数值复现。</p>
+</blockquote>
+<h2 id="1-先抓住论文最重要的一件事"><a href="#1-先抓住论文最重要的一件事" class="headerlink" title="1. 先抓住论文最重要的一件事"></a>1. 先抓住论文最重要的一件事</h2><p>这篇论文提出 <strong>模型参考自适应一致性</strong>（model reference adaptive consensus，MRACon）：给每个智能体配置一个本地参考模型，让真实智能体跟踪它；参考模型的输入取自真实智能体之间的相对状态。</p>
+<p>这一设计把困难集中在一起的“有向网络 + 不确定动力学”问题，转化为两个可以分别处理的问题：</p>
+<ol>
+<li><strong>本地跟踪问题</strong>：用自适应控制使真实状态与本地参考输出之间的误差趋于零。</li>
+<li><strong>网络一致性问题</strong>：证明参考模型构成的线性网络，在上述趋零误差的扰动下仍能达到一致。</li>
+</ol>
+<p>全篇最应记住的关系是</p>
+<p>$$<br>x_i-x_j&#x3D;(x_i-z_i)+(z_i-z_j)-(x_j-z_j).<br>$$</p>
+<p>只要本地跟踪误差 $x_i-z_i\to0$，同时参考模型之间 $z_i-z_j\to0$，真实智能体便达到一致。</p>
+<p>但这不只是一个三角不等式技巧。真正的设计难点是：<strong>参考模型必须同时满足“真实系统可以跟踪”“参考网络可以一致”“实现时不需要传输邻居的参考状态”三个要求。</strong></p>
+<h3 id="1-1-全文结果地图"><a href="#1-1-全文结果地图" class="headerlink" title="1.1 全文结果地图"></a>1.1 全文结果地图</h3><table>
+<thead>
+<tr>
+<th>分支</th>
+<th>智能体模型</th>
+<th>拓扑条件</th>
+<th>主要结论</th>
+<th>对应位置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>一般线性主体 + 匹配参数不确定性</td>
+<td>$\dot x_i&#x3D;Ax_i+B(u_i+\Phi_i\Theta_i)$</td>
+<td>固定有向图，含有向生成树；耦合增益满足谱条件</td>
+<td>全状态渐近一致，可跟随时变公共轨迹</td>
+<td>定理 4.1，式 (12)–(21)，pp. 6182–6183</td>
+</tr>
+<tr>
+<td>高阶积分链 + 匹配不确定性</td>
+<td>末阶含未知惯量、未知控制方向、未知参数和有界扰动</td>
+<td>满足驻留时间、权重界及一致联合连通条件的切换图</td>
+<td>位置差趋零，其他积分链状态趋零；固定图时给出常数一致值</td>
+<td>定理 4.3，式 (22)–(28)，pp. 6183–6184</td>
+</tr>
+<tr>
+<td>二阶系统 + 扩展匹配不确定性</td>
+<td>$\dot x_{i,1}&#x3D;x_{i,2}+\phi_i\theta_i,\ \dot x_{i,2}&#x3D;u_i$</td>
+<td>同类切换图条件</td>
+<td>位置渐近一致；固定图时给出另一种加权一致值</td>
+<td>定理 4.6，式 (29)–(48)，pp. 6184–6185</td>
+</tr>
+</tbody></table>
+<p><strong>不要把三个分支的条件合并使用。</strong> 尤其是，一般线性系统的定理 4.1 并未证明任意联合连通切换图下的一致性；未知控制方向和有界扰动的处理也只出现在高阶积分链分支。</p>
+<h2 id="2-研究背景：为什么直接加一个自适应项不够"><a href="#2-研究背景：为什么直接加一个自适应项不够" class="headerlink" title="2. 研究背景：为什么直接加一个自适应项不够"></a>2. 研究背景：为什么直接加一个自适应项不够</h2><h3 id="2-1-无领导者一致性的含义"><a href="#2-1-无领导者一致性的含义" class="headerlink" title="2.1 无领导者一致性的含义"></a>2.1 无领导者一致性的含义</h3><p>对状态 $x_i\in\mathbb R^p$，论文的基本目标是</p>
+<p>$$<br>\lim_{t\to\infty}|x_i(t)-x_j(t)|&#x3D;0,\qquad \forall i,j.<br>$$</p>
+<p>这里没有外部给定的领导者轨迹。公共运动由系统动力学、拓扑和初始化共同决定。</p>
+<p>“无领导者”不意味着所有节点地位相同。若有向图中某个根节点能影响其他节点而不接收信息，它仍可能决定最终一致轨迹；只是它并非额外指定的外部领导系统。</p>
+<p>还要区分三个性质：</p>
+<ul>
+<li><strong>一致性</strong>：节点间的差趋零。</li>
+<li><strong>有界性</strong>：每个节点的绝对状态不发散。</li>
+<li><strong>收敛到静止点</strong>：每个节点都有同一个有限常数极限。</li>
+</ul>
+<p>后两项不能由第一项自动推出。论文的一般线性分支允许所有节点越来越接近、同时沿公共轨迹增长。</p>
+<h3 id="2-2-匹配不确定性是什么"><a href="#2-2-匹配不确定性是什么" class="headerlink" title="2.2 匹配不确定性是什么"></a>2.2 匹配不确定性是什么</h3><p>原文式 (3) 为</p>
+<p>$$<br>\dot x_i&#x3D;Ax_i+B\bigl(u_i+\Phi_i(t,x_i)\Theta_i\bigr).<br>$$</p>
+<p>其中</p>
+<p>$$<br>A\in\mathbb R^{p\times p},\quad<br>B\in\mathbb R^{p\times m},\quad<br>u_i\in\mathbb R^m,\quad<br>\Phi_i\in\mathbb R^{m\times q},\quad<br>\Theta_i\in\mathbb R^q.<br>$$</p>
+<p>$A,B$ 是已知公共矩阵，$\Theta_i$ 是节点各自的未知常参数，$\Phi_i$ 是已知有界连续回归函数。系统可以因 $\Phi_i(t,x_i)$ 对状态的依赖而具有非线性，所以“一般线性”主要指已知主体 $Ax_i+Bu_i$。</p>
+<p>控制项和不确定项均经由 $B$ 进入状态方程，故称“匹配”。假如参数已知，可用 $-\Phi_i\Theta_i$ 直接补偿；参数未知时则以估计值代替。</p>
+<h3 id="2-3-无不确定性时的经典设计"><a href="#2-3-无不确定性时的经典设计" class="headerlink" title="2.3 无不确定性时的经典设计"></a>2.3 无不确定性时的经典设计</h3><p>令</p>
+<p>$$<br>\rho_i&#x3D;\sum_{j&#x3D;1}^n a_{ij}(x_i-x_j),<br>\qquad u_i&#x3D;\alpha K\rho_i,<br>$$</p>
+<p>并取</p>
+<p>$$<br>K&#x3D;-B^TP,<br>\qquad A^TP+PA-PBB^TP+I_p&#x3D;0.<br>$$</p>
+<p>当 $(A,B)$ 可稳定时，这个 Riccati 方程有唯一正定解 $P$。负号已经包含在 $K$ 中：实现控制器时不要再随意加减号。</p>
+<p>对于有向图，分歧模态涉及复数特征值，但仍可用 $A+\alpha\mu_iBK$ 的稳定性处理。加入参数不确定性后，模态分解会混合不同节点的非线性回归项与参数估计，难以直接沿用原来的线性分析。</p>
+<h3 id="2-4-最直接的自适应补偿"><a href="#2-4-最直接的自适应补偿" class="headerlink" title="2.4 最直接的自适应补偿"></a>2.4 最直接的自适应补偿</h3><p>原文式 (6)、(10) 的直观方案是</p>
+<p>$$<br>u_i&#x3D;\alpha K\rho_i-\Phi_i\widehat\Theta_i,<br>\qquad<br>\dot{\widehat\Theta}_i&#x3D;\Phi_i^TB^TP\rho_i.<br>$$</p>
+<p>它让<strong>网络相对误差</strong>驱动参数更新。对无向连通图，拉普拉斯矩阵对称半正定，能够利用网络二次型消去参数交叉项；一般有向图则没有这种直接的对称结构。</p>
+<p>这并不意味着有向图不能构造 Lyapunov 函数，而是说：原来那个依赖无向图对称性的函数和更新律，不能直接照搬。</p>
+<h3 id="2-5-两节点反例：根节点不学习"><a href="#2-5-两节点反例：根节点不学习" class="headerlink" title="2.5 两节点反例：根节点不学习"></a>2.5 两节点反例：根节点不学习</h3><p>原文 pp. 6181–6182 考虑 $a_{12}&#x3D;1,a_{21}&#x3D;0$，即信息由节点 2 流向节点 1。节点 2 没有入邻居，因此</p>
+<p>$$<br>\rho_2&#x3D;0,\qquad \dot{\widehat\Theta}_2&#x3D;0.<br>$$</p>
+<p>节点 2 的参数估计停在初值，即使其真实动力学受未知项影响，估计器也完全不响应。</p>
+<p>令 $r&#x3D;x_1-x_2$，可得</p>
+<p>$$<br>\dot r&#x3D;(A+\alpha BK)r<br>-B\Phi_1\widetilde\Theta_1<br>+B\Phi_2\widetilde\Theta_2(0),<br>$$</p>
+<p>其中 $\widetilde\Theta_i&#x3D;\widehat\Theta_i-\Theta_i$。最后一项相当于根节点持续注入的外部扰动，原有自适应结构没有自动消除它的机制。</p>
+<p>原文图 2 的参数包括 $A&#x3D;0,B&#x3D;1,\alpha&#x3D;1$，$\Phi_1&#x3D;\cos(tx_1)$，$\Phi_2&#x3D;\sin t$，$\Theta_1&#x3D;1,\Theta_2&#x3D;2$，初始状态为 $2,4$。图示显示该直接方案在无向图下达到一致，而在所示有向图下失效。</p>
+<p><strong>阅读辨析</strong>：这个例子揭示了所给控制器与更新律的不足，不应扩张为“任何确定性等价自适应控制器都不能解决有向图一致性”的不可能性定理。原文反例中的某些措辞比其严格建立的结论更宽。</p>
+<h2 id="3-图论工具：把公共运动和分歧分开"><a href="#3-图论工具：把公共运动和分歧分开" class="headerlink" title="3. 图论工具：把公共运动和分歧分开"></a>3. 图论工具：把公共运动和分歧分开</h2><h3 id="3-1-邻接矩阵的方向约定"><a href="#3-1-邻接矩阵的方向约定" class="headerlink" title="3.1 邻接矩阵的方向约定"></a>3.1 邻接矩阵的方向约定</h3><p>论文规定</p>
+<p>$$<br>a_{ij}&gt;0\quad\Longleftrightarrow\quad j\to i.<br>$$</p>
+<p>即第 $i$ 行表示节点 $i$ 接收的信息。定义</p>
+<p>$$<br>d_i&#x3D;\sum_j a_{ij},\qquad<br>D&#x3D;\operatorname{diag}(d_1,\ldots,d_n),\qquad<br>L&#x3D;D-\mathcal A.<br>$$</p>
+<p>本报告用 $\mathcal A$ 表示邻接矩阵，以避免与智能体矩阵 $A$ 混淆。原文拉普拉斯记为 $\mathcal L_A$，下文简写为 $L$。</p>
+<p>总有 $L\mathbf1_n&#x3D;0$。固定有向图含生成树时，零特征值单重，其余特征值实部为正，并存在归一化左零特征向量</p>
+<p>$$<br>\xi^TL&#x3D;0,\qquad \xi_i\ge0,\qquad \sum_i\xi_i&#x3D;1.<br>$$</p>
+<p>$\xi_i$ 可以为零；只有更强的图条件才可保证所有分量严格为正。它决定哪些节点初值影响最终公共轨迹。</p>
+<h3 id="3-2-为什么引入-Q-n"><a href="#3-2-为什么引入-Q-n" class="headerlink" title="3.2 为什么引入 $Q_n$"></a>3.2 为什么引入 $Q_n$</h3><p>原文式 (1) 给出一种具体矩阵，但精读时更值得掌握式 (2) 的性质：</p>
+<p>$$<br>Q_n\mathbf1_n&#x3D;0,\qquad<br>Q_nQ_n^T&#x3D;I_{n-1},\qquad<br>Q_n^TQ_n&#x3D;I_n-\frac1n\mathbf1_n\mathbf1_n^T.<br>$$</p>
+<p>$Q_n$ 的行构成与一致方向正交的子空间的一组标准正交基。它删去“所有节点一起运动”的自由度，只保留 $n-1$ 个分歧自由度。</p>
+<p>对堆叠状态 $z$，</p>
+<p>$$<br>\widehat z&#x3D;(Q_n\otimes I_p)z<br>$$</p>
+<p>满足 $\widehat z\to0$ 当且仅当所有 $z_i-z_j\to0$。注意：即使公共运动无界，分歧仍然可以趋零。</p>
+<p>由 $L\mathbf1_n&#x3D;0$ 得</p>
+<p>$$<br>LQ_n^TQ_n&#x3D;L.<br>$$</p>
+<p>这是后面分歧系统能够闭合的关键恒等式。$Q_nLQ_n^T$ 不一定对称；它的特征值恰好是 $L$ 的非零特征值。</p>
+<p><strong>两个工具不要混淆</strong>：$Q_n$ 用于判断节点差异是否消失；$\xi$ 用于刻画加权公共运动。正交投影用到算术平均，并不意味着最终达到算术平均一致。</p>
+<h3 id="3-3-切换图要求具体是什么"><a href="#3-3-切换图要求具体是什么" class="headerlink" title="3.3 切换图要求具体是什么"></a>3.3 切换图要求具体是什么</h3><p>原文 pp. 6180 的条件包括：存在边时权重有统一正下界和有限上界；切换有正驻留时间；在连续、长度一致有界的一系列时间区间中，各区间内图的并集含有向生成树。</p>
+<p>因此允许某个瞬间的图不连通，也不要求每个瞬间都含生成树；但不能让信息传播所需的连通性无限期缺席。“联合连通”不是只要求从时间零到无穷远的总并集连通。</p>
+<h2 id="4-MRACon-的结构：参考模型为什么用真实相对状态"><a href="#4-MRACon-的结构：参考模型为什么用真实相对状态" class="headerlink" title="4. MRACon 的结构：参考模型为什么用真实相对状态"></a>4. MRACon 的结构：参考模型为什么用真实相对状态</h2><p>一般线性分支设计为</p>
+<p>$$<br>\dot z_i&#x3D;Az_i+\alpha BK\rho_i,\qquad z_i(0)&#x3D;x_i(0).<br>$$</p>
+<p>这里 $z_i$ 在节点内部积分生成，输入是可获得的真实相对状态 $\rho_i$。实现时并不需要节点 $j$ 发送 $z_j$。</p>
+<p>令 $e_i&#x3D;x_i-z_i$，则在数学分析中可以重写为</p>
+<p>$$<br>\dot z_i&#x3D;Az_i<br>+\alpha BK\sum_j a_{ij}(z_i-z_j)<br>+\alpha BK\sum_j a_{ij}(e_i-e_j).<br>$$</p>
+<p>前两项组成理想线性一致性网络，最后一项是跟踪误差产生的扰动。</p>
+<p>于是，“参考模型会一致”不能仅靠把 $e&#x3D;0$ 代入来说明。真实过程中 $e$ 只是在渐近意义下趋零，必须证明参考网络的分歧动力学能够承受这类趋零输入。论文使用的是稳定线性系统的输入到状态稳定性（ISS）和趋零输入响应性质。</p>
+<h3 id="4-1-实现结构与证明结构"><a href="#4-1-实现结构与证明结构" class="headerlink" title="4.1 实现结构与证明结构"></a>4.1 实现结构与证明结构</h3><p>实现时，每个节点的流程是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">本地状态 + 邻居相对状态</span><br><span class="line">          ↓</span><br><span class="line">      本地参考模型 → 参考状态 z_i</span><br><span class="line">          ↓               ↓</span><br><span class="line">      一致性输入       跟踪误差 e_i</span><br><span class="line">          ↓               ↓</span><br><span class="line">         控制器 ← 本地参数更新律</span><br><span class="line">          ↓</span><br><span class="line">       真实智能体</span><br></pre></td></tr></table></figure>
+
+<p>证明时，则把闭环改写成</p>
+<p>$$<br>\text{本地自适应跟踪误差趋零}<br>\quad\Longrightarrow\quad<br>\text{线性分歧系统所受输入趋零}<br>\quad\Longrightarrow\quad<br>\text{网络一致}.<br>$$</p>
+<p>这是收敛分析上的模块化。回归函数可能仍依赖真实状态，因此不能误称原闭环在所有变量上完全解耦。</p>
+<h2 id="5-定理-4-1-精读：一般线性系统的匹配不确定性"><a href="#5-定理-4-1-精读：一般线性系统的匹配不确定性" class="headerlink" title="5. 定理 4.1 精读：一般线性系统的匹配不确定性"></a>5. 定理 4.1 精读：一般线性系统的匹配不确定性</h2><h3 id="5-1-控制器各项在做什么"><a href="#5-1-控制器各项在做什么" class="headerlink" title="5.1 控制器各项在做什么"></a>5.1 控制器各项在做什么</h3><p>原文式 (14)、(15)：</p>
+<p>$$<br>\boxed{<br>u_i&#x3D;Ke_i-\Phi_i\widehat\Theta_i+\alpha K\rho_i,<br>\qquad<br>\dot{\widehat\Theta}_i&#x3D;\Phi_i^TB^TPe_i.<br>}<br>$$</p>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$Ke_i$</td>
+<td>稳定真实状态相对本地参考模型的误差</td>
+</tr>
+<tr>
+<td>$-\Phi_i\widehat\Theta_i$</td>
+<td>自适应补偿匹配不确定性</td>
+</tr>
+<tr>
+<td>$\alpha K\rho_i$</td>
+<td>与参考模型共享的一致性输入，在误差方程中抵消</td>
+</tr>
+<tr>
+<td>$\Phi_i^TB^TPe_i$</td>
+<td>用本地模型失配驱动参数更新</td>
+</tr>
+</tbody></table>
+<p>与直接方案相比，最重要的变化是<strong>更新律从网络相对误差改为本地跟踪误差</strong>。根节点即使 $\rho_i&#x3D;0$，真实状态一旦偏离自己的参考模型，仍会产生 $e_i$ 并触发学习。</p>
+<h3 id="5-2-第一步：推导不含显式网络耦合项的误差方程"><a href="#5-2-第一步：推导不含显式网络耦合项的误差方程" class="headerlink" title="5.2 第一步：推导不含显式网络耦合项的误差方程"></a>5.2 第一步：推导不含显式网络耦合项的误差方程</h3><p>代入 $e_i&#x3D;x_i-z_i$，得到</p>
+<p>$$<br>\begin{aligned}<br>\dot e_i<br>&amp;&#x3D;Ae_i+B(u_i+\Phi_i\Theta_i-\alpha K\rho_i)\\<br>&amp;&#x3D;(A+BK)e_i-B\Phi_i\widetilde\Theta_i.<br>\end{aligned}<br>$$</p>
+<p>网络项在相减时精确抵消。这是设计参考模型与控制器时故意安排的结构，不是偶然简化。</p>
+<h3 id="5-3-第二步：自适应律精确抵消交叉项"><a href="#5-3-第二步：自适应律精确抵消交叉项" class="headerlink" title="5.3 第二步：自适应律精确抵消交叉项"></a>5.3 第二步：自适应律精确抵消交叉项</h3><p>取</p>
+<p>$$<br>V_i&#x3D;e_i^TPe_i+\widetilde\Theta_i^T\widetilde\Theta_i.<br>$$</p>
+<p>由于参数为常数，$\dot{\widetilde\Theta}_i&#x3D;\dot{\widehat\Theta}_i$。由 Riccati 方程和 $K&#x3D;-B^TP$，</p>
+<p>$$<br>(A+BK)^TP+P(A+BK)&#x3D;-I_p-PBB^TP.<br>$$</p>
+<p>所以</p>
+<p>$$<br>\begin{aligned}<br>\dot V_i<br>&#x3D;{}&amp;-e_i^T(I_p+PBB^TP)e_i<br>-2e_i^TPB\Phi_i\widetilde\Theta_i\\<br>&amp;+2\widetilde\Theta_i^T\dot{\widehat\Theta}_i\\<br>&#x3D;{}&amp;-e_i^T(I_p+PBB^TP)e_i.<br>\end{aligned}<br>$$</p>
+<p>这里没有要求 $\widetilde\Theta_i\to0$；只要参数交叉项在能量导数中消失，跟踪误差就受到耗散约束。</p>
+<h3 id="5-4-第三步：为什么能从能量下降得到误差趋零"><a href="#5-4-第三步：为什么能从能量下降得到误差趋零" class="headerlink" title="5.4 第三步：为什么能从能量下降得到误差趋零"></a>5.4 第三步：为什么能从能量下降得到误差趋零</h3><p>证明需要完整走完以下链条：</p>
+<p>$$<br>\dot V_i\le0<br>\Rightarrow e_i,\widetilde\Theta_i\in L_\infty;<br>$$</p>
+<p>$$<br>\int_0^\infty|e_i(t)|^2dt\le V_i(0)<br>\Rightarrow e_i\in L_2;<br>$$</p>
+<p>$$<br>\Phi_i\text{ 有界},\ e_i,\widetilde\Theta_i\text{ 有界}<br>\Rightarrow \dot e_i\in L_\infty.<br>$$</p>
+<p>由此误差具有足够的时间正则性，可用 Barbalat 引理得 $e_i(t)\to0$。</p>
+<p><strong>不能跳步说“$\dot V\le0$，所以误差趋零”。</strong> 单有能量不增通常只能先得到有界性；平方可积和一致连续性负责排除持续窄脉冲等不收敛行为。</p>
+<h3 id="5-5-第四步：参考网络的分歧系统"><a href="#5-5-第四步：参考网络的分歧系统" class="headerlink" title="5.5 第四步：参考网络的分歧系统"></a>5.5 第四步：参考网络的分歧系统</h3><p>堆叠所有节点后，式 (19) 为</p>
+<p>$$<br>\dot z&#x3D;(I_n\otimes A)z+\alpha(L\otimes BK)z<br>+\alpha(L\otimes BK)e.<br>$$</p>
+<p>投影到分歧空间：</p>
+<p>$$<br>\dot{\widehat z}&#x3D;F\widehat z+Ge,<br>$$</p>
+<p>其中</p>
+<p>$$<br>F&#x3D;I_{n-1}\otimes A+\alpha(Q_nLQ_n^T\otimes BK),<br>\qquad G&#x3D;\alpha(Q_nL\otimes BK).<br>$$</p>
+<p>用 Schur 三角化而非假设拉普拉斯可对角化，可以把稳定性归结为所有矩阵</p>
+<p>$$<br>A+\alpha\mu_iBK,\qquad \mu_i\ne0,<br>$$</p>
+<p>均为 Hurwitz。这使证明覆盖不可对角化的有向拉普拉斯矩阵。</p>
+<h3 id="5-6-第五步：增益下界是怎样算出的"><a href="#5-6-第五步：增益下界是怎样算出的" class="headerlink" title="5.6 第五步：增益下界是怎样算出的"></a>5.6 第五步：增益下界是怎样算出的</h3><p>用同一个 $P$ 检验每个复数模态：</p>
+<p>$$<br>\begin{aligned}<br>&amp;(A+\alpha\mu_iBK)^{\ast}P+P(A+\alpha\mu_iBK)\\<br>&amp;\qquad&#x3D;-I_p+\bigl(1-2\alpha\operatorname{Re}\mu_i\bigr)PBB^TP.<br>\end{aligned}<br>$$</p>
+<p>因此充分条件是</p>
+<p>$$<br>\boxed{\alpha\ge\frac1{2\min_{\mu_i\ne0}\operatorname{Re}\mu_i}.}<br>$$</p>
+<p>即使取等号，右侧仍保留 $-I_p$，所以可以包含等号。这个条件是充分条件，不是论文证明的必要条件。</p>
+<p>图的非零特征值实部越接近零，给出的耦合增益下界越大。控制器在线使用局部信息，但这一离线增益选择一般需要全局谱信息或可用的谱下界，因此不宜直接称为“不依赖任何全局信息的完全分布式设计”。</p>
+<h3 id="5-7-第六步：趋零输入为什么导致分歧趋零"><a href="#5-7-第六步：趋零输入为什么导致分歧趋零" class="headerlink" title="5.7 第六步：趋零输入为什么导致分歧趋零"></a>5.7 第六步：趋零输入为什么导致分歧趋零</h3><p>若 $F$ Hurwitz，则存在 $M,\lambda&gt;0$ 使 $|e^{Ft}|\le Me^{-\lambda t}$。于是</p>
+<p>$$<br>\widehat z(t)&#x3D;e^{Ft}\widehat z(0)<br>+\int_0^t e^{F(t-\tau)}Ge(\tau),d\tau.<br>$$</p>
+<p>初始项指数衰减。积分项可在某个较大的 $T$ 处分段：早期输入的影响随时间衰减；晚期输入因为 $e(\tau)\to0$ 而任意小。因此 $\widehat z\to0$，再结合 $e_i\to0$ 得真实状态一致。</p>
+<p>这里需要稳定的是<strong>分歧系统</strong>，不是包含公共运动的整个参考网络。</p>
+<h3 id="5-8-参数估计一定收敛到真实值吗"><a href="#5-8-参数估计一定收敛到真实值吗" class="headerlink" title="5.8 参数估计一定收敛到真实值吗"></a>5.8 参数估计一定收敛到真实值吗</h3><p>不一定。定理的主体保证跟踪误差趋零及估计有界，不保证参数辨识成功。</p>
+<p>原文 Remark 4.2 提到持续激励条件下的参数收敛。但对实际模型，仍应检查回归信号是否满足相应激励与可辨识要求，尤其当输入矩阵存在不可辨识参数方向时，不能只凭“误差已经为零”宣称参数已识别。</p>
+<p>直观上，控制器只需要消除参数误差在当前运动中产生的影响；若某些参数方向没有被运动充分激发，多个参数估计都可能产生同样的跟踪效果。</p>
+<h2 id="6-最终一致轨迹：加权不变量比参数收敛更关键"><a href="#6-最终一致轨迹：加权不变量比参数收敛更关键" class="headerlink" title="6. 最终一致轨迹：加权不变量比参数收敛更关键"></a>6. 最终一致轨迹：加权不变量比参数收敛更关键</h2><p>对式 (19) 左乘 $\xi^T\otimes I_p$，网络项完全消失：</p>
+<p>$$<br>\frac{d}{dt}\left(\sum_j\xi_jz_j\right)<br>&#x3D;A\sum_j\xi_jz_j.<br>$$</p>
+<p>故</p>
+<p>$$<br>\sum_j\xi_jz_j(t)&#x3D;e^{At}\sum_j\xi_jz_j(0).<br>$$</p>
+<p>配合 $z_j(0)&#x3D;x_j(0)$，定义</p>
+<p>$$<br>\boxed{x_c(t)&#x3D;e^{At}\sum_j\xi_jx_j(0).}<br>$$</p>
+<p>由于</p>
+<p>$$<br>z_i-\sum_j\xi_jz_j&#x3D;\sum_j\xi_j(z_i-z_j)\to0,<br>$$</p>
+<p>可严格得到 $x_i(t)-x_c(t)\to0$。</p>
+<p>这里不是“先令跟踪误差等于零，再算最终值”。<strong>参考状态的加权演化规律在整个过程中都精确成立</strong>，因为 $\xi^TL&#x3D;0$ 同时消去了由跟踪误差产生的网络项。</p>
+<h3 id="6-1-三种典型公共运动"><a href="#6-1-三种典型公共运动" class="headerlink" title="6.1 三种典型公共运动"></a>6.1 三种典型公共运动</h3><table>
+<thead>
+<tr>
+<th>$A$ 的类型</th>
+<th>公共运动</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$A&#x3D;0$</td>
+<td>收敛到 $\sum_j\xi_jx_j(0)$</td>
+</tr>
+<tr>
+<td>$A$ Hurwitz</td>
+<td>所有节点渐近趋于零</td>
+</tr>
+<tr>
+<td>双积分器矩阵</td>
+<td>公共速度为初始速度加权平均，公共位置通常线性增长</td>
+</tr>
+</tbody></table>
+<p>双积分器时</p>
+<p>$$<br>A&#x3D;\begin{bmatrix}0&amp;1\0&amp;0\end{bmatrix},<br>\qquad<br>e^{At}&#x3D;\begin{bmatrix}1&amp;t\0&amp;1\end{bmatrix},<br>$$</p>
+<p>从而</p>
+<p>$$<br>v_c&#x3D;\sum_j\xi_jv_j(0),\qquad<br>p_c(t)&#x3D;\sum_j\xi_jp_j(0)+t\sum_j\xi_jv_j(0).<br>$$</p>
+<p>若公共初始速度非零，位置无界增长与定理的一致性结论并不矛盾。</p>
+<h3 id="6-2-初始化是设计的一部分"><a href="#6-2-初始化是设计的一部分" class="headerlink" title="6.2 初始化是设计的一部分"></a>6.2 初始化是设计的一部分</h3><p>若任意设置 $z_i(0)$，仍可能达到一致，但公共轨迹将由参考初值决定，而非原论文给出的真实初值公式。</p>
+<p>因此 $z_i(0)&#x3D;x_i(0)$ 不只是让 $e_i(0)&#x3D;0$，还在参考系统中写入了希望保留的初始信息。$e_i(0)&#x3D;0$ 也不表示误差永远为零：参数估计不准时，误差导数通常立即非零。</p>
+<h2 id="7-定理-4-3-精读：高阶积分链如何获得位置一致"><a href="#7-定理-4-3-精读：高阶积分链如何获得位置一致" class="headerlink" title="7. 定理 4.3 精读：高阶积分链如何获得位置一致"></a>7. 定理 4.3 精读：高阶积分链如何获得位置一致</h2><h3 id="7-1-为什么要换参考模型"><a href="#7-1-为什么要换参考模型" class="headerlink" title="7.1 为什么要换参考模型"></a>7.1 为什么要换参考模型</h3><p>直接套用一般线性分支会保留积分链的自由运动，可能使位置不断增长。若目标是位置一致并使其余积分链状态趋零，就应改变参考模型所保留的公共运动。</p>
+<p>原文式 (22) 为</p>
+<p>$$<br>\dot x_{i,1}&#x3D;x_{i,2},\quad\ldots,\quad<br>m_i\dot x_{i,m}&#x3D;b_iu_i+\phi_i(t,x_i)\theta_i+d_i(t),<br>$$</p>
+<p>其中 $m_i&gt;0$ 未知，$b_i$ 的符号未知且幅值有正下界和有限上界，$\theta_i$ 为未知常数，$|d_i(t)|\le d_{\max}$，扰动界也未知。</p>
+<p>注意 $m$ 表示系统阶数，$m_i$ 表示惯量；而前一分支的 $m$ 表示输入维数。原文复用符号，阅读时要按上下文区分。</p>
+<h3 id="7-2-用滤波状态把高阶问题变为一阶问题"><a href="#7-2-用滤波状态把高阶问题变为一阶问题" class="headerlink" title="7.2 用滤波状态把高阶问题变为一阶问题"></a>7.2 用滤波状态把高阶问题变为一阶问题</h3><p>定义式 (23)</p>
+<p>$$<br>s_i&#x3D;x_{i,m}+\lambda_{m-1}x_{i,m-1}+\cdots+\lambda_1x_{i,1}.<br>$$</p>
+<p>按该定义，与位置之间对应的稳定滤波多项式应为</p>
+<p>$$<br>q(r)&#x3D;r^{m-1}+\lambda_{m-1}r^{m-2}+\cdots+\lambda_2r+\lambda_1.<br>$$</p>
+<p>应选系数使 $q$ Hurwitz。原文在该处给出的多项式阶次存在不一致，见第 10 节；本报告后续采用由 $s_i$ 定义直接推出的阶次。</p>
+<p>求导时必须保留扰动：</p>
+<p>$$<br>m_i\dot s_i&#x3D;b_iu_i+\phi_i\theta_i<br>+m_i\sum_{\ell&#x3D;1}^{m-1}\lambda_\ell x_{i,\ell+1}+d_i(t).<br>$$</p>
+<p>设计</p>
+<p>$$<br>\dot z_i&#x3D;-\sum_j a_{ij}(t)(s_i-s_j),<br>\qquad z_i(0)&#x3D;\lambda_1x_{i,1}(0),<br>\qquad e_i&#x3D;s_i-z_i.<br>$$</p>
+<p>这里跟踪的是滤波状态 $s_i$，而不是直接跟踪位置。</p>
+<h3 id="7-3-未知参数、惯量、控制方向和扰动如何进入设计"><a href="#7-3-未知参数、惯量、控制方向和扰动如何进入设计" class="headerlink" title="7.3 未知参数、惯量、控制方向和扰动如何进入设计"></a>7.3 未知参数、惯量、控制方向和扰动如何进入设计</h3><p>可写成</p>
+<p>$$<br>m_i\dot e_i&#x3D;b_iu_i+\varphi_i\vartheta_i+d_i(t),<br>$$</p>
+<p>其中</p>
+<p>$$<br>\varphi_i&#x3D;<br>\begin{bmatrix}<br>\phi_i &amp; \displaystyle\sum_j a_{ij}(t)(s_i-s_j)<br>+\sum_{\ell&#x3D;1}^{m-1}\lambda_\ell x_{i,\ell+1}<br>\end{bmatrix},<br>\qquad<br>\vartheta_i&#x3D;\begin{bmatrix}\theta_i\m_i\end{bmatrix}.<br>$$</p>
+<p>将原文 Nussbaum 自适应变量 $k_i$ 在本节改记为 $\kappa_i$，避免与下一节固定增益混淆。式 (27)、(28) 写为</p>
+<p>$$<br>u_i&#x3D;N(\kappa_i)<br>\bigl(\delta_ie_i+\varphi_i\widehat\vartheta_i<br>+\widehat d_i\operatorname{sgn}(e_i)\bigr),<br>$$</p>
+<p>$$<br>\begin{aligned}<br>\dot\kappa_i&amp;&#x3D;\delta_ie_i^2<br>+\varphi_i\widehat\vartheta_ie_i+\widehat d_i|e_i|,\\<br>\dot{\widehat\vartheta}_i&amp;&#x3D;\gamma_i\varphi_i^Te_i,\\<br>\dot{\widehat d}_i&amp;&#x3D;\beta_i|e_i|.<br>\end{aligned}<br>$$</p>
+<p>$\delta_i,\gamma_i,\beta_i&gt;0$。本报告将参数更新写为列向量形式，明确补上 $\varphi_i^T$ 以保持维度一致。</p>
+<p>各部分作用是：参数估计处理 $\theta_i,m_i$；符号项处理未知界的有界扰动；Nussbaum 函数处理未知控制方向。未知符号时不能简单假设一个固定负反馈方向总是有效。</p>
+<h3 id="7-4-原文省略证明的核心能量关系：补充推导"><a href="#7-4-原文省略证明的核心能量关系：补充推导" class="headerlink" title="7.4 原文省略证明的核心能量关系：补充推导"></a>7.4 原文省略证明的核心能量关系：补充推导</h3><p>原文 Remark 4.4 说明定理 4.3 的证明因篇幅而省略，并引用其参考文献 [39] 的引理。以下给出可核验的核心不等式，<strong>不是对被引用引理及所有非光滑解条件的完整替代证明</strong>。</p>
+<p>令</p>
+<p>$$<br>\widetilde\vartheta_i&#x3D;\widehat\vartheta_i-\vartheta_i,<br>\quad \widetilde d_i&#x3D;\widehat d_i-d_{\max},<br>$$</p>
+<p>并取</p>
+<p>$$<br>V_i&#x3D;\frac{m_i}{2}e_i^2<br>+\frac{\widetilde\vartheta_i^T\widetilde\vartheta_i}{2\gamma_i}<br>+\frac{\widetilde d_i^2}{2\beta_i}.<br>$$</p>
+<p>利用 $e_id_i\le d_{\max}|e_i|$，可得</p>
+<p>$$<br>\begin{aligned}<br>\dot V_i<br>&amp;\le b_iN(\kappa_i)\dot\kappa_i<br>+e_i\varphi_i\widehat\vartheta_i+\widehat d_i|e_i|\\<br>&amp;&#x3D;\bigl(b_iN(\kappa_i)+1\bigr)\dot\kappa_i-\delta_ie_i^2.<br>\end{aligned}<br>$$</p>
+<p>普通自适应设计希望直接获得负定导数；这里多出一个含未知控制方向的积分项，需要 Nussbaum 引理来约束它，进而建立信号有界及误差平方可积，再继续证明跟踪收敛。</p>
+<h3 id="7-5-参考网络与位置之间的关系"><a href="#7-5-参考网络与位置之间的关系" class="headerlink" title="7.5 参考网络与位置之间的关系"></a>7.5 参考网络与位置之间的关系</h3><p>用 $s&#x3D;z+e$，参考模型变为</p>
+<p>$$<br>\dot z&#x3D;-L(t)z-L(t)e.<br>$$</p>
+<p>在原文切换条件下，一阶一致性网络的分歧部分具有统一收敛性质。跟踪误差趋零后，可以分析 $s_i-s_j\to0$，再利用稳定滤波关系把结论传回位置。</p>
+<p>固定图时还有精确不变量</p>
+<p>$$<br>\xi^Tz(t)&#x3D;\xi^Tz(0)&#x3D;\lambda_1\sum_j\xi_jx_{j,1}(0).<br>$$</p>
+<p>于是 $s_i\to\lambda_1c$，由稳定滤波器的静态增益 $1&#x2F;\lambda_1$ 得</p>
+<p>$$<br>\boxed{c&#x3D;\sum_j\xi_jx_{j,1}(0),\qquad<br>x_{i,\ell}\to0\quad(\ell&#x3D;2,\ldots,m).}<br>$$</p>
+<p>初始高阶状态可影响过渡过程，但在论文规定的参考初始化下不进入固定图位置极限公式。</p>
+<h3 id="7-6-与-PI-一致性误差的联系"><a href="#7-6-与-PI-一致性误差的联系" class="headerlink" title="7.6 与 PI 一致性误差的联系"></a>7.6 与 PI 一致性误差的联系</h3><p>积分参考方程可得</p>
+<p>$$<br>e_i&#x3D;s_i-\lambda_1x_{i,1}(0)<br>+\int_0^t\sum_j a_{ij}(\tau)(s_i-s_j),d\tau.<br>$$</p>
+<p>这解释了原文为何把先前 PI 一致性误差变换纳入 MRACon 框架：积分误差变量可以等价理解为“真实滤波状态减去本地动态参考”。该框架更一般之处，在于参考模型不局限于一个积分器。</p>
+<h3 id="7-7-实现边界"><a href="#7-7-实现边界" class="headerlink" title="7.7 实现边界"></a>7.7 实现边界</h3><p>该分支仍需要组成 $s_i-s_j$ 的相对积分链状态信息，并非仅需相对位置。符号函数带来非光滑控制；若仿真中以饱和函数或双曲正切函数替代，闭环已发生变化，不能不加说明地继承原文精确渐近结论。</p>
+<p>切换图下一致性与固定图常数极限也应分开：原文给出切换图的位置差与高阶状态趋零结论，明确的固定加权常数公式属于固定图情形。仅凭分歧系统 ISS 与趋零输入，不能顺手把整个网络公共分量的有界性、常数收敛也一并证明。</p>
+<h2 id="8-定理-4-6-精读：扩展匹配不确定性与自适应反步"><a href="#8-定理-4-6-精读：扩展匹配不确定性与自适应反步" class="headerlink" title="8. 定理 4.6 精读：扩展匹配不确定性与自适应反步"></a>8. 定理 4.6 精读：扩展匹配不确定性与自适应反步</h2><h3 id="8-1-不确定性比控制提前一层进入"><a href="#8-1-不确定性比控制提前一层进入" class="headerlink" title="8.1 不确定性比控制提前一层进入"></a>8.1 不确定性比控制提前一层进入</h3><p>原文式 (29)：</p>
+<p>$$<br>\dot x_{i,1}&#x3D;x_{i,2}+\phi_i(x_{i,1})\theta_i,<br>\qquad \dot x_{i,2}&#x3D;u_i.<br>$$</p>
+<p>未知项进入第一条方程，控制进入第二条方程。它相对原控制通道并不匹配，但只相差一个积分环节，因此可用反步结构处理。</p>
+<p><strong>$x_{i,2}$ 不是实际位置导数。</strong> 实际导数是 $x_{i,2}+\phi_i\theta_i$。已知 $x_{i,1},x_{i,2}$ 和回归函数，也不能在不知道参数时直接计算真实 $\dot x_{i,1}$。</p>
+<p>这正是上一节基于真实位置导数构造滤波状态的方案不能直接搬过来的原因。</p>
+<h3 id="8-2-二阶参考模型：只让相对位置进入网络"><a href="#8-2-二阶参考模型：只让相对位置进入网络" class="headerlink" title="8.2 二阶参考模型：只让相对位置进入网络"></a>8.2 二阶参考模型：只让相对位置进入网络</h3><p>设计</p>
+<p>$$<br>\boxed{<br>\ddot z_i+\left(\frac{d_i(t)}{k_i}+k_i\right)\dot z_i<br>&#x3D;-\sum_j a_{ij}(t)(x_{i,1}-x_{j,1}),<br>}<br>$$</p>
+<p>其中 $k_i&gt;0$，$z_i(0)&#x3D;x_{i,1}(0)$，$\dot z_i(0)&#x3D;0$。</p>
+<p>参考模型输出的 $\dot z_i$ 是内部可用状态，$\ddot z_i$ 可由该微分方程直接计算。因此控制器可使用它们，不需要测量或数值微分真实位置来获得 $\dot x_{i,1}$。</p>
+<p>阻尼系数 $d_i&#x2F;k_i+k_i$ 也不是任意经验选择。它使二阶参考网络能转化为一个 $2n$ 节点的一阶一致性网络，这是切换图证明的关键。</p>
+<h3 id="8-3-反步第一层：虚拟控制"><a href="#8-3-反步第一层：虚拟控制" class="headerlink" title="8.3 反步第一层：虚拟控制"></a>8.3 反步第一层：虚拟控制</h3><p>统一用 $w_{i,1},w_{i,2}$ 表示原文的误差变量，定义</p>
+<p>$$<br>w_{i,1}&#x3D;x_{i,1}-z_i.<br>$$</p>
+<p>把 $x_{i,2}$ 暂视为虚拟控制，设计</p>
+<p>$$<br>\alpha_{i,1}&#x3D;-k_{i,1}w_{i,1}-\phi_i\widehat\theta_{i}+\dot z_i,<br>\qquad w_{i,2}&#x3D;x_{i,2}-\alpha_{i,1}.<br>$$</p>
+<p>于是</p>
+<p>$$<br>\dot w_{i,1}&#x3D;-k_{i,1}w_{i,1}+w_{i,2}-\phi_i\widetilde\theta_{i}.<br>$$</p>
+<p>虚拟控制如果能被准确实现，第一层便具有稳定反馈和参数补偿；第二层负责处理 $x_{i,2}$ 与这个虚拟目标的偏差。</p>
+<h3 id="8-4-反步第二层：为什么参数更新律变复杂"><a href="#8-4-反步第二层：为什么参数更新律变复杂" class="headerlink" title="8.4 反步第二层：为什么参数更新律变复杂"></a>8.4 反步第二层：为什么参数更新律变复杂</h3><p>记</p>
+<p>$$<br>\phi_i^{\prime}&#x3D;\frac{\partial\phi_i}{\partial x_{i,1}},<br>\qquad \psi_i&#x3D;k_{i,1}+\phi_i^{\prime}\widehat\theta_{i}.<br>$$</p>
+<p>原文式 (38) 可紧凑写为</p>
+<p>$$<br>\boxed{\dot{\widehat\theta}\sb{i}<br>&#x3D;\gamma_i\phi_i\bigl(w_{i,1}+\psi_iw_{i,2}\bigr).}<br>$$</p>
+<p>原文式 (39) 为</p>
+<p>$$<br>\begin{aligned}<br>u_i&#x3D;{}&amp;-(k_{i,2}+k_{i,1})w_{i,2}<br>+(k_{i,1}^2-1)w_{i,1}<br>-\phi_i\dot{\widehat\theta}\sb{i}+\ddot z_i\\<br>&amp;-\phi_i^{\prime}\widehat\theta\sb{i}<br>\bigl(-k_{i,1}w_{i,1}+w_{i,2}+\dot z_i\bigr).<br>\end{aligned}<br>$$</p>
+<p>这里 $k_{i,1},k_{i,2},\gamma_i&gt;0$。参数更新中包含 $w_{i,2}$，因为对虚拟控制求导会让同一个未知参数进入第二层误差方程。只使用第一层更新项 $\gamma_i\phi_iw_{i,1}$ 无法消去全部参数交叉项。</p>
+<h3 id="8-5-把复杂控制律压缩成两行闭环"><a href="#8-5-把复杂控制律压缩成两行闭环" class="headerlink" title="8.5 把复杂控制律压缩成两行闭环"></a>8.5 把复杂控制律压缩成两行闭环</h3><p>代入上述设计，可得到特别适合核验的等价形式：</p>
+<p>$$<br>\begin{aligned}<br>\dot w_{i,1}&amp;&#x3D;-k_{i,1}w_{i,1}+w_{i,2}-\phi_i\widetilde\theta_{i},\\<br>\dot w_{i,2}&amp;&#x3D;-w_{i,1}-k_{i,2}w_{i,2}<br>-\phi_i\psi_i\widetilde\theta_{i}.<br>\end{aligned}<br>$$</p>
+<p>取</p>
+<p>$$<br>V_i&#x3D;\frac12w_{i,1}^2+\frac12w_{i,2}^2<br>+\frac1{2\gamma_i}\widetilde\theta_{i}^{2},<br>$$</p>
+<p>则 $w_{i,1}w_{i,2}$ 项相消，参数项又被更新律消去，剩下</p>
+<p>$$<br>\boxed{\dot V_i&#x3D;-k_{i,1}w_{i,1}^2-k_{i,2}w_{i,2}^2.}<br>$$</p>
+<p>由此 $w_{i,1},w_{i,2}$ 有界且平方可积，参数估计有界；利用第一层方程和 $\phi_i$ 有界得到 $\dot w_{i,1}$ 有界，进而 $w_{i,1}\to0$。这就建立了位置跟踪 $x_{i,1}-z_i\to0$。</p>
+<p>这个紧凑闭环也是复现式 (38)、(39) 时的检查标准：如果代入后没有得到这一结构，通常是某个负号、导数项或增益项抄错。</p>
+<h3 id="8-6-2n-节点增广图：全文另一处关键构造"><a href="#8-6-2n-节点增广图：全文另一处关键构造" class="headerlink" title="8.6 $2n$ 节点增广图：全文另一处关键构造"></a>8.6 $2n$ 节点增广图：全文另一处关键构造</h3><p>令 $e_i&#x3D;x_{i,1}-z_i$，并定义</p>
+<p>$$<br>\eta_i&#x3D;z_i+\frac1{k_i}\dot z_i.<br>$$</p>
+<p>从参考模型直接推得</p>
+<p>$$<br>\dot z_i&#x3D;k_i(\eta_i-z_i),<br>$$</p>
+<p>$$<br>\dot\eta_i&#x3D;\frac1{k_i}\sum_j a_{ij}(t)(z_j-\eta_i)<br>-\frac1{k_i}\sum_j a_{ij}(t)(e_i-e_j).<br>$$</p>
+<p>用 $K_d&#x3D;\operatorname{diag}(k_1,\ldots,k_n)$，堆叠 $\chi&#x3D;(z^T,\eta^T)^T$，得到</p>
+<p>$$<br>\dot\chi&#x3D;-\mathscr L(t)\chi-H(t)e,<br>$$</p>
+<p>$$<br>\mathscr L(t)&#x3D;<br>\begin{bmatrix}<br>K_d&amp;-K_d\\<br>-K_d^{-1}\mathcal A(t)&amp;K_d^{-1}D(t)<br>\end{bmatrix},<br>\qquad<br>H(t)&#x3D;\begin{bmatrix}0\K_d^{-1}L(t)\end{bmatrix}.<br>$$</p>
+<p>$\mathscr L(t)$ 的非对角元素非正且每行和为零，所以确实是一个有向图拉普拉斯。</p>
+<p>原图的一条边 $j\to i$ 在增广图中对应 $z_j\to\eta_i$，每个节点内部还有 $\eta_i\to z_i$。这种结构把原图的信息传播扩展到参考模型的两个状态层。</p>
+<p>按原文引用的增广图结论及联合连通分析，分歧坐标 $Q_{2n}\chi$ 对应的齐次系统一致指数稳定。由于 $e\to0$ 且 $H(t)$ 一致有界，得到</p>
+<p>$$<br>z_i-z_j\to0,\qquad z_i-\eta_i\to0,<br>\qquad \dot z_i&#x3D;k_i(\eta_i-z_i)\to0.<br>$$</p>
+<p>再结合位置跟踪误差趋零，即得位置一致。</p>
+<h3 id="8-7-固定图的最终值为什么多了一层权重"><a href="#8-7-固定图的最终值为什么多了一层权重" class="headerlink" title="8.7 固定图的最终值为什么多了一层权重"></a>8.7 固定图的最终值为什么多了一层权重</h3><p>固定图下定义</p>
+<p>$$<br>c_i&#x3D;\frac{d_i}{k_i}+k_i,<br>\qquad C&#x3D;\operatorname{diag}(c_1,\ldots,c_n).<br>$$</p>
+<p>参考模型写成</p>
+<p>$$<br>\ddot z&#x3D;-C\dot z-Lz-Le.<br>$$</p>
+<p>左乘 $\xi^T$ 后得到</p>
+<p>$$<br>\frac{d}{dt}\bigl(\xi^T\dot z+\xi^TCz\bigr)&#x3D;0.<br>$$</p>
+<p>因此真正守恒的是“加权参考速度 + 加权参考位置”。利用初值与 $\dot z\to0$，可得</p>
+<p>$$<br>\boxed{<br>\lim_{t\to\infty}x_{i,1}(t)<br>&#x3D;\frac{\sum_j\xi_jc_jx_{j,1}(0)}{\sum_j\xi_jc_j}.<br>}<br>$$</p>
+<p>其归一化权重为 $\omega_j&#x3D;\xi_jc_j&#x2F;(\sum_\ell\xi_\ell c_\ell)$。由于 $c_j&gt;0$、$\xi_j\ge0$，最终值是初始位置的凸组合；该结论不保证过渡过程中没有超调。</p>
+<p>一般而言，即使 $k_i$ 相同，只要 $d_i$ 不同，附加权重仍不同。只有使各节点 $c_i$ 相同，或满足其他使归一化权重恰好一致的条件，才退化为 $\xi$ 加权平均。调整 $k_i$ 因而可能改变最终位置，而不仅是改变收敛快慢。</p>
+<p><strong>补充推导</strong>：若不采用 $\dot z_i(0)&#x3D;0$，固定图最终值变为</p>
+<p>$$<br>c&#x3D;\frac{\sum_j\xi_j\bigl(\dot z_j(0)+c_jz_j(0)\bigr)}<br>{\sum_j\xi_jc_j}.<br>$$</p>
+<p>这再次说明参考初始化与最终一致值紧密相连。</p>
+<h3 id="8-8-位置一致不等于第二状态趋零"><a href="#8-8-位置一致不等于第二状态趋零" class="headerlink" title="8.8 位置一致不等于第二状态趋零"></a>8.8 位置一致不等于第二状态趋零</h3><p>若位置最终静止，应满足</p>
+<p>$$<br>0&#x3D;x_{i,2}+\phi_i(c)\theta_i.<br>$$</p>
+<p>故相应平衡状态一般是 $x_{i,2}&#x3D;-\phi_i(c)\theta_i$，不同节点甚至不相同。不能把高阶积分链分支“其他状态趋零”的结论移植到这个扩展匹配模型。</p>
+<h2 id="9-信息需求与贡献边界"><a href="#9-信息需求与贡献边界" class="headerlink" title="9. 信息需求与贡献边界"></a>9. 信息需求与贡献边界</h2><h3 id="9-1-“只交互相对状态”不等于“控制器只用相对状态”"><a href="#9-1-“只交互相对状态”不等于“控制器只用相对状态”" class="headerlink" title="9.1 “只交互相对状态”不等于“控制器只用相对状态”"></a>9.1 “只交互相对状态”不等于“控制器只用相对状态”</h3><table>
+<thead>
+<tr>
+<th>分支</th>
+<th>网络侧需要的信息</th>
+<th>本地仍需要的信息</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>一般线性</td>
+<td>$\sum_j a_{ij}(x_i-x_j)$</td>
+<td>$x_i$、$z_i$、$\Phi_i(t,x_i)$、参数估计</td>
+</tr>
+<tr>
+<td>高阶积分链</td>
+<td>$s_i-s_j$，可由相对积分链状态构造</td>
+<td>本地积分链状态、参考状态、回归函数、自适应变量</td>
+</tr>
+<tr>
+<td>扩展匹配二阶</td>
+<td>相对位置及本地入权重和 $d_i$</td>
+<td>$x_{i,1},x_{i,2}$、$z_i,\dot z_i$、$\phi_i,\phi_i^{\prime}$、参数估计</td>
+</tr>
+</tbody></table>
+<p>本论文不需要邻居传输虚拟参考模型或观测器状态。若传感器直接测得所需相对状态，可以减少对数字通信的依赖；若这些量仍靠网络传送，当然仍然需要通信。</p>
+<p>尤其不能把第三个分支称为“纯位置输出反馈”：它不需要邻居速度，也不需要真实位置导数，但本地控制律仍用 $x_{i,2}$。</p>
+<h3 id="9-2-主要贡献应怎样准确表述"><a href="#9-2-主要贡献应怎样准确表述" class="headerlink" title="9.2 主要贡献应怎样准确表述"></a>9.2 主要贡献应怎样准确表述</h3><p>可以概括为：以本地动态参考模型为纽带，把不确定系统跟踪与有向线性网络一致性结合；针对不同不确定结构选择不同参考模型；在固定图下利用不变量明确最终运动；在特殊结构的高阶和二阶分支中进一步处理联合连通切换图。</p>
+<p>它并未一次性解决所有一般非线性不确定系统、所有非匹配不确定性、任意拓扑切换、未知时变控制方向、通信时延或状态约束。</p>
+<h3 id="9-3-原文的验证力度"><a href="#9-3-原文的验证力度" class="headerlink" title="9.3 原文的验证力度"></a>9.3 原文的验证力度</h3><p>原文共 5 幅图：图 1、2 用于展示直接自适应方案的两节点反例；图 3–5 是控制框图。文章没有单独给出所提三个定理的大规模正向仿真或实验章节，也没有展示噪声、离散采样和执行器限制下的性能。</p>
+<p>因此其贡献主要是结构设计与理论分析。工程效果需要额外验证，不能把反例图当成完整的所提算法性能评估。</p>
+<h2 id="10-原文公式核对与值得注意的严谨性问题"><a href="#10-原文公式核对与值得注意的严谨性问题" class="headerlink" title="10. 原文公式核对与值得注意的严谨性问题"></a>10. 原文公式核对与值得注意的严谨性问题</h2><p>本节依据上传 PDF 的页面图像与公式上下文核对。下述修改是本报告的代数核验结论，不是检索到的官方勘误。</p>
+<h3 id="10-1-确定会影响抄写和复现的公式问题"><a href="#10-1-确定会影响抄写和复现的公式问题" class="headerlink" title="10.1 确定会影响抄写和复现的公式问题"></a>10.1 确定会影响抄写和复现的公式问题</h3><table>
+<thead>
+<tr>
+<th>原文位置</th>
+<th>观察到的问题</th>
+<th>本报告采用的处理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>p. 6182，两节点仿真参数</td>
+<td>写作 $K&#x3D;P&#x3D;1$，与前文 $K&#x3D;-B^TP$ 不一致</td>
+<td>$A&#x3D;0,B&#x3D;1$ 时应为 $P&#x3D;1,K&#x3D;-1$</td>
+</tr>
+<tr>
+<td>p. 6181，式 (5) 后的模态描述</td>
+<td>模态矩阵写成 $A-\mu_iBK$，与式 (4) 的符号及增益不一致</td>
+<td>按闭环和后文证明使用 $A+\alpha\mu_iBK$</td>
+</tr>
+<tr>
+<td>p. 6181，式 (7)；p. 6184，式 (26)</td>
+<td>邻居求和下标局部写为 $i&#x3D;1$</td>
+<td>固定节点 $i$ 后应对 $j$ 求和</td>
+</tr>
+<tr>
+<td>p. 6181，式 (8)–(10)</td>
+<td>按显示的二次型求导，状态交叉项应带因子 2，参数能量却为 $\frac12|\widetilde\Theta_i|^2$，不能与所给更新律直接匹配</td>
+<td>保留状态能量时，把参数能量改为 $|\widetilde\Theta_i|^2$ 即可匹配；或将整个 Lyapunov 函数统一缩放</td>
+</tr>
+<tr>
+<td>p. 6181，式 (10) 后</td>
+<td>无向图二次型的边求和写法省略了求和与系数细节</td>
+<td>使用 $x^T(L\otimes I_p)x&#x3D;\frac12\sum_{i,j}a_{ij}|x_i-x_j|^2$</td>
+</tr>
+<tr>
+<td>p. 6183，式 (23) 后</td>
+<td>显示的 Hurwitz 多项式与 $s_i$ 的定义阶次不一致</td>
+<td>用 $m-1$ 阶多项式 $q(r)$；例如 $m&#x3D;2$ 时为 $r+\lambda_1$</td>
+</tr>
+<tr>
+<td>p. 6184，式 (24)</td>
+<td>从式 (22) 求导后遗漏了 $d_i(t)$</td>
+<td>在 $m_i\dot s_i$ 中保留该项；后续式 (26) 已再次包含扰动</td>
+</tr>
+<tr>
+<td>p. 6184，式 (28)</td>
+<td>$\varphi_i$ 定义为行向量时，参数更新的转置不明确</td>
+<td>列参数采用 $\dot{\widehat\vartheta}_i&#x3D;\gamma_i\varphi_i^Te_i$</td>
+</tr>
+<tr>
+<td>p. 6185，式 (35) 后</td>
+<td>给出的 $\partial\alpha_{i,1}&#x2F;\partial x_{i,1}$ 漏写 $\widehat\theta_{i}$ 因子</td>
+<td>应为 $-\phi_i^{\prime}\widehat\theta_{i}$，与实际控制公式一致</td>
+</tr>
+<tr>
+<td>p. 6183，式 (20) 附近</td>
+<td>几处引用“式 (3)”来说明 $Q_n$ 性质</td>
+<td>相关性质实际来自式 (2)</td>
+</tr>
+</tbody></table>
+<p>无向图 Lyapunov 系数问题可直接检查：若状态能量是 $x^T(L\otimes P)x$，其参数交叉项为</p>
+<p>$$<br>-2\sum_i\widetilde\Theta_i^T\Phi_i^TB^TP\rho_i.<br>$$</p>
+<p>而 $\frac12\sum_i|\widetilde\Theta_i|^2$ 的导数只有 $\sum_i\widetilde\Theta_i^T\dot{\widehat\Theta}_i$。因此需要统一系数。这个局部归一化问题可以修正，并不推翻后面的 MRACon 定理 4.1；后者使用的本地能量与更新律系数是匹配的。</p>
+<h3 id="10-2-回归函数的可微性条件写得偏弱"><a href="#10-2-回归函数的可微性条件写得偏弱" class="headerlink" title="10.2 回归函数的可微性条件写得偏弱"></a>10.2 回归函数的可微性条件写得偏弱</h3><p>扩展匹配分支的模型文字要求 $\phi_i$ 有界且 Lipschitz 连续，但控制器显式使用 $\phi_i^{\prime}$。Lipschitz 性本身不保证处处经典可微。</p>
+<p>若按经典微分方程和经典反步公式实现，应明确采用足够光滑、可计算导数的回归函数；涉及有界性与全局结论时还应核查所需导数界。若要保留一般非光滑 Lipschitz 函数，则需另行说明导数选取与解的意义。本文公式不能让这个实现前提自动消失。</p>
+<h3 id="10-3-切换情况下不要过度解释“收敛”"><a href="#10-3-切换情况下不要过度解释“收敛”" class="headerlink" title="10.3 切换情况下不要过度解释“收敛”"></a>10.3 切换情况下不要过度解释“收敛”</h3><p>稳定分歧系统受到趋零输入，可以推出节点差异消失；这并不自动给出公共分量的积分有界性。即使某信号导数趋零，也不必然收敛到有限常数。</p>
+<p>固定图分支有明确加权不变量，能够额外确定公共轨迹或常数极限；一般切换图没有同一个固定 $\xi$ 可直接消去所有 $L(t)$。因此阅读定理时应保留其精确定义，特别是区分“位置差趋零”与“所有位置都收敛到同一个有限常数”。</p>
+<h2 id="11-两个手算例子：把抽象结构落到具体系统"><a href="#11-两个手算例子：把抽象结构落到具体系统" class="headerlink" title="11. 两个手算例子：把抽象结构落到具体系统"></a>11. 两个手算例子：把抽象结构落到具体系统</h2><p>以下均为本报告补充算例，不是原文新增仿真。</p>
+<h3 id="11-1-单向两节点：MRACon-如何让根节点也学习"><a href="#11-1-单向两节点：MRACon-如何让根节点也学习" class="headerlink" title="11.1 单向两节点：MRACon 如何让根节点也学习"></a>11.1 单向两节点：MRACon 如何让根节点也学习</h3><p>取 $2\to1$，$A&#x3D;0,B&#x3D;1$，$\Phi_i&#x3D;1$，则</p>
+<p>$$<br>L&#x3D;\begin{bmatrix}1&amp;-1\0&amp;0\end{bmatrix},<br>\quad \xi&#x3D;\begin{bmatrix}0\1\end{bmatrix},<br>\quad P&#x3D;1,\ K&#x3D;-1.<br>$$</p>
+<p>非零特征值为 1，原文充分条件为 $\alpha\ge1&#x2F;2$。取 $\alpha&#x3D;1$，控制器为</p>
+<p>$$<br>\dot z_1&#x3D;-(x_1-x_2),\qquad \dot z_2&#x3D;0,<br>$$</p>
+<p>$$<br>u_1&#x3D;-e_1-\widehat\theta_1-(x_1-x_2),<br>\qquad u_2&#x3D;-e_2-\widehat\theta_2,<br>$$</p>
+<p>$$<br>\dot{\widehat\theta}\sb{1}&#x3D;e_1,<br>\qquad\dot{\widehat\theta}\sb{2}&#x3D;e_2.<br>$$</p>
+<p>每个本地误差系统都是</p>
+<p>$$<br>\frac{d}{dt}\begin{bmatrix}e_i\\\widetilde\theta_{i}\end{bmatrix}<br>&#x3D;\begin{bmatrix}-1&amp;-1\\1&amp;0\end{bmatrix}<br>\begin{bmatrix}e_i\\\widetilde\theta_{i}\end{bmatrix}.<br>$$</p>
+<p>特征多项式 $r^2+r+1$ 为 Hurwitz。根节点的参考值虽然不动，但它偏离参考值就会触发参数更新。因此两个真实节点最终均趋于 $x_2(0)$。</p>
+<p>这个算例说明：根节点没有邻居误差，不代表它没有本地模型跟踪误差。</p>
+<h3 id="11-2-同一个图，两种参考模型可产生不同权重"><a href="#11-2-同一个图，两种参考模型可产生不同权重" class="headerlink" title="11.2 同一个图，两种参考模型可产生不同权重"></a>11.2 同一个图，两种参考模型可产生不同权重</h3><p>取双向但权重不对称的两节点图 $a_{12}&#x3D;2,a_{21}&#x3D;1$，则</p>
+<p>$$<br>L&#x3D;\begin{bmatrix}2&amp;-2\-1&amp;1\end{bmatrix},<br>\qquad \xi&#x3D;\begin{bmatrix}1&#x2F;3\2&#x2F;3\end{bmatrix}.<br>$$</p>
+<p>一般线性分支中取 $A&#x3D;0$，最终值是</p>
+<p>$$<br>c_{\mathrm{linear}}&#x3D;\frac{x_1(0)+2x_2(0)}3.<br>$$</p>
+<p>扩展匹配二阶分支若取 $k_1&#x3D;k_2&#x3D;1$，则 $c_1&#x3D;3,c_2&#x3D;2$，最终位置是</p>
+<p>$$<br>c_{\mathrm{extended}}<br>&#x3D;\frac{3x_{1,1}(0)+4x_{2,1}(0)}7.<br>$$</p>
+<p>例如初始位置为 $0,7$，前者为 $14&#x2F;3$，后者为 $4$。差别来自参考模型的守恒量，而不是来自是否成功辨识出未知参数。</p>
+<h2 id="12-若要复现，推荐按什么顺序开展"><a href="#12-若要复现，推荐按什么顺序开展" class="headerlink" title="12. 若要复现，推荐按什么顺序开展"></a>12. 若要复现，推荐按什么顺序开展</h2><h3 id="12-1-一般线性分支的实现步骤"><a href="#12-1-一般线性分支的实现步骤" class="headerlink" title="12.1 一般线性分支的实现步骤"></a>12.1 一般线性分支的实现步骤</h3><ol>
+<li>按“$j\to i$ 对应 $a_{ij}&gt;0$”构造邻接矩阵与 $L$，检查图含生成树。</li>
+<li>检查 $(A,B)$ 可稳定，求解正定 $P$，计算 $K&#x3D;-B^TP$。</li>
+<li>根据非零特征值实部选取 $\alpha$，记录它满足的是论文充分条件。</li>
+<li>设置 $z_i(0)&#x3D;x_i(0)$，设置各节点参数估计初值。</li>
+<li>每次计算动力学时，先由当前真实状态求 $\rho_i$，再求参考导数、控制输入和参数导数。</li>
+<li>同时积分真实状态、参考状态和参数估计，避免把参考模型误写为直接使用邻居 $z_j$ 的另一种算法。</li>
+</ol>
+<h3 id="12-2-应记录哪些量"><a href="#12-2-应记录哪些量" class="headerlink" title="12.2 应记录哪些量"></a>12.2 应记录哪些量</h3><p>$$<br>E_x(t)&#x3D;\max_{i,j}|x_i-x_j|,<br>\quad E_e(t)&#x3D;\max_i|x_i-z_i|,<br>\quad E_z(t)&#x3D;\max_{i,j}|z_i-z_j|.<br>$$</p>
+<p>还应记录控制输入、参数估计以及对应加权不变量的数值漂移。一般线性分支检验 $x_i-x_c(t)$，而不是只看状态是否趋于零。</p>
+<p>对于扩展匹配分支，记录真实位置导数 $x_{i,2}+\phi_i\theta_i$ 与内部状态 $x_{i,2}$ 时必须分别命名；前者可在仿真器已知真实参数的情况下用于评估，但不能因此偷偷加入控制器可用信息。</p>
+<h3 id="12-3-最小但有意义的验证组"><a href="#12-3-最小但有意义的验证组" class="headerlink" title="12.3 最小但有意义的验证组"></a>12.3 最小但有意义的验证组</h3><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>要验证的机制</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单向两节点</td>
+<td>根节点也能通过本地误差自适应</td>
+</tr>
+<tr>
+<td>含复特征值的有向图</td>
+<td>非对称拉普拉斯下的模态稳定性</td>
+</tr>
+<tr>
+<td>双积分器且平均初速度非零</td>
+<td>动态一致与绝对状态增长可以共存</td>
+</tr>
+<tr>
+<td>每个子图都不连通，但周期并图含生成树</td>
+<td>特定分支的联合连通结论</td>
+</tr>
+<tr>
+<td>扩展匹配模型</td>
+<td>使用内部参考导数，而非不可用的真实位置导数</td>
+</tr>
+<tr>
+<td>改变参考初值或 $k_i$</td>
+<td>检查最终值公式与初始化、阻尼权重的关系</td>
+</tr>
+</tbody></table>
+<p>数值曲线只能检验所选实例，不能替代定理；反过来，连续时间定理也不能直接保证任意离散步长或输入限幅后的实现效果。</p>
+<h2 id="13-如何把这篇论文的方法用于自己的研究"><a href="#13-如何把这篇论文的方法用于自己的研究" class="headerlink" title="13. 如何把这篇论文的方法用于自己的研究"></a>13. 如何把这篇论文的方法用于自己的研究</h2><h3 id="13-1-最值得迁移的是证明模板"><a href="#13-1-最值得迁移的是证明模板" class="headerlink" title="13.1 最值得迁移的是证明模板"></a>13.1 最值得迁移的是证明模板</h3><p>对一个新问题，先确定真正希望一致的物理量，再依次回答：</p>
+<ol>
+<li>能否仅用允许的信息构造一个本地动态参考？</li>
+<li>真实系统能否跟踪该参考，并得到误差趋零所需的有界性和正则性？</li>
+<li>把真实量写成“参考 + 误差”后，参考分歧是否构成稳定系统？</li>
+<li>误差究竟是趋零、平方可积，还是只有最终有界？对应的网络结论是否匹配？</li>
+<li>若需要绝对状态有界或指定常数极限，公共模态是否也被充分控制？</li>
+</ol>
+<p>如果本地跟踪只能证明误差最终有界，稳定网络通常也只能得到相应的实际一致性界，不能照抄“渐近精确一致”。</p>
+<h3 id="13-2-一个容易被忽视的设计自由度"><a href="#13-2-一个容易被忽视的设计自由度" class="headerlink" title="13.2 一个容易被忽视的设计自由度"></a>13.2 一个容易被忽视的设计自由度</h3><p>参考模型不仅是证明辅助变量，它决定公共运动和不变量：一般线性参考保留 $A$ 的自由运动；积分参考结合稳定滤波器得到位置静止目标；特殊二阶参考产生由入度与阻尼共同决定的权重。</p>
+<p>因此在设计阶段应先明确要动态同步、静止聚集，还是指定某种加权平均，再决定参考结构与初始化。</p>
+<h3 id="13-3-不能直接宣称的推广"><a href="#13-3-不能直接宣称的推广" class="headerlink" title="13.3 不能直接宣称的推广"></a>13.3 不能直接宣称的推广</h3><table>
+<thead>
+<tr>
+<th>希望推广的方向</th>
+<th>至少需要补上的工作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>一般线性主体下的切换拓扑</td>
+<td>验证时变分歧系统的一致稳定性；固定图谱条件不能直接替代</td>
+</tr>
+<tr>
+<td>更一般的非匹配不确定性</td>
+<td>构造可实现的跟踪器，处理内部动态、相对阶或其他结构障碍</td>
+</tr>
+<tr>
+<td>仅位置输出反馈</td>
+<td>处理本地不可测状态及其估计误差，重新验证闭环级联</td>
+</tr>
+<tr>
+<td>通信时延、异步采样</td>
+<td>把真实网络时延和采样误差纳入参考网络稳定性分析</td>
+</tr>
+<tr>
+<td>噪声和输入饱和</td>
+<td>处理估计漂移、控制受限及由此产生的残余误差</td>
+</tr>
+<tr>
+<td>指定最终平均值</td>
+<td>分析并设计参考系统不变量，不能仅调跟踪增益</td>
+</tr>
+</tbody></table>
+<p>这些属于由本文启发的研究问题，不是本文已经完成的结果。</p>
+<h2 id="14-自测问题与参考答案"><a href="#14-自测问题与参考答案" class="headerlink" title="14. 自测问题与参考答案"></a>14. 自测问题与参考答案</h2><p><strong>问题 1：为什么本地 Lyapunov 函数中不必放入图拉普拉斯？</strong><br>因为真实系统与参考模型共享相同的网络输入，两者相减后，该项从本地跟踪误差方程中抵消。</p>
+<p><strong>问题 2：参考模型是不是先独立运行到一致，真实系统再去跟踪？</strong><br>不是。两者同时运行，参考模型持续接受真实相对状态；证明必须处理跟踪误差对参考网络的持续但趋零的影响。</p>
+<p><strong>问题 3：参数不收敛为什么仍能一致？</strong><br>因为目标是跟踪误差和节点差异消失，参数更新用于能量交叉项抵消；参数唯一辨识需要额外激励与可辨识条件。</p>
+<p><strong>问题 4：控制器要在线计算 $Q_n$ 和 $\xi$ 吗？</strong><br>不需要。$Q_n$ 用于分歧分析，$\xi$ 用于解释最终轨迹；但一般线性分支的耦合增益设计涉及图谱信息。</p>
+<p><strong>问题 5：定理 4.1 是否保证所有状态有界？</strong><br>不普遍保证。它保证相对误差趋零；公共轨迹 $e^{At}\sum_j\xi_jx_j(0)$ 可以无界。</p>
+<p><strong>问题 6：扩展匹配二阶控制是不是完全不需要速度相关状态？</strong><br>不是。无需邻居速度和真实位置导数，但使用本地 $x_{i,2}$ 以及参考模型内部的 $\dot z_i$。</p>
+<p><strong>问题 7：为什么最后的固定图位置权重不总是 $\xi_i$？</strong><br>因为不同参考系统有不同守恒量。二阶参考守恒的是 $\xi^T\dot z+\xi^TCz$，所以多出 $c_i&#x3D;d_i&#x2F;k_i+k_i$。</p>
+<p><strong>问题 8：这篇论文最核心的理论技术是什么？</strong><br>本地自适应 Lyapunov 抵消、分歧空间投影、稳定线性系统的趋零输入响应，以及针对二阶切换网络的增广图构造。</p>
+<h2 id="15-回读原文的最短路径"><a href="#15-回读原文的最短路径" class="headerlink" title="15. 回读原文的最短路径"></a>15. 回读原文的最短路径</h2><table>
+<thead>
+<tr>
+<th>阅读目标</th>
+<th>原文位置</th>
+<th>应能独立完成的推导</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>理解为什么需要新结构</td>
+<td>pp. 6181–6182，式 (6)–(11)、图 1–2</td>
+<td>推出根节点参数更新为零以及分歧中的残余扰动</td>
+</tr>
+<tr>
+<td>掌握 MRACon 本体</td>
+<td>p. 6182，式 (12)–(17)</td>
+<td>推出网络项从跟踪误差中抵消</td>
+</tr>
+<tr>
+<td>掌握固定图主证明</td>
+<td>p. 6183，式 (18)–(20)</td>
+<td>得到 $\dot V_i$，再推出模态增益条件</td>
+</tr>
+<tr>
+<td>理解公共轨迹</td>
+<td>p. 6183，式 (21)</td>
+<td>算出 $x_c(t)&#x3D;e^{At}\sum\xi_jx_j(0)$</td>
+</tr>
+<tr>
+<td>理解高阶扩展</td>
+<td>pp. 6183–6184，式 (22)–(28)</td>
+<td>正确求导 $s_i$，写出稳定滤波多项式和 Nussbaum 能量不等式</td>
+</tr>
+<tr>
+<td>掌握反步设计</td>
+<td>pp. 6184–6185，式 (29)–(40)</td>
+<td>将复杂控制律化为两层误差闭环并验证能量导数</td>
+</tr>
+<tr>
+<td>掌握切换图技巧</td>
+<td>p. 6185，式 (41)–(42)</td>
+<td>由 $\eta_i&#x3D;z_i+\dot z_i&#x2F;k_i$ 推导增广拉普拉斯</td>
+</tr>
+<tr>
+<td>理解最终位置权重</td>
+<td>p. 6185，式 (43)–(48)</td>
+<td>求出守恒量及其对应的加权平均</td>
+</tr>
+</tbody></table>
+<p>完成这些推导后，阅读重点就从“记住某个控制器”转向了“理解怎样设计一个可以被跟踪、能够一致且具有目标公共运动的参考系统”。这正是本文可以迁移到其他协调控制问题中的方法。</p>
+<h2 id="附录：参考文献线索与格式说明"><a href="#附录：参考文献线索与格式说明" class="headerlink" title="附录：参考文献线索与格式说明"></a>附录：参考文献线索与格式说明</h2><p>下列编号沿用原论文，仅作为回查线索，不表示本报告已独立精读这些文献。</p>
+<ul>
+<li><strong>[5]</strong> K. Liu, Z. Ji, W. Ren，2017，关于无全局增益依赖的二阶有向图一致性。对应二阶参考模型及增广图思路。</li>
+<li><strong>[26]</strong> H. E. Psillakis，2019，PI consensus error transformation for adaptive cooperative control of nonlinear multi-agent systems。对应 PI 一致性误差。</li>
+<li><strong>[27]</strong> Q. Wang, H. E. Psillakis, C. Sun，2020，Adaptive cooperative control with guaranteed convergence in time-varying networks of nonlinear dynamical systems。对应高阶系统与时变网络。</li>
+<li><strong>[29]</strong> W. Ren, R. W. Beard，2008，Distributed Consensus in Multi-Vehicle Cooperative Control。对应图论与切换一致性基础。</li>
+<li><strong>[36]</strong> H. K. Khalil，2002，Nonlinear Systems，第 3 版。对应 Lyapunov、Barbalat 与稳定性工具。</li>
+<li><strong>[39]</strong> X. Ye, J. Jiang，1998，Adaptive nonlinear design without a priori knowledge of control directions。对应未知控制方向与 Nussbaum 引理。</li>
+<li><strong>[40]</strong> M. Krstić, I. Kanellakopoulos, P. Kokotović，1995，Nonlinear and Adaptive Control。对应自适应反步。</li>
+</ul>
+<p>本文件采用 UTF-8 编码、标准 Markdown 标题和表格、<code>[TOC]</code> 目录以及 <code>$...$</code> &#x2F; <code>$$...$$</code> 数学公式。用 Typora 打开即可阅读；若行内公式显示为原始文本，在 Typora 的 Markdown 数学设置中启用行内公式。本文件不依赖外置图片或其他附件。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linx29853.github.io">LenoVo</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linx29853.github.io/2026/09/08/2021-MRACon-%E7%B2%BE%E8%AF%BB%E8%AE%B2%E8%A7%A3%E6%8A%A5%E5%91%8A/">https://linx29853.github.io/2026/09/08/2021-MRACon-%E7%B2%BE%E8%AF%BB%E8%AE%B2%E8%A7%A3%E6%8A%A5%E5%91%8A/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://linx29853.github.io" target="_blank">LenoVo的小站</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6/">自适应控制</a><a class="post-meta__tags" href="/tags/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93%E7%B3%BB%E7%BB%9F/">多智能体系统</a><a class="post-meta__tags" href="/tags/MRACon/">MRACon</a><a class="post-meta__tags" href="/tags/%E6%9C%89%E5%90%91%E5%9B%BE/">有向图</a><a class="post-meta__tags" href="/tags/%E4%B8%80%E8%87%B4%E6%80%A7%E6%8E%A7%E5%88%B6/">一致性控制</a></div><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/09/07/%E6%AD%A3%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="二连杆机械臂正逆运动学学习笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">二连杆机械臂正逆运动学学习笔记</div></div><div class="info-2"><div class="info-item-1"> 项目：2-Link Manipulator Learning机械臂：平面二自由度旋转关节机械臂（2R）连杆长度：$a_1&#x3D;0.30\,\text{m}$，$a_2&#x3D;0.25\,\text{m}$  1. 学习目标本阶段的目标不是只让原仓库代码运行，而是能够独立完成下面的闭环：  根据关节角计算末端位置，即正运动学； 根据目标位置计算关节角，即逆运动学； 使用正运动学回代逆运动学的结果； 判断目标点是否可达； 理解多解、边界状态和数值误差； 能够发现并定位矩阵运算中的实现错误。   2. 二连杆机械臂模型机械臂由两个旋转关节组成：  $q_1$：第一关节相对基坐标系的角度； $q_2$：第二关节相对第一连杆的角度； $a_1$：第一连杆长度； $a_2$：第二连杆长度； $(x,y)$：末端执行器在基坐标系中的位置。  需要特别注意：第二连杆相对基坐标系的绝对角度不是 $q_2$，而是： $$q_1+q_2$$ 因此两个关节角共同决定末端位置。  3. 正运动学3.1 正运动学解决什么问题已知关节角和连杆长度： $$(q_1,q_2,a_1,a_2)$$ 计算...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/08/27/MRASC_leader_following_consensus_%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/" title="MRASC 领导者-跟随者一致性论文阅读笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-27</div><div class="info-item-2">MRASC 领导者-跟随者一致性论文阅读笔记</div></div><div class="info-2"><div class="info-item-1"> Dongdong Yue, Jiantao Shi, Ling Shi, Paolo Frasca, Simone Baldi.IEEE Transactions on Automatic Control, 70(10): 6861-6868, 2025.DOI: 10.1109&#x2F;TAC.2025.3562457  1. 一句话概括论文研究未知、异构线性多智能体的领导者-跟随者一致性问题，提出分层的 MRASC &#x2F; v-MRASC 自适应控制框架，使全体跟随者能够跟踪一个本身可不稳定、但可稳定化的领导者；同时给出针对有向通信图的钉扎节点数量下界。 它最重要的突破不是“让所有节点同步”本身，而是放松了传统 MRAC 一致性中“领导者参考模型必须稳定或中性稳定”的限制。  2. 研究背景与问题2.1 传统方法的限制在 MRAC 型领导者-跟随者一致性中，常将领导者看作参考模型。传统分析通常要求领导者状态矩阵 A₀：  Hurwitz 稳定；或 中性稳定。  但部分参考行为，例如尖峰、脉冲样模式，可能由不稳定动态产生。仅因参考模型不稳定便无法进行一致性跟踪，并不合...</div></div></div></a><a class="pagination-related" href="/2026/08/29/%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A-MRACon-MRASCon%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6/" title="同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-29</div><div class="info-item-2">同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制</div></div><div class="info-2"><div class="info-item-1">检索日期：2026-08-29 1. 文件夹论文的共同研究画像文件夹中的论文主要落在以下交叉方向：  有向图或切换有向图上的多智能体一致性、同步、编队与包容控制； 不确定、异构、非线性或未知动力学下的分布式自适应控制； 模型参考自适应控制（MRAC）、模型参考自适应一致性（MRACon）与模型参考自适应稳定化一致性（MRASCon）； 全分布式设计，即不依赖 Laplacian 特征值、网络规模等全局信息； DREM、协同持续激励&#x2F;有限时间激励、参数收敛与有限时间辨识； 输出反馈、分布式观测器、包容控制； 被动性分析、事件触发、滑模、未知控制方向与 Nussbaum 增益。  最强的主题主线是：MRACon&#x2F;MRASCon + 有向支撑树 + 不确定异构线性系统 + 全分布式&#x2F;参数辨识 + 输出反馈扩展。 2. 第一优先级：与 MRACon &#x2F; MRASCon 最接近   年份 文献 匹配点 建议    2019 Output Synchronization of Unknown Heterogeneous Agents via Distr...</div></div></div></a><a class="pagination-related" href="/2026/08/29/Popov%E8%B6%85%E7%A8%B3%E5%AE%9A%E6%96%B9%E6%B3%95%E4%B8%8EMRAC-%E7%B2%BE%E7%AE%80%E7%AC%94%E8%AE%B0/" title="基于 Popov 超稳定性理论的模型参考自适应控制器"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-29</div><div class="info-item-2">基于 Popov 超稳定性理论的模型参考自适应控制器</div></div><div class="info-2"><div class="info-item-1"> 资料来源：柴天佑等《自适应控制》第 4 章第 4.5 节，印刷页 147-163。本文按 Typora Markdown 与 LaTeX 公式语法整理，并补充直观解释、推导线索和仿真结果分析。  1. 本节要解决的问题考虑参数不完全已知的线性被控对象，希望设计一个参数随时间在线变化的控制器，使对象状态跟踪给定参考模型状态： $$\lim_{t\to\infty}e_x(t)&#x3D;\lim_{t\to\infty}\left[x_m(t)-x_s(t)\right]&#x3D;0.$$ 第 4.4 节采用 Lyapunov 方法：先构造 Lyapunov 函数，再让其导数非正，从而反推出自适应律。本节采用另一条路线：  将 MRAC 误差系统改写为一个等效反馈系统； 使正向线性环节为严格正实系统； 使反馈非线性环节满足 Popov 积分不等式； 根据 Popov 渐近超稳定性定理证明跟踪误差收敛。  核心结构可以概括为： $$\boxed{\text{严格正实线性环节}+\text{满足 Popov 不等式的自适应环节}\Longrightarrow\text{全局渐近稳定...</div></div></div></a><a class="pagination-related" href="/2026/08/26/MRAC%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AC%94%E8%AE%B0/" title="MRAC 数学基础知识点笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-26</div><div class="info-item-2">MRAC 数学基础知识点笔记</div></div><div class="info-2"><div class="info-item-1">   学习目标：为李雅普诺夫稳定性、模型参考自适应控制（MRAC）和 Popov 超稳定理论打基础。   0. 知识地图学习顺序建议：  会从物理方程建立微分方程； 会把微分方程写成状态空间模型； 会在状态空间模型与传递函数之间转换； 会用极点或特征值判断线性系统稳定性； 理解正定矩阵与二次型，能看懂李雅普诺夫函数； 理解频率响应、正实函数和严格正实函数； 再学习李雅普诺夫方法、KYP 引理、Popov 判据和 MRAC。  它们在 MRAC 中的联系是： 123456789微分方程 → 状态空间模型 → 误差状态方程                         ↓               Hurwitz 矩阵与李雅普诺夫方程                         ↓                  正定二次型 V(x)                         ↓             设计自适应律，使 V̇ ≤ 0误差传递函数 → 严格正实性 → KYP 引理 → Popov 超稳定分析   1. 状态空间模型与传递函数1.1 为什么需要两种模型控...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">LenoVo</div><div class="author-info-description">记录轨道交通、公交与卡车见闻，以及技术学习笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">37</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/linx29853"><i class="fab fa-github"></i><span>访问 GitHub</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LenoVo 的小站</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%85%88%E6%8A%93%E4%BD%8F%E8%AE%BA%E6%96%87%E6%9C%80%E9%87%8D%E8%A6%81%E7%9A%84%E4%B8%80%E4%BB%B6%E4%BA%8B"><span class="toc-text">1. 先抓住论文最重要的一件事</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%85%A8%E6%96%87%E7%BB%93%E6%9E%9C%E5%9C%B0%E5%9B%BE"><span class="toc-text">1.1 全文结果地图</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%A0%94%E7%A9%B6%E8%83%8C%E6%99%AF%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E7%9B%B4%E6%8E%A5%E5%8A%A0%E4%B8%80%E4%B8%AA%E8%87%AA%E9%80%82%E5%BA%94%E9%A1%B9%E4%B8%8D%E5%A4%9F"><span class="toc-text">2. 研究背景：为什么直接加一个自适应项不够</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E6%97%A0%E9%A2%86%E5%AF%BC%E8%80%85%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E5%90%AB%E4%B9%89"><span class="toc-text">2.1 无领导者一致性的含义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E5%8C%B9%E9%85%8D%E4%B8%8D%E7%A1%AE%E5%AE%9A%E6%80%A7%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">2.2 匹配不确定性是什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E6%97%A0%E4%B8%8D%E7%A1%AE%E5%AE%9A%E6%80%A7%E6%97%B6%E7%9A%84%E7%BB%8F%E5%85%B8%E8%AE%BE%E8%AE%A1"><span class="toc-text">2.3 无不确定性时的经典设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4-%E6%9C%80%E7%9B%B4%E6%8E%A5%E7%9A%84%E8%87%AA%E9%80%82%E5%BA%94%E8%A1%A5%E5%81%BF"><span class="toc-text">2.4 最直接的自适应补偿</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5-%E4%B8%A4%E8%8A%82%E7%82%B9%E5%8F%8D%E4%BE%8B%EF%BC%9A%E6%A0%B9%E8%8A%82%E7%82%B9%E4%B8%8D%E5%AD%A6%E4%B9%A0"><span class="toc-text">2.5 两节点反例：根节点不学习</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E5%9B%BE%E8%AE%BA%E5%B7%A5%E5%85%B7%EF%BC%9A%E6%8A%8A%E5%85%AC%E5%85%B1%E8%BF%90%E5%8A%A8%E5%92%8C%E5%88%86%E6%AD%A7%E5%88%86%E5%BC%80"><span class="toc-text">3. 图论工具：把公共运动和分歧分开</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E9%82%BB%E6%8E%A5%E7%9F%A9%E9%98%B5%E7%9A%84%E6%96%B9%E5%90%91%E7%BA%A6%E5%AE%9A"><span class="toc-text">3.1 邻接矩阵的方向约定</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BC%95%E5%85%A5-Q-n"><span class="toc-text">3.2 为什么引入 $Q_n$</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E5%88%87%E6%8D%A2%E5%9B%BE%E8%A6%81%E6%B1%82%E5%85%B7%E4%BD%93%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">3.3 切换图要求具体是什么</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-MRACon-%E7%9A%84%E7%BB%93%E6%9E%84%EF%BC%9A%E5%8F%82%E8%80%83%E6%A8%A1%E5%9E%8B%E4%B8%BA%E4%BB%80%E4%B9%88%E7%94%A8%E7%9C%9F%E5%AE%9E%E7%9B%B8%E5%AF%B9%E7%8A%B6%E6%80%81"><span class="toc-text">4. MRACon 的结构：参考模型为什么用真实相对状态</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E5%AE%9E%E7%8E%B0%E7%BB%93%E6%9E%84%E4%B8%8E%E8%AF%81%E6%98%8E%E7%BB%93%E6%9E%84"><span class="toc-text">4.1 实现结构与证明结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E5%AE%9A%E7%90%86-4-1-%E7%B2%BE%E8%AF%BB%EF%BC%9A%E4%B8%80%E8%88%AC%E7%BA%BF%E6%80%A7%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8C%B9%E9%85%8D%E4%B8%8D%E7%A1%AE%E5%AE%9A%E6%80%A7"><span class="toc-text">5. 定理 4.1 精读：一般线性系统的匹配不确定性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E6%8E%A7%E5%88%B6%E5%99%A8%E5%90%84%E9%A1%B9%E5%9C%A8%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-text">5.1 控制器各项在做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-2-%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E6%8E%A8%E5%AF%BC%E4%B8%8D%E5%90%AB%E6%98%BE%E5%BC%8F%E7%BD%91%E7%BB%9C%E8%80%A6%E5%90%88%E9%A1%B9%E7%9A%84%E8%AF%AF%E5%B7%AE%E6%96%B9%E7%A8%8B"><span class="toc-text">5.2 第一步：推导不含显式网络耦合项的误差方程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-3-%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E8%87%AA%E9%80%82%E5%BA%94%E5%BE%8B%E7%B2%BE%E7%A1%AE%E6%8A%B5%E6%B6%88%E4%BA%A4%E5%8F%89%E9%A1%B9"><span class="toc-text">5.3 第二步：自适应律精确抵消交叉项</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-4-%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E8%83%BD%E4%BB%8E%E8%83%BD%E9%87%8F%E4%B8%8B%E9%99%8D%E5%BE%97%E5%88%B0%E8%AF%AF%E5%B7%AE%E8%B6%8B%E9%9B%B6"><span class="toc-text">5.4 第三步：为什么能从能量下降得到误差趋零</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-5-%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E5%8F%82%E8%80%83%E7%BD%91%E7%BB%9C%E7%9A%84%E5%88%86%E6%AD%A7%E7%B3%BB%E7%BB%9F"><span class="toc-text">5.5 第四步：参考网络的分歧系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-6-%E7%AC%AC%E4%BA%94%E6%AD%A5%EF%BC%9A%E5%A2%9E%E7%9B%8A%E4%B8%8B%E7%95%8C%E6%98%AF%E6%80%8E%E6%A0%B7%E7%AE%97%E5%87%BA%E7%9A%84"><span class="toc-text">5.6 第五步：增益下界是怎样算出的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-7-%E7%AC%AC%E5%85%AD%E6%AD%A5%EF%BC%9A%E8%B6%8B%E9%9B%B6%E8%BE%93%E5%85%A5%E4%B8%BA%E4%BB%80%E4%B9%88%E5%AF%BC%E8%87%B4%E5%88%86%E6%AD%A7%E8%B6%8B%E9%9B%B6"><span class="toc-text">5.7 第六步：趋零输入为什么导致分歧趋零</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-8-%E5%8F%82%E6%95%B0%E4%BC%B0%E8%AE%A1%E4%B8%80%E5%AE%9A%E6%94%B6%E6%95%9B%E5%88%B0%E7%9C%9F%E5%AE%9E%E5%80%BC%E5%90%97"><span class="toc-text">5.8 参数估计一定收敛到真实值吗</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E8%BD%A8%E8%BF%B9%EF%BC%9A%E5%8A%A0%E6%9D%83%E4%B8%8D%E5%8F%98%E9%87%8F%E6%AF%94%E5%8F%82%E6%95%B0%E6%94%B6%E6%95%9B%E6%9B%B4%E5%85%B3%E9%94%AE"><span class="toc-text">6. 最终一致轨迹：加权不变量比参数收敛更关键</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E4%B8%89%E7%A7%8D%E5%85%B8%E5%9E%8B%E5%85%AC%E5%85%B1%E8%BF%90%E5%8A%A8"><span class="toc-text">6.1 三种典型公共运动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E5%88%9D%E5%A7%8B%E5%8C%96%E6%98%AF%E8%AE%BE%E8%AE%A1%E7%9A%84%E4%B8%80%E9%83%A8%E5%88%86"><span class="toc-text">6.2 初始化是设计的一部分</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%AE%9A%E7%90%86-4-3-%E7%B2%BE%E8%AF%BB%EF%BC%9A%E9%AB%98%E9%98%B6%E7%A7%AF%E5%88%86%E9%93%BE%E5%A6%82%E4%BD%95%E8%8E%B7%E5%BE%97%E4%BD%8D%E7%BD%AE%E4%B8%80%E8%87%B4"><span class="toc-text">7. 定理 4.3 精读：高阶积分链如何获得位置一致</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%8D%A2%E5%8F%82%E8%80%83%E6%A8%A1%E5%9E%8B"><span class="toc-text">7.1 为什么要换参考模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E7%94%A8%E6%BB%A4%E6%B3%A2%E7%8A%B6%E6%80%81%E6%8A%8A%E9%AB%98%E9%98%B6%E9%97%AE%E9%A2%98%E5%8F%98%E4%B8%BA%E4%B8%80%E9%98%B6%E9%97%AE%E9%A2%98"><span class="toc-text">7.2 用滤波状态把高阶问题变为一阶问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E6%9C%AA%E7%9F%A5%E5%8F%82%E6%95%B0%E3%80%81%E6%83%AF%E9%87%8F%E3%80%81%E6%8E%A7%E5%88%B6%E6%96%B9%E5%90%91%E5%92%8C%E6%89%B0%E5%8A%A8%E5%A6%82%E4%BD%95%E8%BF%9B%E5%85%A5%E8%AE%BE%E8%AE%A1"><span class="toc-text">7.3 未知参数、惯量、控制方向和扰动如何进入设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-4-%E5%8E%9F%E6%96%87%E7%9C%81%E7%95%A5%E8%AF%81%E6%98%8E%E7%9A%84%E6%A0%B8%E5%BF%83%E8%83%BD%E9%87%8F%E5%85%B3%E7%B3%BB%EF%BC%9A%E8%A1%A5%E5%85%85%E6%8E%A8%E5%AF%BC"><span class="toc-text">7.4 原文省略证明的核心能量关系：补充推导</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-5-%E5%8F%82%E8%80%83%E7%BD%91%E7%BB%9C%E4%B8%8E%E4%BD%8D%E7%BD%AE%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-text">7.5 参考网络与位置之间的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-6-%E4%B8%8E-PI-%E4%B8%80%E8%87%B4%E6%80%A7%E8%AF%AF%E5%B7%AE%E7%9A%84%E8%81%94%E7%B3%BB"><span class="toc-text">7.6 与 PI 一致性误差的联系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-7-%E5%AE%9E%E7%8E%B0%E8%BE%B9%E7%95%8C"><span class="toc-text">7.7 实现边界</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%AE%9A%E7%90%86-4-6-%E7%B2%BE%E8%AF%BB%EF%BC%9A%E6%89%A9%E5%B1%95%E5%8C%B9%E9%85%8D%E4%B8%8D%E7%A1%AE%E5%AE%9A%E6%80%A7%E4%B8%8E%E8%87%AA%E9%80%82%E5%BA%94%E5%8F%8D%E6%AD%A5"><span class="toc-text">8. 定理 4.6 精读：扩展匹配不确定性与自适应反步</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E4%B8%8D%E7%A1%AE%E5%AE%9A%E6%80%A7%E6%AF%94%E6%8E%A7%E5%88%B6%E6%8F%90%E5%89%8D%E4%B8%80%E5%B1%82%E8%BF%9B%E5%85%A5"><span class="toc-text">8.1 不确定性比控制提前一层进入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E4%BA%8C%E9%98%B6%E5%8F%82%E8%80%83%E6%A8%A1%E5%9E%8B%EF%BC%9A%E5%8F%AA%E8%AE%A9%E7%9B%B8%E5%AF%B9%E4%BD%8D%E7%BD%AE%E8%BF%9B%E5%85%A5%E7%BD%91%E7%BB%9C"><span class="toc-text">8.2 二阶参考模型：只让相对位置进入网络</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E5%8F%8D%E6%AD%A5%E7%AC%AC%E4%B8%80%E5%B1%82%EF%BC%9A%E8%99%9A%E6%8B%9F%E6%8E%A7%E5%88%B6"><span class="toc-text">8.3 反步第一层：虚拟控制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-%E5%8F%8D%E6%AD%A5%E7%AC%AC%E4%BA%8C%E5%B1%82%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8F%82%E6%95%B0%E6%9B%B4%E6%96%B0%E5%BE%8B%E5%8F%98%E5%A4%8D%E6%9D%82"><span class="toc-text">8.4 反步第二层：为什么参数更新律变复杂</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-5-%E6%8A%8A%E5%A4%8D%E6%9D%82%E6%8E%A7%E5%88%B6%E5%BE%8B%E5%8E%8B%E7%BC%A9%E6%88%90%E4%B8%A4%E8%A1%8C%E9%97%AD%E7%8E%AF"><span class="toc-text">8.5 把复杂控制律压缩成两行闭环</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-6-2n-%E8%8A%82%E7%82%B9%E5%A2%9E%E5%B9%BF%E5%9B%BE%EF%BC%9A%E5%85%A8%E6%96%87%E5%8F%A6%E4%B8%80%E5%A4%84%E5%85%B3%E9%94%AE%E6%9E%84%E9%80%A0"><span class="toc-text">8.6 $2n$ 节点增广图：全文另一处关键构造</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-7-%E5%9B%BA%E5%AE%9A%E5%9B%BE%E7%9A%84%E6%9C%80%E7%BB%88%E5%80%BC%E4%B8%BA%E4%BB%80%E4%B9%88%E5%A4%9A%E4%BA%86%E4%B8%80%E5%B1%82%E6%9D%83%E9%87%8D"><span class="toc-text">8.7 固定图的最终值为什么多了一层权重</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-8-%E4%BD%8D%E7%BD%AE%E4%B8%80%E8%87%B4%E4%B8%8D%E7%AD%89%E4%BA%8E%E7%AC%AC%E4%BA%8C%E7%8A%B6%E6%80%81%E8%B6%8B%E9%9B%B6"><span class="toc-text">8.8 位置一致不等于第二状态趋零</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E4%BF%A1%E6%81%AF%E9%9C%80%E6%B1%82%E4%B8%8E%E8%B4%A1%E7%8C%AE%E8%BE%B9%E7%95%8C"><span class="toc-text">9. 信息需求与贡献边界</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#9-1-%E2%80%9C%E5%8F%AA%E4%BA%A4%E4%BA%92%E7%9B%B8%E5%AF%B9%E7%8A%B6%E6%80%81%E2%80%9D%E4%B8%8D%E7%AD%89%E4%BA%8E%E2%80%9C%E6%8E%A7%E5%88%B6%E5%99%A8%E5%8F%AA%E7%94%A8%E7%9B%B8%E5%AF%B9%E7%8A%B6%E6%80%81%E2%80%9D"><span class="toc-text">9.1 “只交互相对状态”不等于“控制器只用相对状态”</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-2-%E4%B8%BB%E8%A6%81%E8%B4%A1%E7%8C%AE%E5%BA%94%E6%80%8E%E6%A0%B7%E5%87%86%E7%A1%AE%E8%A1%A8%E8%BF%B0"><span class="toc-text">9.2 主要贡献应怎样准确表述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#9-3-%E5%8E%9F%E6%96%87%E7%9A%84%E9%AA%8C%E8%AF%81%E5%8A%9B%E5%BA%A6"><span class="toc-text">9.3 原文的验证力度</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E5%8E%9F%E6%96%87%E5%85%AC%E5%BC%8F%E6%A0%B8%E5%AF%B9%E4%B8%8E%E5%80%BC%E5%BE%97%E6%B3%A8%E6%84%8F%E7%9A%84%E4%B8%A5%E8%B0%A8%E6%80%A7%E9%97%AE%E9%A2%98"><span class="toc-text">10. 原文公式核对与值得注意的严谨性问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-%E7%A1%AE%E5%AE%9A%E4%BC%9A%E5%BD%B1%E5%93%8D%E6%8A%84%E5%86%99%E5%92%8C%E5%A4%8D%E7%8E%B0%E7%9A%84%E5%85%AC%E5%BC%8F%E9%97%AE%E9%A2%98"><span class="toc-text">10.1 确定会影响抄写和复现的公式问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-%E5%9B%9E%E5%BD%92%E5%87%BD%E6%95%B0%E7%9A%84%E5%8F%AF%E5%BE%AE%E6%80%A7%E6%9D%A1%E4%BB%B6%E5%86%99%E5%BE%97%E5%81%8F%E5%BC%B1"><span class="toc-text">10.2 回归函数的可微性条件写得偏弱</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-3-%E5%88%87%E6%8D%A2%E6%83%85%E5%86%B5%E4%B8%8B%E4%B8%8D%E8%A6%81%E8%BF%87%E5%BA%A6%E8%A7%A3%E9%87%8A%E2%80%9C%E6%94%B6%E6%95%9B%E2%80%9D"><span class="toc-text">10.3 切换情况下不要过度解释“收敛”</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E4%B8%A4%E4%B8%AA%E6%89%8B%E7%AE%97%E4%BE%8B%E5%AD%90%EF%BC%9A%E6%8A%8A%E6%8A%BD%E8%B1%A1%E7%BB%93%E6%9E%84%E8%90%BD%E5%88%B0%E5%85%B7%E4%BD%93%E7%B3%BB%E7%BB%9F"><span class="toc-text">11. 两个手算例子：把抽象结构落到具体系统</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11-1-%E5%8D%95%E5%90%91%E4%B8%A4%E8%8A%82%E7%82%B9%EF%BC%9AMRACon-%E5%A6%82%E4%BD%95%E8%AE%A9%E6%A0%B9%E8%8A%82%E7%82%B9%E4%B9%9F%E5%AD%A6%E4%B9%A0"><span class="toc-text">11.1 单向两节点：MRACon 如何让根节点也学习</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-2-%E5%90%8C%E4%B8%80%E4%B8%AA%E5%9B%BE%EF%BC%8C%E4%B8%A4%E7%A7%8D%E5%8F%82%E8%80%83%E6%A8%A1%E5%9E%8B%E5%8F%AF%E4%BA%A7%E7%94%9F%E4%B8%8D%E5%90%8C%E6%9D%83%E9%87%8D"><span class="toc-text">11.2 同一个图，两种参考模型可产生不同权重</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E8%8B%A5%E8%A6%81%E5%A4%8D%E7%8E%B0%EF%BC%8C%E6%8E%A8%E8%8D%90%E6%8C%89%E4%BB%80%E4%B9%88%E9%A1%BA%E5%BA%8F%E5%BC%80%E5%B1%95"><span class="toc-text">12. 若要复现，推荐按什么顺序开展</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#12-1-%E4%B8%80%E8%88%AC%E7%BA%BF%E6%80%A7%E5%88%86%E6%94%AF%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%AD%A5%E9%AA%A4"><span class="toc-text">12.1 一般线性分支的实现步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-2-%E5%BA%94%E8%AE%B0%E5%BD%95%E5%93%AA%E4%BA%9B%E9%87%8F"><span class="toc-text">12.2 应记录哪些量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-3-%E6%9C%80%E5%B0%8F%E4%BD%86%E6%9C%89%E6%84%8F%E4%B9%89%E7%9A%84%E9%AA%8C%E8%AF%81%E7%BB%84"><span class="toc-text">12.3 最小但有意义的验证组</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E5%A6%82%E4%BD%95%E6%8A%8A%E8%BF%99%E7%AF%87%E8%AE%BA%E6%96%87%E7%9A%84%E6%96%B9%E6%B3%95%E7%94%A8%E4%BA%8E%E8%87%AA%E5%B7%B1%E7%9A%84%E7%A0%94%E7%A9%B6"><span class="toc-text">13. 如何把这篇论文的方法用于自己的研究</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#13-1-%E6%9C%80%E5%80%BC%E5%BE%97%E8%BF%81%E7%A7%BB%E7%9A%84%E6%98%AF%E8%AF%81%E6%98%8E%E6%A8%A1%E6%9D%BF"><span class="toc-text">13.1 最值得迁移的是证明模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-2-%E4%B8%80%E4%B8%AA%E5%AE%B9%E6%98%93%E8%A2%AB%E5%BF%BD%E8%A7%86%E7%9A%84%E8%AE%BE%E8%AE%A1%E8%87%AA%E7%94%B1%E5%BA%A6"><span class="toc-text">13.2 一个容易被忽视的设计自由度</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-3-%E4%B8%8D%E8%83%BD%E7%9B%B4%E6%8E%A5%E5%AE%A3%E7%A7%B0%E7%9A%84%E6%8E%A8%E5%B9%BF"><span class="toc-text">13.3 不能直接宣称的推广</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E8%87%AA%E6%B5%8B%E9%97%AE%E9%A2%98%E4%B8%8E%E5%8F%82%E8%80%83%E7%AD%94%E6%A1%88"><span class="toc-text">14. 自测问题与参考答案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E5%9B%9E%E8%AF%BB%E5%8E%9F%E6%96%87%E7%9A%84%E6%9C%80%E7%9F%AD%E8%B7%AF%E5%BE%84"><span class="toc-text">15. 回读原文的最短路径</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%99%84%E5%BD%95%EF%BC%9A%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE%E7%BA%BF%E7%B4%A2%E4%B8%8E%E6%A0%BC%E5%BC%8F%E8%AF%B4%E6%98%8E"><span class="toc-text">附录：参考文献线索与格式说明</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/08/2021-MRACon-%E7%B2%BE%E8%AF%BB%E8%AE%B2%E8%A7%A3%E6%8A%A5%E5%91%8A/" title="有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告">有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告</a><time datetime="2026-09-08T12:53:45.000Z" title="发表于 2026-09-08 20:53:45">2026-09-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/07/%E6%AD%A3%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="二连杆机械臂正逆运动学学习笔记">二连杆机械臂正逆运动学学习笔记</a><time datetime="2026-09-07T12:00:04.000Z" title="发表于 2026-09-07 20:00:04">2026-09-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/31/%E8%8B%B1%E8%AF%AD%E6%88%90%E7%86%9F%E8%AF%AD%E5%8F%A5%E7%A7%AF%E7%B4%AF/" title="英语成熟语句积累">英语成熟语句积累</a><time datetime="2026-08-31T04:01:17.000Z" title="发表于 2026-08-31 12:01:17">2026-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/31/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%AC%AC%E4%B8%80%E7%AB%A0-%E8%A1%8C%E5%88%97%E5%BC%8F%E6%80%BB%E7%BB%93%E7%AC%94%E8%AE%B0/" title="线性代数第一章：行列式总结笔记">线性代数第一章：行列式总结笔记</a><time datetime="2026-08-31T02:00:00.000Z" title="发表于 2026-08-31 10:00:00">2026-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/30/%E7%BA%BF%E6%80%A7%E7%B3%BB%E7%BB%9F%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="线性系统基础学习笔记">线性系统基础学习笔记</a><time datetime="2026-08-30T02:00:00.000Z" title="发表于 2026-08-30 10:00:00">2026-08-30</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2025 - 2026 By LenoVo</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
