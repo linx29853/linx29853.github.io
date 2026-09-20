@@ -1,0 +1,446 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>机器人学导论（第3版）第2章：空间描述与变换 | LenoVo的小站</title><meta name="author" content="LenoVo"><meta name="copyright" content="LenoVo"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="系统整理《机器人学导论》第 2 章中的位置与姿态描述、旋转矩阵、齐次变换、变换复合与求逆、欧拉角、轴角和四元数。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器人学导论（第3版）第2章：空间描述与变换">
+<meta property="og:url" content="https://linx29853.github.io/2026/09/20/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AD%A6%E5%AF%BC%E8%AE%BA-%E7%AC%AC2%E7%AB%A0-%E7%A9%BA%E9%97%B4%E6%8F%8F%E8%BF%B0%E4%B8%8E%E5%8F%98%E6%8D%A2/">
+<meta property="og:site_name" content="LenoVo的小站">
+<meta property="og:description" content="系统整理《机器人学导论》第 2 章中的位置与姿态描述、旋转矩阵、齐次变换、变换复合与求逆、欧拉角、轴角和四元数。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linx29853.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-09-20T11:16:52.000Z">
+<meta property="article:modified_time" content="2026-09-20T11:19:02.107Z">
+<meta property="article:author" content="LenoVo">
+<meta property="article:tag" content="机器人学">
+<meta property="article:tag" content="空间变换">
+<meta property="article:tag" content="旋转矩阵">
+<meta property="article:tag" content="齐次变换">
+<meta property="article:tag" content="姿态表示">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linx29853.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "机器人学导论（第3版）第2章：空间描述与变换",
+  "url": "https://linx29853.github.io/2026/09/20/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AD%A6%E5%AF%BC%E8%AE%BA-%E7%AC%AC2%E7%AB%A0-%E7%A9%BA%E9%97%B4%E6%8F%8F%E8%BF%B0%E4%B8%8E%E5%8F%98%E6%8D%A2/",
+  "image": "https://linx29853.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-09-20T11:16:52.000Z",
+  "dateModified": "2026-09-20T11:19:02.107Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LenoVo",
+      "url": "https://linx29853.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://linx29853.github.io/2026/09/20/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AD%A6%E5%AF%BC%E8%AE%BA-%E7%AC%AC2%E7%AB%A0-%E7%A9%BA%E9%97%B4%E6%8F%8F%E8%BF%B0%E4%B8%8E%E5%8F%98%E6%8D%A2/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?aeb05b46d9af3b7840e1a58e05c8aefc";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+btf.addGlobalFn('pjaxComplete', () => {
+  _hmt.push(['_trackPageview',window.location.pathname])
+}, 'baidu_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '机器人学导论（第3版）第2章：空间描述与变换',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/bilibili.css"><link rel="stylesheet" href="/css/travel-gallery.css"><link rel="stylesheet" href="/css/music-profile.css"><link rel="stylesheet" href="/css/books.css"><link rel="stylesheet" href="/css/category-cover.css"><link rel="stylesheet" href="/css/skill-tree.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/skill-tree/"><i class="fa-fw fas fa-list-check"></i><span> 技能树</span></a></div><div class="menus_item"><a class="site-page" href="/books/"><i class="fa-fw fas fa-book-open"></i><span> 资料</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LenoVo的小站</span></a><a class="nav-page-title" href="/"><span class="site-name">机器人学导论（第3版）第2章：空间描述与变换</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/skill-tree/"><i class="fa-fw fas fa-list-check"></i><span> 技能树</span></a></div><div class="menus_item"><a class="site-page" href="/books/"><i class="fa-fw fas fa-book-open"></i><span> 资料</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">机器人学导论（第3版）第2章：空间描述与变换</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-09-20T11:16:52.000Z" title="发表于 2026-09-20 19:16:52">2026-09-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-09-20T11:19:02.107Z" title="更新于 2026-09-20 19:19:02">2026-09-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/">技术学习</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AD%A6/">机器人学</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>原书：John J. Craig, <em>Introduction to Robotics: Mechanics and Control</em>, 3rd Edition<br>对应范围：PDF 第 27-62 页，书内页码 19-54<br>本文是知识点整理与学习笔记。</p>
+</blockquote>
+<h2 id="1-本章解决什么问题"><a href="#1-本章解决什么问题" class="headerlink" title="1. 本章解决什么问题"></a>1. 本章解决什么问题</h2><p>机器人需要在三维空间中描述零件、工具和机械臂自身的<strong>位置</strong>与<strong>姿态</strong>。同一个几何对象还可能需要在基座、末端、相机或工件等不同坐标系中表达。</p>
+<p>本章建立了后续运动学、速度、力和力矩分析所需的统一语言：</p>
+<ol>
+<li>用位置向量描述点；</li>
+<li>用旋转矩阵描述姿态；</li>
+<li>用坐标系（frame）同时描述位置和姿态；</li>
+<li>用齐次变换统一表示旋转和平移；</li>
+<li>用变换乘法、求逆和变换方程处理坐标系链；</li>
+<li>用固定角、欧拉角、轴角和四元数表达姿态。</li>
+</ol>
+<hr>
+<h2 id="2-基本记号与核心对象"><a href="#2-基本记号与核心对象" class="headerlink" title="2. 基本记号与核心对象"></a>2. 基本记号与核心对象</h2><h3 id="2-1-位置向量"><a href="#2-1-位置向量" class="headerlink" title="2.1 位置向量"></a>2.1 位置向量</h3><p>点 $P$ 在坐标系 ${A}$ 中的位置写作</p>
+<p>$$<br>{}^{A}\mathbf{p}&#x3D;<br>\begin{bmatrix}<br>p_x\\p_y\\p_z<br>\end{bmatrix}.<br>$$</p>
+<p>左上标表示“该向量的分量在哪个坐标系中表达”。几何点 $P$ 没有变化时，${}^{A}\mathbf p$ 与 ${}^{B}\mathbf p$ 可能具有不同的数值。</p>
+<h3 id="2-2-旋转矩阵"><a href="#2-2-旋转矩阵" class="headerlink" title="2.2 旋转矩阵"></a>2.2 旋转矩阵</h3><p>坐标系 ${B}$ 相对坐标系 ${A}$ 的姿态记作</p>
+<p>$$<br>{}^{A}_{B}\mathbf R<br>{}&#x3D;{}<br>\begin{bmatrix}<br>{}^{A}\hat{\mathbf x}_B &amp;<br>{}^{A}\hat{\mathbf y}_B &amp;<br>{}^{A}\hat{\mathbf z}_B<br>\end{bmatrix}.<br>$$</p>
+<p>它的三列分别是 ${B}$ 的三个单位轴在 ${A}$ 中的表达。矩阵元素也叫<strong>方向余弦</strong>：</p>
+<p>$$<br>r_{ij}&#x3D;\hat{\mathbf e}_{i}^{A}\cdot\hat{\mathbf e}_{j}^{B}.<br>$$</p>
+<p>旋转矩阵属于 $SO(3)$，满足</p>
+<p>$$<br>\mathbf R^{T}\mathbf R&#x3D;\mathbf I,<br>\qquad<br>\mathbf R^{-1}&#x3D;\mathbf R^{T},<br>\qquad<br>\det(\mathbf R)&#x3D;+1.<br>$$</p>
+<p>因此 9 个矩阵元素中只有 3 个独立自由度。约束来自三列均为单位向量且两两正交。</p>
+<h3 id="2-3-坐标系（frame）"><a href="#2-3-坐标系（frame）" class="headerlink" title="2.3 坐标系（frame）"></a>2.3 坐标系（frame）</h3><p>一个坐标系的完整描述包括：</p>
+<ul>
+<li>原点的位置 ${}^{A}\mathbf p_{BORG}$；</li>
+<li>坐标轴的姿态 ${}^{A}_{B}\mathbf R$。</li>
+</ul>
+<p>所以，刚体在三维空间中共有 6 个自由度：3 个平移自由度和 3 个旋转自由度。</p>
+<hr>
+<h2 id="3-映射：同一个量在不同坐标系中的表达"><a href="#3-映射：同一个量在不同坐标系中的表达" class="headerlink" title="3. 映射：同一个量在不同坐标系中的表达"></a>3. 映射：同一个量在不同坐标系中的表达</h2><p>“映射”只改变描述所采用的坐标系，不移动几何对象本身。</p>
+<h3 id="3-1-仅有平移"><a href="#3-1-仅有平移" class="headerlink" title="3.1 仅有平移"></a>3.1 仅有平移</h3><p>若 ${A}$ 与 ${B}$ 的方向相同，则</p>
+<p>$$<br>{}^{A}\mathbf p<br>{}&#x3D;{}<br>{}^{B}\mathbf p<br>+<br>{}^{A}\mathbf p_{BORG}.<br>$$</p>
+<p>只有当两个向量已经在方向相同的坐标系中表达时，才能直接相加。</p>
+<h3 id="3-2-仅有旋转"><a href="#3-2-仅有旋转" class="headerlink" title="3.2 仅有旋转"></a>3.2 仅有旋转</h3><p>若两个坐标系原点重合，则</p>
+<p>$$<br>{}^{A}\mathbf p<br>{}&#x3D;{}<br>{}^{A}_{B}\mathbf R\,{}^{B}\mathbf p.<br>$$</p>
+<p>可把上下标按相邻关系“消去”来检查式子：右侧的 $B$ 消去，结果留下 $A$。</p>
+<h3 id="3-3-一般情况：旋转加平移"><a href="#3-3-一般情况：旋转加平移" class="headerlink" title="3.3 一般情况：旋转加平移"></a>3.3 一般情况：旋转加平移</h3><p>$$<br>{}^{A}\mathbf p<br>{}&#x3D;{}<br>{}^{A}_{B}\mathbf R\,{}^{B}\mathbf p<br>+<br>{}^{A}\mathbf p_{BORG}.<br>$$</p>
+<p>这条式子是整章最核心的坐标变换公式。</p>
+<hr>
+<h2 id="4-齐次变换"><a href="#4-齐次变换" class="headerlink" title="4. 齐次变换"></a>4. 齐次变换</h2><p>将旋转和平移写进同一个 $4\times4$ 矩阵：</p>
+<p>$$<br>{}^{A}_{B}\mathbf T<br>{}&#x3D;{}<br>\begin{bmatrix}<br>{}^{A}_{B}\mathbf R &amp; {}^{A}\mathbf p_{BORG}\\<br>\mathbf 0^{T} &amp; 1<br>\end{bmatrix}.<br>$$</p>
+<p>把位置向量扩展为齐次坐标</p>
+<p>$$<br>{}^{B}\tilde{\mathbf p}<br>{}&#x3D;{}<br>\begin{bmatrix}<br>{}^{B}\mathbf p\\1<br>\end{bmatrix},<br>$$</p>
+<p>即可统一写成</p>
+<p>$$<br>{}^{A}\tilde{\mathbf p}<br>{}&#x3D;{}<br>{}^{A}_{B}\mathbf T\,{}^{B}\tilde{\mathbf p}.<br>$$</p>
+<p>齐次表示主要提供简洁、统一的推导形式。实际程序可直接保存 $\mathbf R$ 和 $\mathbf p$，避免无意义地乘以最后一行中的 0 和 1。</p>
+<h3 id="4-1-齐次变换的三种解释"><a href="#4-1-齐次变换的三种解释" class="headerlink" title="4.1 齐次变换的三种解释"></a>4.1 齐次变换的三种解释</h3><p>同一个矩阵可以有三种解释，必须结合上下文区分：</p>
+<table>
+<thead>
+<tr>
+<th>解释</th>
+<th>含义</th>
+<th>典型形式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>坐标系描述</td>
+<td>描述 ${B}$ 相对 ${A}$ 的位姿</td>
+<td>${}^{A}_{B}\mathbf T$</td>
+</tr>
+<tr>
+<td>坐标映射</td>
+<td>将同一点从 ${B}$ 表达转换到 ${A}$ 表达</td>
+<td>${}^{A}\mathbf p&#x3D;{}^{A}_{B}\mathbf T{}^{B}\mathbf p$</td>
+</tr>
+<tr>
+<td>变换算子</td>
+<td>在同一参考系中实际旋转、平移一个点</td>
+<td>$\mathbf p_2&#x3D;\mathbf T\mathbf p_1$</td>
+</tr>
+</tbody></table>
+<p>三者数学形式相同，物理叙述不同。最常见的误解是把“坐标描述变化”误认为“物体发生了运动”。</p>
+<hr>
+<h2 id="5-旋转与变换算子"><a href="#5-旋转与变换算子" class="headerlink" title="5. 旋转与变换算子"></a>5. 旋转与变换算子</h2><p>绕固定主轴的基本旋转矩阵为</p>
+<p>$$<br>\mathbf R_x(\theta)&#x3D;<br>\begin{bmatrix}<br>1&amp;0&amp;0\\<br>0&amp;\cos\theta&amp;-\sin\theta\\<br>0&amp;\sin\theta&amp;\cos\theta<br>\end{bmatrix},<br>$$</p>
+<p>$$<br>\mathbf R_y(\theta)&#x3D;<br>\begin{bmatrix}<br>\cos\theta&amp;0&amp;\sin\theta\\<br>0&amp;1&amp;0\\<br>-\sin\theta&amp;0&amp;\cos\theta<br>\end{bmatrix},<br>$$</p>
+<p>$$<br>\mathbf R_z(\theta)&#x3D;<br>\begin{bmatrix}<br>\cos\theta&amp;-\sin\theta&amp;0\\<br>\sin\theta&amp;\cos\theta&amp;0\\<br>0&amp;0&amp;1<br>\end{bmatrix}.<br>$$</p>
+<p>均遵循右手定则。</p>
+<h3 id="5-1-乘法顺序"><a href="#5-1-乘法顺序" class="headerlink" title="5.1 乘法顺序"></a>5.1 乘法顺序</h3><p>矩阵乘法从右向左作用。例如</p>
+<p>$$<br>\mathbf p’&#x3D;mathbf R_z(\alpha)\mathbf R_y(\beta)\mathbf R_x(\gamma)\mathbf p<br>$$</p>
+<p>表示先绕 $X$ 轴转 $\gamma$，再绕 $Y$ 轴转 $\beta$，最后绕 $Z$ 轴转 $\alpha$。</p>
+<p>有限旋转通常不满足交换律：</p>
+<p>$$<br>\mathbf R_x\mathbf R_z\ne\mathbf R_z\mathbf R_x.<br>$$</p>
+<hr>
+<h2 id="6-变换运算"><a href="#6-变换运算" class="headerlink" title="6. 变换运算"></a>6. 变换运算</h2><h3 id="6-1-复合变换"><a href="#6-1-复合变换" class="headerlink" title="6.1 复合变换"></a>6.1 复合变换</h3><p>若已知 ${B}$ 相对 ${A}$ 的变换和 ${C}$ 相对 ${B}$ 的变换，则</p>
+<p>$$<br>{}^{A}_{C}\mathbf T<br>{}&#x3D;{}<br>{}^{A}_{B}\mathbf T\,{}^{B}_{C}\mathbf T.<br>$$</p>
+<p>分块展开为</p>
+<p>$$<br>{}^{A}_{C}\mathbf R<br>{}&#x3D;{}<br>{}^{A}_{B}\mathbf R\,{}^{B}_{C}\mathbf R,<br>$$</p>
+<p>$$<br>{}^{A}\mathbf p_{CORG}<br>{}&#x3D;{}<br>{}^{A}_{B}\mathbf R\,{}^{B}\mathbf p_{CORG}<br>+{}^{A}\mathbf p_{BORG}.<br>$$</p>
+<p>注意：后一坐标系的平移向量必须先旋转到前一坐标系中，才能相加。</p>
+<h3 id="6-2-变换求逆"><a href="#6-2-变换求逆" class="headerlink" title="6.2 变换求逆"></a>6.2 变换求逆</h3><p>若</p>
+<p>$$<br>{}^{A}_{B}\mathbf T&#x3D;<br>\begin{bmatrix}<br>\mathbf R&amp;\mathbf p\\<br>\mathbf 0^T&amp;1<br>\end{bmatrix},<br>$$</p>
+<p>则</p>
+<p>$$<br>{}^{B}_{A}\mathbf T<br>{}&#x3D;{}<br>\left({}^{A}_{B}\mathbf T\right)^{-1}<br>{}&#x3D;{}<br>\begin{bmatrix}<br>\mathbf R^T&amp;-\mathbf R^T\mathbf p\\<br>\mathbf 0^T&amp;1<br>\end{bmatrix}.<br>$$</p>
+<p>易错点：逆变换的平移部分是 $-\mathbf R^T\mathbf p$，不能只写成 $-\mathbf p$。</p>
+<hr>
+<h2 id="7-变换方程与坐标系图"><a href="#7-变换方程与坐标系图" class="headerlink" title="7. 变换方程与坐标系图"></a>7. 变换方程与坐标系图</h2><p>坐标系关系可以画成有向图：箭头方向表示“箭头终点坐标系相对起点坐标系的描述”。</p>
+<p>求两个坐标系之间的变换时：</p>
+<ol>
+<li>找到连接两者的路径；</li>
+<li>沿箭头方向使用原变换；</li>
+<li>逆箭头方向使用逆变换；</li>
+<li>按路径顺序相乘，并用上下标连续消去检查。</li>
+</ol>
+<p>例如，末端坐标系为 ${T}$、机器人基座为 ${B}$、桌面为 ${S}$、目标为 ${G}$，则目标相对末端的位姿为</p>
+<p>$$<br>{}^{T}_{G}\mathbf T<br>{}&#x3D;{}<br>\left({}^{B}_{T}\mathbf T\right)^{-1}<br>{}^{B}_{S}\mathbf T<br>{}^{S}_{G}\mathbf T.<br>$$</p>
+<p>这个结构在手眼标定、抓取位姿转换和机器人工作站标定中反复出现。</p>
+<hr>
+<h2 id="8-姿态的多种表示"><a href="#8-姿态的多种表示" class="headerlink" title="8. 姿态的多种表示"></a>8. 姿态的多种表示</h2><h3 id="8-1-旋转矩阵"><a href="#8-1-旋转矩阵" class="headerlink" title="8.1 旋转矩阵"></a>8.1 旋转矩阵</h3><p>优点：</p>
+<ul>
+<li>可直接作为旋转算子；</li>
+<li>复合与求逆简单；</li>
+<li>没有局部奇异性。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>用 9 个数表达 3 个自由度；</li>
+<li>数值计算中可能逐渐失去正交性，需要重新正交化。</li>
+</ul>
+<h3 id="8-2-X-Y-Z-固定角"><a href="#8-2-X-Y-Z-固定角" class="headerlink" title="8.2 X-Y-Z 固定角"></a>8.2 X-Y-Z 固定角</h3><p>依次绕固定参考系的 $X_A$、$Y_A$、$Z_A$ 轴旋转 $\gamma$、$\beta$、$\alpha$：</p>
+<p>$$<br>\mathbf R_{XYZ}(\gamma,\beta,\alpha)<br>{}&#x3D;{}<br>\mathbf R_z(\alpha)\mathbf R_y(\beta)\mathbf R_x(\gamma).<br>$$</p>
+<p>展开得</p>
+<p>$$<br>\mathbf R&#x3D;<br>\begin{bmatrix}<br>c_\alpha c_\beta &amp; c_\alpha s_\beta s_\gamma-s_\alpha c_\gamma &amp; c_\alpha s_\beta c_\gamma+s_\alpha s_\gamma\\<br>s_\alpha c_\beta &amp; s_\alpha s_\beta s_\gamma+c_\alpha c_\gamma &amp; s_\alpha s_\beta c_\gamma-c_\alpha s_\gamma\\<br>-s_\beta &amp; c_\beta s_\gamma &amp; c_\beta c_\gamma<br>\end{bmatrix}.<br>$$</p>
+<p>其中 $c_\alpha&#x3D;\cos\alpha$，$s_\alpha&#x3D;\sin\alpha$，其余同理。</p>
+<p>当 $\cos\beta\ne0$ 时，可取主值解</p>
+<p>$$<br>\beta&#x3D;\operatorname{atan2}\left(-r_{31},\sqrt{r_{11}^2+r_{21}^2}\right),<br>$$</p>
+<p>$$<br>\alpha&#x3D;\operatorname{atan2}(r_{21},r_{11}),<br>\qquad<br>\gamma&#x3D;\operatorname{atan2}(r_{32},r_{33}).<br>$$</p>
+<p>当 $\beta&#x3D;\pm90^\circ$ 时发生奇异，$\alpha$ 与 $\gamma$ 无法分别唯一确定，只能确定二者的某种组合。这就是常说的万向节锁现象。</p>
+<h3 id="8-3-Z-Y-X-欧拉角"><a href="#8-3-Z-Y-X-欧拉角" class="headerlink" title="8.3 Z-Y-X 欧拉角"></a>8.3 Z-Y-X 欧拉角</h3><p>依次绕运动坐标系自身的 $Z_B$、新 $Y_B$、新 $X_B$ 轴旋转 $\alpha$、$\beta$、$\gamma$。</p>
+<p>其最终旋转矩阵与<strong>反向次序的固定轴旋转</strong>相同：</p>
+<p>$$<br>\mathbf R_{ZYX}^{\text{moving}}(\alpha,\beta,\gamma)<br>{}&#x3D;{}<br>\mathbf R_{XYZ}^{\text{fixed}}(\gamma,\beta,\alpha)<br>{}&#x3D;{}<br>\mathbf R_z(\alpha)\mathbf R_y(\beta)\mathbf R_x(\gamma).<br>$$</p>
+<p>这是理解“内禀旋转”和“外禀旋转”对应关系的关键。</p>
+<h3 id="8-4-Z-Y-Z-欧拉角"><a href="#8-4-Z-Y-Z-欧拉角" class="headerlink" title="8.4 Z-Y-Z 欧拉角"></a>8.4 Z-Y-Z 欧拉角</h3><p>依次绕运动坐标系的 $Z$、新 $Y$、新 $Z$ 轴旋转 $\alpha$、$\beta$、$\gamma$：</p>
+<p>$$<br>\mathbf R_{ZYZ}<br>{}&#x3D;{}<br>\mathbf R_z(\alpha)\mathbf R_y(\beta)\mathbf R_z(\gamma).<br>$$</p>
+<p>当 $\sin\beta&#x3D;0$，即 $\beta&#x3D;0^\circ$ 或 $180^\circ$ 时发生奇异，只能确定 $\alpha$ 与 $\gamma$ 的和或差。</p>
+<h3 id="8-5-等效轴角"><a href="#8-5-等效轴角" class="headerlink" title="8.5 等效轴角"></a>8.5 等效轴角</h3><p>欧拉旋转定理指出：任意三维姿态都可以表示为绕某个单位轴</p>
+<p>$$<br>\hat{\mathbf k}&#x3D;<br>\begin{bmatrix}k_x&amp;k_y&amp;k_z\end{bmatrix}^{T},<br>\qquad |\hat{\mathbf k}|&#x3D;1<br>$$</p>
+<p>旋转角度 $\theta$。</p>
+<p>定义反对称矩阵</p>
+<p>$$<br>[\hat{\mathbf k}]_\times&#x3D;<br>\begin{bmatrix}<br>0&amp;-k_z&amp;k_y\\<br>k_z&amp;0&amp;-k_x\\<br>-k_y&amp;k_x&amp;0<br>\end{bmatrix},<br>$$</p>
+<p>则 Rodrigues 公式为</p>
+<p>$$<br>\mathbf R<br>{}&#x3D;{}<br>\mathbf I\cos\theta<br>+(1-\cos\theta)\hat{\mathbf k}\hat{\mathbf k}^{T}<br>+[\hat{\mathbf k}]_\times\sin\theta.<br>$$</p>
+<p>等价地，矩阵形式可写为</p>
+<p>$$<br>\mathbf R&#x3D;<br>\begin{bmatrix}<br>k_x^2v+c &amp; k_xk_yv-k_zs &amp; k_xk_zv+k_ys\\<br>k_xk_yv+k_zs &amp; k_y^2v+c &amp; k_yk_zv-k_xs\\<br>k_xk_zv-k_ys &amp; k_yk_zv+k_xs &amp; k_z^2v+c<br>\end{bmatrix},<br>$$</p>
+<p>其中 $c&#x3D;\cos\theta$、$s&#x3D;\sin\theta$、$v&#x3D;1-\cos\theta$。</p>
+<p>由旋转矩阵反求轴角时，常用</p>
+<p>$$<br>\theta&#x3D;cos^{-1}\left(\frac{\operatorname{tr}(\mathbf R)-1}{2}\right),<br>$$</p>
+<p>$$<br>\hat{\mathbf k}<br>{}&#x3D;{}<br>\frac{1}{2\sin\theta}<br>\begin{bmatrix}<br>r_{32}-r_{23}\\<br>r_{13}-r_{31}\\<br>r_{21}-r_{12}<br>\end{bmatrix}.<br>$$</p>
+<p>该公式在 $\theta&#x3D;0$ 和 $\theta&#x3D;\pi$ 附近数值不稳定，需要单独处理。并且 $(\hat{\mathbf k},\theta)$ 与 $(-\hat{\mathbf k},-\theta)$ 表示同一姿态。</p>
+<h3 id="8-6-欧拉参数与单位四元数"><a href="#8-6-欧拉参数与单位四元数" class="headerlink" title="8.6 欧拉参数与单位四元数"></a>8.6 欧拉参数与单位四元数</h3><p>由轴角定义欧拉参数：</p>
+<p>$$<br>\boldsymbol\epsilon<br>{}&#x3D;{}<br>\hat{\mathbf k}\sin\frac{\theta}{2},<br>\qquad<br>\eta&#x3D;\cos\frac{\theta}{2}.<br>$$</p>
+<p>组成单位四元数</p>
+<p>$$<br>\mathbf q&#x3D;<br>\begin{bmatrix}<br>\boldsymbol\epsilon\\\eta<br>\end{bmatrix},<br>\qquad<br>\boldsymbol\epsilon^{T}\boldsymbol\epsilon+\eta^2&#x3D;1.<br>$$</p>
+<p>单位四元数只用 4 个数，适合数值计算和姿态插值。$\mathbf q$ 与 $-\mathbf q$ 表示同一姿态，因此它仍不是一一表示。</p>
+<hr>
+<h2 id="9-绕不过原点的轴旋转"><a href="#9-绕不过原点的轴旋转" class="headerlink" title="9. 绕不过原点的轴旋转"></a>9. 绕不过原点的轴旋转</h2><p>若旋转轴经过点 $\mathbf p$ 而不经过参考系原点，可将操作分成三步：</p>
+<ol>
+<li>平移 $-\mathbf p$，使旋转轴移到原点；</li>
+<li>绕该轴旋转 $\mathbf R$；</li>
+<li>平移 $+\mathbf p$，移回原位置。</li>
+</ol>
+<p>齐次形式为</p>
+<p>$$<br>\mathbf T<br>{}&#x3D;{}<br>\operatorname{Trans}(\mathbf p)<br>\begin{bmatrix}\mathbf R&amp;\mathbf 0\\\mathbf 0^T&amp;1\end{bmatrix}<br>\operatorname{Trans}(-\mathbf p).<br>$$</p>
+<p>其平移部分可化为</p>
+<p>$$<br>\mathbf t&#x3D;(\mathbf I-\mathbf R)\mathbf p.<br>$$</p>
+<p>所以绕偏置轴旋转虽然没有额外的“直线平移指令”，相对原参考系观察时仍会产生位置变化。</p>
+<hr>
+<h2 id="10-自由向量与线向量"><a href="#10-自由向量与线向量" class="headerlink" title="10. 自由向量与线向量"></a>10. 自由向量与线向量</h2><h3 id="10-1-自由向量"><a href="#10-1-自由向量" class="headerlink" title="10.1 自由向量"></a>10.1 自由向量</h3><p>自由向量只关心大小和方向，与放置位置无关。例如点的线速度和纯力矩。它在坐标系之间变换时只需要旋转：</p>
+<p>$$<br>{}^{A}\mathbf v&#x3D;{}^{A}_{B}\mathbf R\,{}^{B}\mathbf v,<br>$$</p>
+<p>$$<br>{}^{A}\mathbf n&#x3D;{}^{A}_{B}\mathbf R\,{}^{B}\mathbf n.<br>$$</p>
+<p>不能把位置向量的平移项加到速度或纯力矩上。</p>
+<h3 id="10-2-线向量"><a href="#10-2-线向量" class="headerlink" title="10.2 线向量"></a>10.2 线向量</h3><p>线向量的作用效果还依赖其作用线或作用点，力通常属于这一类。力与力矩的完整变换将在后续章节中处理。</p>
+<hr>
+<h2 id="11-计算方面的考虑"><a href="#11-计算方面的考虑" class="headerlink" title="11. 计算方面的考虑"></a>11. 计算方面的考虑</h2><h3 id="11-1-不必机械地使用完整-4-times4-乘法"><a href="#11-1-不必机械地使用完整-4-times4-乘法" class="headerlink" title="11.1 不必机械地使用完整 $4\times4$ 乘法"></a>11.1 不必机械地使用完整 $4\times4$ 乘法</h3><p>程序中可以直接采用分块运算：</p>
+<p>$$<br>\mathbf R_{AC}&#x3D;\mathbf R_{AB}\mathbf R_{BC},<br>$$</p>
+<p>$$<br>\mathbf p_{AC}&#x3D;\mathbf R_{AB}\mathbf p_{BC}+\mathbf p_{AB}.<br>$$</p>
+<p>求逆也应使用结构化公式 $[\mathbf R^T,-\mathbf R^T\mathbf p]$，而不是调用通用矩阵求逆。</p>
+<h3 id="11-2-选择合适的乘法顺序"><a href="#11-2-选择合适的乘法顺序" class="headerlink" title="11.2 选择合适的乘法顺序"></a>11.2 选择合适的乘法顺序</h3><p>对</p>
+<p>$$<br>{}^{A}\mathbf p<br>{}&#x3D;{}<br>{}^{A}_{B}\mathbf R<br>{}^{B}_{C}\mathbf R<br>{}^{C}_{D}\mathbf R<br>{}^{D}\mathbf p,<br>$$</p>
+<p>若只变换一个向量，逐个进行矩阵-向量乘法通常更省计算量；书中比较为：</p>
+<ul>
+<li>先合成三个旋转矩阵再乘向量：63 次乘法、42 次加法；</li>
+<li>从右到左逐次变换向量：27 次乘法、18 次加法。</li>
+</ul>
+<p>如果旋转矩阵长期不变而有大量向量需要变换，则应先计算复合矩阵并复用。优化策略取决于哪些量变化以及各自的更新频率。</p>
+<hr>
+<h2 id="12-常见易错点"><a href="#12-常见易错点" class="headerlink" title="12. 常见易错点"></a>12. 常见易错点</h2><ol>
+<li><strong>混淆点与点的坐标。</strong> 几何点不变，不同坐标系中的坐标值可以变化。</li>
+<li><strong>忘记标注表达坐标系。</strong> 向量没有上标时，式子很容易在不同坐标系间发生非法相加。</li>
+<li><strong>弄反 ${}^{A}_{B}\mathbf R$ 的含义。</strong> 它的列是 $B$ 轴在 $A$ 中的表达，并把 $B$ 坐标映射为 $A$ 坐标。</li>
+<li><strong>把矩阵乘法顺序按文字从左向右理解。</strong> 对列向量，最右侧变换最先作用。</li>
+<li><strong>混淆固定轴旋转与运动轴旋转。</strong> 固定轴按左乘累积，运动轴可理解为按右乘累积；最好回到坐标系定义推导。</li>
+<li><strong>认为有限旋转可交换。</strong> 一般只有同轴旋转或特殊情形才交换；无穷小旋转在一阶近似下可交换。</li>
+<li><strong>逆变换只转置旋转矩阵，却直接对平移取负。</strong> 正确结果是 $-\mathbf R^T\mathbf p$。</li>
+<li><strong>用齐次位置变换处理速度。</strong> 自由向量只旋转，不附加平移。</li>
+<li><strong>忽略角度表示的奇异性和多解性。</strong> 三参数角度表示不可避免地存在奇异点。</li>
+<li><strong>用单参数 $\arctan(y&#x2F;x)$ 反求角度。</strong> 应优先使用 $\operatorname{atan2}(y,x)$ 保留象限信息。</li>
+</ol>
+<hr>
+<h2 id="13-一页公式速查"><a href="#13-一页公式速查" class="headerlink" title="13. 一页公式速查"></a>13. 一页公式速查</h2><h3 id="坐标映射"><a href="#坐标映射" class="headerlink" title="坐标映射"></a>坐标映射</h3><p>$$<br>{}^{A}\mathbf p<br>{}&#x3D;{}<br>{}^{A}_{B}\mathbf R{}^{B}\mathbf p<br>+{}^{A}\mathbf p_{BORG}<br>$$</p>
+<h3 id="齐次变换"><a href="#齐次变换" class="headerlink" title="齐次变换"></a>齐次变换</h3><p>$$<br>{}^{A}_{B}\mathbf T&#x3D;<br>\begin{bmatrix}<br>{}^{A}_{B}\mathbf R&amp;{}^{A}\mathbf p_{BORG}\\<br>\mathbf 0^T&amp;1<br>\end{bmatrix}<br>$$</p>
+<h3 id="复合"><a href="#复合" class="headerlink" title="复合"></a>复合</h3><p>$$<br>{}^{A}_{C}\mathbf T<br>{}&#x3D;{}<br>{}^{A}_{B}\mathbf T{}^{B}_{C}\mathbf T<br>$$</p>
+<h3 id="求逆"><a href="#求逆" class="headerlink" title="求逆"></a>求逆</h3><p>$$<br>\mathbf T^{-1}&#x3D;<br>\begin{bmatrix}<br>\mathbf R^T&amp;-\mathbf R^T\mathbf p\\<br>\mathbf 0^T&amp;1<br>\end{bmatrix}<br>$$</p>
+<h3 id="旋转矩阵性质"><a href="#旋转矩阵性质" class="headerlink" title="旋转矩阵性质"></a>旋转矩阵性质</h3><p>$$<br>\mathbf R^T\mathbf R&#x3D;\mathbf I,<br>\qquad<br>\mathbf R^{-1}&#x3D;\mathbf R^T,<br>\qquad<br>\det\mathbf R&#x3D;1<br>$$</p>
+<h3 id="Rodrigues-公式"><a href="#Rodrigues-公式" class="headerlink" title="Rodrigues 公式"></a>Rodrigues 公式</h3><p>$$<br>\mathbf R<br>{}&#x3D;{}<br>\mathbf I\cos\theta<br>+(1-\cos\theta)\hat{\mathbf k}\hat{\mathbf k}^{T}<br>+[\hat{\mathbf k}]_\times\sin\theta<br>$$</p>
+<h3 id="轴角反求"><a href="#轴角反求" class="headerlink" title="轴角反求"></a>轴角反求</h3><p>$$<br>\theta&#x3D;cos^{-1}\left(\frac{\operatorname{tr}(\mathbf R)-1}{2}\right)<br>$$</p>
+<h3 id="四元数约束"><a href="#四元数约束" class="headerlink" title="四元数约束"></a>四元数约束</h3><p>$$<br>|\mathbf q|&#x3D;1<br>$$</p>
+<hr>
+<h2 id="14-自测"><a href="#14-自测" class="headerlink" title="14. 自测"></a>14. 自测</h2><ol>
+<li>为什么 ${}^{A}\mathbf p$ 与 ${}^{B}\mathbf p$ 数值不同，却能代表同一个点？</li>
+<li>${}^{A}_{B}\mathbf R$ 的三列和三行分别有什么几何意义？</li>
+<li>为什么旋转矩阵有 9 个元素却只有 3 个自由度？</li>
+<li>齐次变换作为“坐标系描述”“坐标映射”和“运动算子”时，区别是什么？</li>
+<li>推导 $\mathbf T^{-1}$ 的分块形式，并解释为什么平移部分是 $-\mathbf R^T\mathbf p$。</li>
+<li>已知基座到相机、相机到物体、基座到末端的变换，如何求物体相对末端的变换？</li>
+<li>为什么 X-Y-Z 固定角与 Z-Y-X 运动轴欧拉角会得到相同的旋转矩阵？</li>
+<li>轴角反求公式在 $\theta&#x3D;0$ 和 $\theta&#x3D;\pi$ 时为什么需要特殊处理？</li>
+<li>为什么速度向量变换时不使用齐次变换中的平移部分？</li>
+<li>在什么情况下应预先合成多个旋转矩阵，什么情况下应逐个作用于向量？</li>
+</ol>
+<hr>
+<h2 id="15-学习主线"><a href="#15-学习主线" class="headerlink" title="15. 学习主线"></a>15. 学习主线</h2><p>建议按以下顺序掌握：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">位置向量与表达坐标系</span><br><span class="line">        ↓</span><br><span class="line">旋转矩阵的列向量含义与正交性质</span><br><span class="line">        ↓</span><br><span class="line">一般坐标映射 R p + t</span><br><span class="line">        ↓</span><br><span class="line">齐次变换及三种解释</span><br><span class="line">        ↓</span><br><span class="line">变换复合、求逆、坐标系图</span><br><span class="line">        ↓</span><br><span class="line">固定角 / 欧拉角 / 轴角 / 四元数</span><br><span class="line">        ↓</span><br><span class="line">自由向量与计算优化</span><br></pre></td></tr></table></figure>
+
+<p>掌握本章的判断标准不是背下所有展开式，而是能根据坐标系关系独立写出正确的变换链，并通过上下标、维度和物理意义检查结果。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linx29853.github.io">LenoVo</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linx29853.github.io/2026/09/20/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AD%A6%E5%AF%BC%E8%AE%BA-%E7%AC%AC2%E7%AB%A0-%E7%A9%BA%E9%97%B4%E6%8F%8F%E8%BF%B0%E4%B8%8E%E5%8F%98%E6%8D%A2/">https://linx29853.github.io/2026/09/20/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AD%A6%E5%AF%BC%E8%AE%BA-%E7%AC%AC2%E7%AB%A0-%E7%A9%BA%E9%97%B4%E6%8F%8F%E8%BF%B0%E4%B8%8E%E5%8F%98%E6%8D%A2/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://linx29853.github.io" target="_blank">LenoVo的小站</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AD%A6/">机器人学</a><a class="post-meta__tags" href="/tags/%E7%A9%BA%E9%97%B4%E5%8F%98%E6%8D%A2/">空间变换</a><a class="post-meta__tags" href="/tags/%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5/">旋转矩阵</a><a class="post-meta__tags" href="/tags/%E9%BD%90%E6%AC%A1%E5%8F%98%E6%8D%A2/">齐次变换</a><a class="post-meta__tags" href="/tags/%E5%A7%BF%E6%80%81%E8%A1%A8%E7%A4%BA/">姿态表示</a></div><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/09/08/2021-MRACon-%E7%B2%BE%E8%AF%BB%E8%AE%B2%E8%A7%A3%E6%8A%A5%E5%91%8A/" title="有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告</div></div><div class="info-2"><div class="info-item-1"> 论文：A Unified Framework for Adaptive Leaderless Consensus of Uncertain Multiagent Systems Under Directed Graphs作者：Jie Mei、Wei Ren、Yongduan Song出处：IEEE Transactions on Automatic Control，66(12)，6179–6186，2021DOI：10.1109&#x2F;TAC.2021.3062594阅读依据：用户提供的完整 8 页 PDF。下文页码使用期刊页码，PDF 页码 &#x3D; 期刊页码 − 6178。报告定位：中文精读讲解，重点解释建模、控制器构造、证明逻辑及适用边界。标为“补充推导”“阅读辨析”的内容属于本报告分析，不冒充原文结论。本文未独立查阅原文所引参考文献，也未开展数值复现。  1. 先抓住论文最重要的一件事这篇论文提出 模型参考自适应一致性（model reference adaptive consensus，MRACon）：给每个智能体配置一个本地参考模型，让真实智能体跟踪它；参考...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">LenoVo</div><div class="author-info-description">记录轨道交通、公交与卡车见闻，以及技术学习笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">15</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">42</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/linx29853"><i class="fab fa-github"></i><span>访问 GitHub</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LenoVo 的小站</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%9C%AC%E7%AB%A0%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-text">1. 本章解决什么问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%9F%BA%E6%9C%AC%E8%AE%B0%E5%8F%B7%E4%B8%8E%E6%A0%B8%E5%BF%83%E5%AF%B9%E8%B1%A1"><span class="toc-text">2. 基本记号与核心对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-%E4%BD%8D%E7%BD%AE%E5%90%91%E9%87%8F"><span class="toc-text">2.1 位置向量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2-%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5"><span class="toc-text">2.2 旋转矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3-%E5%9D%90%E6%A0%87%E7%B3%BB%EF%BC%88frame%EF%BC%89"><span class="toc-text">2.3 坐标系（frame）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%98%A0%E5%B0%84%EF%BC%9A%E5%90%8C%E4%B8%80%E4%B8%AA%E9%87%8F%E5%9C%A8%E4%B8%8D%E5%90%8C%E5%9D%90%E6%A0%87%E7%B3%BB%E4%B8%AD%E7%9A%84%E8%A1%A8%E8%BE%BE"><span class="toc-text">3. 映射：同一个量在不同坐标系中的表达</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E4%BB%85%E6%9C%89%E5%B9%B3%E7%A7%BB"><span class="toc-text">3.1 仅有平移</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E4%BB%85%E6%9C%89%E6%97%8B%E8%BD%AC"><span class="toc-text">3.2 仅有旋转</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-%E4%B8%80%E8%88%AC%E6%83%85%E5%86%B5%EF%BC%9A%E6%97%8B%E8%BD%AC%E5%8A%A0%E5%B9%B3%E7%A7%BB"><span class="toc-text">3.3 一般情况：旋转加平移</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E9%BD%90%E6%AC%A1%E5%8F%98%E6%8D%A2"><span class="toc-text">4. 齐次变换</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E9%BD%90%E6%AC%A1%E5%8F%98%E6%8D%A2%E7%9A%84%E4%B8%89%E7%A7%8D%E8%A7%A3%E9%87%8A"><span class="toc-text">4.1 齐次变换的三种解释</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%97%8B%E8%BD%AC%E4%B8%8E%E5%8F%98%E6%8D%A2%E7%AE%97%E5%AD%90"><span class="toc-text">5. 旋转与变换算子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#5-1-%E4%B9%98%E6%B3%95%E9%A1%BA%E5%BA%8F"><span class="toc-text">5.1 乘法顺序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E5%8F%98%E6%8D%A2%E8%BF%90%E7%AE%97"><span class="toc-text">6. 变换运算</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-1-%E5%A4%8D%E5%90%88%E5%8F%98%E6%8D%A2"><span class="toc-text">6.1 复合变换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-2-%E5%8F%98%E6%8D%A2%E6%B1%82%E9%80%86"><span class="toc-text">6.2 变换求逆</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E5%8F%98%E6%8D%A2%E6%96%B9%E7%A8%8B%E4%B8%8E%E5%9D%90%E6%A0%87%E7%B3%BB%E5%9B%BE"><span class="toc-text">7. 变换方程与坐标系图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E5%A7%BF%E6%80%81%E7%9A%84%E5%A4%9A%E7%A7%8D%E8%A1%A8%E7%A4%BA"><span class="toc-text">8. 姿态的多种表示</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5"><span class="toc-text">8.1 旋转矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-X-Y-Z-%E5%9B%BA%E5%AE%9A%E8%A7%92"><span class="toc-text">8.2 X-Y-Z 固定角</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-Z-Y-X-%E6%AC%A7%E6%8B%89%E8%A7%92"><span class="toc-text">8.3 Z-Y-X 欧拉角</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-Z-Y-Z-%E6%AC%A7%E6%8B%89%E8%A7%92"><span class="toc-text">8.4 Z-Y-Z 欧拉角</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-5-%E7%AD%89%E6%95%88%E8%BD%B4%E8%A7%92"><span class="toc-text">8.5 等效轴角</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-6-%E6%AC%A7%E6%8B%89%E5%8F%82%E6%95%B0%E4%B8%8E%E5%8D%95%E4%BD%8D%E5%9B%9B%E5%85%83%E6%95%B0"><span class="toc-text">8.6 欧拉参数与单位四元数</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E7%BB%95%E4%B8%8D%E8%BF%87%E5%8E%9F%E7%82%B9%E7%9A%84%E8%BD%B4%E6%97%8B%E8%BD%AC"><span class="toc-text">9. 绕不过原点的轴旋转</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E8%87%AA%E7%94%B1%E5%90%91%E9%87%8F%E4%B8%8E%E7%BA%BF%E5%90%91%E9%87%8F"><span class="toc-text">10. 自由向量与线向量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-%E8%87%AA%E7%94%B1%E5%90%91%E9%87%8F"><span class="toc-text">10.1 自由向量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-%E7%BA%BF%E5%90%91%E9%87%8F"><span class="toc-text">10.2 线向量</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E8%AE%A1%E7%AE%97%E6%96%B9%E9%9D%A2%E7%9A%84%E8%80%83%E8%99%91"><span class="toc-text">11. 计算方面的考虑</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11-1-%E4%B8%8D%E5%BF%85%E6%9C%BA%E6%A2%B0%E5%9C%B0%E4%BD%BF%E7%94%A8%E5%AE%8C%E6%95%B4-4-times4-%E4%B9%98%E6%B3%95"><span class="toc-text">11.1 不必机械地使用完整 $4\times4$ 乘法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#11-2-%E9%80%89%E6%8B%A9%E5%90%88%E9%80%82%E7%9A%84%E4%B9%98%E6%B3%95%E9%A1%BA%E5%BA%8F"><span class="toc-text">11.2 选择合适的乘法顺序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E5%B8%B8%E8%A7%81%E6%98%93%E9%94%99%E7%82%B9"><span class="toc-text">12. 常见易错点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E4%B8%80%E9%A1%B5%E5%85%AC%E5%BC%8F%E9%80%9F%E6%9F%A5"><span class="toc-text">13. 一页公式速查</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9D%90%E6%A0%87%E6%98%A0%E5%B0%84"><span class="toc-text">坐标映射</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%BD%90%E6%AC%A1%E5%8F%98%E6%8D%A2"><span class="toc-text">齐次变换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%8D%E5%90%88"><span class="toc-text">复合</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B1%82%E9%80%86"><span class="toc-text">求逆</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%8B%E8%BD%AC%E7%9F%A9%E9%98%B5%E6%80%A7%E8%B4%A8"><span class="toc-text">旋转矩阵性质</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Rodrigues-%E5%85%AC%E5%BC%8F"><span class="toc-text">Rodrigues 公式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BD%B4%E8%A7%92%E5%8F%8D%E6%B1%82"><span class="toc-text">轴角反求</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E5%85%83%E6%95%B0%E7%BA%A6%E6%9D%9F"><span class="toc-text">四元数约束</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E8%87%AA%E6%B5%8B"><span class="toc-text">14. 自测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E5%AD%A6%E4%B9%A0%E4%B8%BB%E7%BA%BF"><span class="toc-text">15. 学习主线</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/20/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AD%A6%E5%AF%BC%E8%AE%BA-%E7%AC%AC2%E7%AB%A0-%E7%A9%BA%E9%97%B4%E6%8F%8F%E8%BF%B0%E4%B8%8E%E5%8F%98%E6%8D%A2/" title="机器人学导论（第3版）第2章：空间描述与变换">机器人学导论（第3版）第2章：空间描述与变换</a><time datetime="2026-09-20T11:16:52.000Z" title="发表于 2026-09-20 19:16:52">2026-09-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/08/2021-MRACon-%E7%B2%BE%E8%AF%BB%E8%AE%B2%E8%A7%A3%E6%8A%A5%E5%91%8A/" title="有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告">有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告</a><time datetime="2026-09-08T12:53:45.000Z" title="发表于 2026-09-08 20:53:45">2026-09-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/07/%E6%AD%A3%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="二连杆机械臂正逆运动学学习笔记">二连杆机械臂正逆运动学学习笔记</a><time datetime="2026-09-07T12:00:04.000Z" title="发表于 2026-09-07 20:00:04">2026-09-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/31/%E8%8B%B1%E8%AF%AD%E6%88%90%E7%86%9F%E8%AF%AD%E5%8F%A5%E7%A7%AF%E7%B4%AF/" title="英语成熟语句积累">英语成熟语句积累</a><time datetime="2026-08-31T04:01:17.000Z" title="发表于 2026-08-31 12:01:17">2026-08-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/08/31/%E7%BA%BF%E6%80%A7%E4%BB%A3%E6%95%B0%E7%AC%AC%E4%B8%80%E7%AB%A0-%E8%A1%8C%E5%88%97%E5%BC%8F%E6%80%BB%E7%BB%93%E7%AC%94%E8%AE%B0/" title="线性代数第一章：行列式总结笔记">线性代数第一章：行列式总结笔记</a><time datetime="2026-08-31T02:00:00.000Z" title="发表于 2026-08-31 10:00:00">2026-08-31</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2025 - 2026 By LenoVo</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
