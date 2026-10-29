@@ -1,0 +1,408 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ROS2 学习记录：Python 话题发布与订阅 | LenoVo的小站</title><meta name="author" content="LenoVo"><meta name="copyright" content="LenoVo"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="记录 ROS2 Humble 中使用 RCLPY 编写 Python 话题发布者与订阅者的过程，包括节点结构、回调、setup.py 入口、编译运行、RQT 关系图和常见问题排查。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ROS2 学习记录：Python 话题发布与订阅">
+<meta property="og:url" content="https://linx29853.github.io/2026/10/29/ROS2%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-%E8%AF%9D%E9%A2%98%E5%8F%91%E5%B8%83%E4%B8%8E%E8%AE%A2%E9%98%85/">
+<meta property="og:site_name" content="LenoVo的小站">
+<meta property="og:description" content="记录 ROS2 Humble 中使用 RCLPY 编写 Python 话题发布者与订阅者的过程，包括节点结构、回调、setup.py 入口、编译运行、RQT 关系图和常见问题排查。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linx29853.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-10-29T06:25:24.000Z">
+<meta property="article:modified_time" content="2026-10-29T06:26:10.961Z">
+<meta property="article:author" content="LenoVo">
+<meta property="article:tag" content="ROS2">
+<meta property="article:tag" content="Python">
+<meta property="article:tag" content="RCLPY">
+<meta property="article:tag" content="话题通信">
+<meta property="article:tag" content="发布与订阅">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linx29853.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "ROS2 学习记录：Python 话题发布与订阅",
+  "url": "https://linx29853.github.io/2026/10/29/ROS2%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-%E8%AF%9D%E9%A2%98%E5%8F%91%E5%B8%83%E4%B8%8E%E8%AE%A2%E9%98%85/",
+  "image": "https://linx29853.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-10-29T06:25:24.000Z",
+  "dateModified": "2026-10-29T06:26:10.961Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LenoVo",
+      "url": "https://linx29853.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://linx29853.github.io/2026/10/29/ROS2%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-%E8%AF%9D%E9%A2%98%E5%8F%91%E5%B8%83%E4%B8%8E%E8%AE%A2%E9%98%85/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?aeb05b46d9af3b7840e1a58e05c8aefc";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+btf.addGlobalFn('pjaxComplete', () => {
+  _hmt.push(['_trackPageview',window.location.pathname])
+}, 'baidu_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ROS2 学习记录：Python 话题发布与订阅',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/bilibili.css"><link rel="stylesheet" href="/css/travel-gallery.css"><link rel="stylesheet" href="/css/music-profile.css"><link rel="stylesheet" href="/css/books.css"><link rel="stylesheet" href="/css/category-cover.css"><link rel="stylesheet" href="/css/skill-tree.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">19</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">57</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/skill-tree/"><i class="fa-fw fas fa-list-check"></i><span> 技能树</span></a></div><div class="menus_item"><a class="site-page" href="/books/"><i class="fa-fw fas fa-book-open"></i><span> 资料</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LenoVo的小站</span></a><a class="nav-page-title" href="/"><span class="site-name">ROS2 学习记录：Python 话题发布与订阅</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/skill-tree/"><i class="fa-fw fas fa-list-check"></i><span> 技能树</span></a></div><div class="menus_item"><a class="site-page" href="/books/"><i class="fa-fw fas fa-book-open"></i><span> 资料</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">ROS2 学习记录：Python 话题发布与订阅</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-29T06:25:24.000Z" title="发表于 2026-10-29 14:25:24">2026-10-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-29T06:26:10.961Z" title="更新于 2026-10-29 14:26:10">2026-10-29</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/">技术学习</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AD%A6/">机器人学</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><ul>
+<li>学习日期：2026-10-29</li>
+<li>环境：Ubuntu 22.04、ROS2 Humble、Python 3</li>
+<li>教材：鱼香 ROS《3.话题之 RCLPY 实现》</li>
+<li>工作空间：<code>/home/linx/fishros_ros2/workspaces/learning_ws</code></li>
+<li>功能包：<code>example_topic_rclpy</code></li>
+</ul>
+<h2 id="1-本次完成了什么"><a href="#1-本次完成了什么" class="headerlink" title="1. 本次完成了什么"></a>1. 本次完成了什么</h2><p>创建 Python 功能包，编写发布节点和订阅节点，通过 <code>command</code> 话题发送字符串 <code>backup</code>，并在 RQT 中观察节点连接。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">发布节点 /topic_publisher_02</span><br><span class="line">    │ 每隔 0.5 秒发送 String(data=&quot;backup&quot;)</span><br><span class="line">    ▼</span><br><span class="line">话题 /command</span><br><span class="line">    │ 收到消息后触发订阅回调</span><br><span class="line">    ▼</span><br><span class="line">订阅节点 /topic_subscriber_02</span><br><span class="line">    └─ 计算 speed = -0.2，打印日志</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>当前订阅代码只计算并打印速度，没有发布速度消息，也没有控制真实电机。日志中的“发送速度”只是文字描述。</p>
+</blockquote>
+<h2 id="2-功能包、文件和节点的区别"><a href="#2-功能包、文件和节点的区别" class="headerlink" title="2. 功能包、文件和节点的区别"></a>2. 功能包、文件和节点的区别</h2><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>本次实例</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>工作空间</td>
+<td>learning_ws</td>
+<td>组织源码与构建结果</td>
+</tr>
+<tr>
+<td>功能包</td>
+<td>example_topic_rclpy</td>
+<td>管理代码、依赖和运行入口</td>
+</tr>
+<tr>
+<td>Python 文件</td>
+<td>topic_publisher_02.py</td>
+<td>保存源代码</td>
+</tr>
+<tr>
+<td>Python 类</td>
+<td>NodePublisher02</td>
+<td>定义节点的属性和行为</td>
+</tr>
+<tr>
+<td>ROS2 节点</td>
+<td>topic_publisher_02</td>
+<td>程序运行时创建的通信参与者</td>
+</tr>
+<tr>
+<td>话题</td>
+<td>&#x2F;command</td>
+<td>发布者和订阅者交换消息的通道</td>
+</tr>
+<tr>
+<td>消息类型</td>
+<td>std_msgs&#x2F;msg&#x2F;String</td>
+<td>规定消息结构，字符串放在 data 字段</td>
+</tr>
+</tbody></table>
+<p><code>ros2 pkg create</code> 创建包的结构，<code>touch</code> 创建空文件。只有运行程序并执行节点构造代码，才会创建运行中的节点。</p>
+<p>教程前面的节点代码是基础框架，后面的代码为同一个类增加发布、订阅和回调功能。合并时保留导入和 <code>main()</code>，替换原来的类定义，不能把两个同名类直接叠在一起。</p>
+<h2 id="3-节点基础代码怎样执行"><a href="#3-节点基础代码怎样执行" class="headerlink" title="3. 节点基础代码怎样执行"></a>3. 节点基础代码怎样执行</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="keyword">import</span> rclpy</span><br><span class="line"><span class="keyword">from</span> rclpy.node <span class="keyword">import</span> Node</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>第一行用于直接执行脚本时选择 Python 3 解释器。</li>
+<li><code>rclpy</code> 是 ROS2 的 Python 客户端库。</li>
+<li><code>Node</code> 提供节点名称、日志、发布订阅、定时器等能力。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">NodePublisher02</span>(<span class="title class_ inherited__">Node</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__(name)</span><br><span class="line">        <span class="variable language_">self</span>.get_logger().info(<span class="string">&quot;大家好，我是%s!&quot;</span> % name)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>class ... (Node)</code>：继承 Node。</li>
+<li><code>__init__</code>：创建对象时自动执行的初始化方法。</li>
+<li><code>self</code>：当前对象，由 Python 自动传入。</li>
+<li><code>name</code>：传入的节点名称。</li>
+<li><code>super().__init__(name)</code>：完成父类 Node 的初始化。</li>
+<li><code>get_logger().info(...)</code>：输出普通信息日志，问候只在初始化时打印一次。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>(<span class="params">args=<span class="literal">None</span></span>):</span><br><span class="line">    rclpy.init(args=args)</span><br><span class="line">    node = NodePublisher02(<span class="string">&quot;topic_publisher_02&quot;</span>)</span><br><span class="line">    rclpy.spin(node)</span><br><span class="line">    rclpy.shutdown()</span><br></pre></td></tr></table></figure>
+
+<p>执行顺序：初始化 ROS2 → 创建节点 → spin 处理回调 → 退出运行环境。</p>
+<p><code>spin()</code> 会等待并处理订阅、定时器等回调，不会重复执行 <code>__init__</code>。按 Ctrl+C 可能抛出 <code>KeyboardInterrupt</code>，因此例子里最后的 <code>shutdown()</code> 不保证执行到；后续可学习异常处理和资源清理。</p>
+<h3 id="args-是什么"><a href="#args-是什么" class="headerlink" title="args 是什么"></a>args 是什么</h3><p><code>args</code> 是 arguments 的缩写，是普通变量名，不是 Python 关键字。本例用于向 ROS2 传入启动参数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rclpy.init(args=args)</span><br><span class="line"><span class="comment">#          ↑    ↑</span></span><br><span class="line"><span class="comment">#    init 的参数名  main 中的变量</span></span><br></pre></td></tr></table></figure>
+
+<p>默认 <code>None</code> 表示让 rclpy 从进程命令行读取参数。例如启动时通过 ROS 参数重命名节点：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ros2 run example_topic_rclpy topic_publisher_02 --ros-args -r __node:=my_node</span><br></pre></td></tr></table></figure>
+
+<p>定义 <code>main()</code> 不会自动运行它。本项目通过 setup.py 的入口调用 main；若要直接执行 Python 文件，可在文件末尾添加：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-发布节点：当前源代码"><a href="#4-发布节点：当前源代码" class="headerlink" title="4. 发布节点：当前源代码"></a>4. 发布节点：当前源代码</h2><p>源文件：<code>workspaces/learning_ws/src/example_topic_rclpy/example_topic_rclpy/topic_publisher_02.py</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> rclpy</span><br><span class="line"><span class="keyword">from</span> rclpy.node <span class="keyword">import</span> Node</span><br><span class="line"><span class="keyword">from</span> std_msgs.msg <span class="keyword">import</span> String</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">NodePublisher02</span>(<span class="title class_ inherited__">Node</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self,name</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__(name)</span><br><span class="line">        <span class="variable language_">self</span>.get_logger().info(<span class="string">&quot;大家好，我是%s!&quot;</span> % name)</span><br><span class="line">        <span class="variable language_">self</span>.command_publisher = <span class="variable language_">self</span>.create_publisher(String, <span class="string">&quot;command&quot;</span>, <span class="number">10</span>) <span class="comment"># 创建一个发布器，发布String类型的消息，话题名为&quot;command&quot;，队列长度为10</span></span><br><span class="line">        <span class="variable language_">self</span>.timer=<span class="variable language_">self</span>.create_timer(<span class="number">0.5</span>,<span class="variable language_">self</span>.timer_callback) <span class="comment"># 创建一个定时器，周期为0.5秒，回调函数为timer_callback</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">timer_callback</span>(<span class="params">self</span>):</span><br><span class="line">        msg = String()</span><br><span class="line">        msg.data = <span class="string">&#x27;backup&#x27;</span></span><br><span class="line">        <span class="variable language_">self</span>.command_publisher.publish(msg)</span><br><span class="line"></span><br><span class="line">        </span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>(<span class="params">args=<span class="literal">None</span></span>):</span><br><span class="line">    rclpy.init(args=args) <span class="comment"># 初始化rclpy</span></span><br><span class="line">    node = NodePublisher02(<span class="string">&quot;topic_publisher_02&quot;</span>)  <span class="comment"># 新建一个节点</span></span><br><span class="line">    rclpy.spin(node) <span class="comment"># 保持节点运行，检测是否收到退出指令（Ctrl+C）</span></span><br><span class="line">    rclpy.shutdown() <span class="comment"># 关闭rclpy</span></span><br></pre></td></tr></table></figure>
+
+<p>关键语句：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">self</span>.create_publisher(String, <span class="string">&quot;command&quot;</span>, <span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+
+<p>创建发布者：消息类型为 <code>String</code>，话题名为 <code>command</code>。整数 <code>10</code> 是 QoS 历史深度的简写，在 KEEP_LAST 策略下表示保留最近最多 10 条样本，不是发布频率。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">self</span>.create_timer(<span class="number">0.5</span>, <span class="variable language_">self</span>.timer_callback)</span><br></pre></td></tr></table></figure>
+
+<p>每隔约 0.5 秒调用一次回调，即目标频率 2 Hz。传入的是函数本身，不能写成 <code>self.timer_callback()</code>，否则会在创建定时器时立即调用函数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">msg = String()</span><br><span class="line">msg.data = <span class="string">&#x27;backup&#x27;</span></span><br><span class="line"><span class="variable language_">self</span>.command_publisher.publish(msg)</span><br></pre></td></tr></table></figure>
+
+<p>先创建消息对象，再填充字符串，最后发布。当前发布者没有逐条打印发布日志，所以终端只出现问候也可能正在正常发消息。</p>
+<h2 id="5-订阅节点：当前源代码"><a href="#5-订阅节点：当前源代码" class="headerlink" title="5. 订阅节点：当前源代码"></a>5. 订阅节点：当前源代码</h2><p>源文件：<code>workspaces/learning_ws/src/example_topic_rclpy/example_topic_rclpy/topic_subscribe_02.py</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> rclpy</span><br><span class="line"><span class="keyword">from</span> rclpy.node <span class="keyword">import</span> Node</span><br><span class="line"><span class="keyword">from</span> std_msgs.msg <span class="keyword">import</span> String</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">NodeSubscriber02</span>(<span class="title class_ inherited__">Node</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self,name</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__(name)</span><br><span class="line">        <span class="variable language_">self</span>.get_logger().info(<span class="string">&quot;大家好，我是%s!&quot;</span> % name)</span><br><span class="line">        <span class="variable language_">self</span>.command_subscribe_= <span class="variable language_">self</span>.create_subscription(String, <span class="string">&quot;command&quot;</span>, <span class="variable language_">self</span>.command_callback, <span class="number">10</span>) <span class="comment"># 创建一个订阅器，订阅String类型的消息，话题名为&quot;command&quot;，回调函数为command_callback，队列长度为10</span></span><br><span class="line">        </span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">command_callback</span>(<span class="params">self, msg</span>):</span><br><span class="line">        speed = <span class="number">0.0</span></span><br><span class="line">        <span class="keyword">if</span> msg.data == <span class="string">&quot;backup&quot;</span>:</span><br><span class="line">            speed = -<span class="number">0.2</span></span><br><span class="line">        <span class="variable language_">self</span>.get_logger().info(<span class="string">f&#x27;收到[<span class="subst">&#123;msg.data&#125;</span>]命令，发送速度<span class="subst">&#123;speed&#125;</span>&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>(<span class="params">args=<span class="literal">None</span></span>):</span><br><span class="line">    rclpy.init(args=args) <span class="comment"># 初始化rclpy</span></span><br><span class="line">    node = NodeSubscriber02(<span class="string">&quot;topic_subscriber_02&quot;</span>)  <span class="comment"># 新建一个节点</span></span><br><span class="line">    rclpy.spin(node) <span class="comment"># 保持节点运行，检测是否收到退出指令（Ctrl+C）</span></span><br><span class="line">    rclpy.shutdown() <span class="comment"># 关闭rclpy</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">self</span>.create_subscription(String, <span class="string">&quot;command&quot;</span>, <span class="variable language_">self</span>.command_callback, <span class="number">10</span>)</span><br></pre></td></tr></table></figure>
+
+<p>订阅相同名称和类型的话题。收到消息后，执行 <code>command_callback(self, msg)</code>，实际内容在 <code>msg.data</code> 中。</p>
+<p>本次程序收到 <code>backup</code> 时令 speed 为 -0.2；其他字符串对应 0.0。这个数值只是当前代码的分支结果。</p>
+<p>注意：运行命令叫 <code>topic_subscribe_02</code>，程序创建的节点名叫 <code>topic_subscriber_02</code>，二者拼写不同但可以正常工作，因为分别来自入口配置和 Node 的构造参数。</p>
+<h2 id="6-setup-py-运行入口"><a href="#6-setup-py-运行入口" class="headerlink" title="6. setup.py 运行入口"></a>6. setup.py 运行入口</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">entry_points=&#123;</span><br><span class="line">    <span class="string">&#x27;console_scripts&#x27;</span>: [</span><br><span class="line">        <span class="string">&#x27;topic_publisher_02 = example_topic_rclpy.topic_publisher_02:main&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;topic_subscribe_02 = example_topic_rclpy.topic_subscribe_02:main&#x27;</span>,</span><br><span class="line">    ],</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+
+<p>格式：<code>命令名称 = Python包.模块:函数</code>。<code>ros2 run</code> 用左边的命令名找到右边的 <code>main()</code>。</p>
+<p>依赖方面：代码使用 <code>rclpy</code> 和 <code>std_msgs</code>，功能包的 package.xml 应声明这两个依赖。当前创建命令仅声明了 rclpy，后续应补上 <code>&lt;depend&gt;std_msgs&lt;/depend&gt;</code>，方便其他环境安装依赖。</p>
+<h2 id="7-编译与运行命令"><a href="#7-编译与运行命令" class="headerlink" title="7. 编译与运行命令"></a>7. 编译与运行命令</h2><h3 id="7-1-编译"><a href="#7-1-编译" class="headerlink" title="7.1 编译"></a>7.1 编译</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> /home/linx/fishros_ros2/scripts/activate.bash</span><br><span class="line"><span class="built_in">cd</span> /home/linx/fishros_ros2/workspaces/learning_ws</span><br><span class="line">colcon build --symlink-install --packages-select example_topic_rclpy</span><br><span class="line"><span class="built_in">source</span> install/setup.bash</span><br></pre></td></tr></table></figure>
+
+<p><code>--packages-select</code> 只构建指定包；<code>--symlink-install</code> 允许许多 Python 源码修改直接生效，但修改入口、安装配置等仍应重新构建。</p>
+<h3 id="7-2-终端一：发布者"><a href="#7-2-终端一：发布者" class="headerlink" title="7.2 终端一：发布者"></a>7.2 终端一：发布者</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> /home/linx/fishros_ros2/scripts/activate.bash</span><br><span class="line">ros2 run example_topic_rclpy topic_publisher_02</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-3-终端二：订阅者"><a href="#7-3-终端二：订阅者" class="headerlink" title="7.3 终端二：订阅者"></a>7.3 终端二：订阅者</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> /home/linx/fishros_ros2/scripts/activate.bash</span><br><span class="line">ros2 run example_topic_rclpy topic_subscribe_02</span><br></pre></td></tr></table></figure>
+
+<p>预期先出现问候，再持续出现：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">收到[backup]命令，发送速度-0.2</span><br></pre></td></tr></table></figure>
+
+<p>每个终端都加载同一份环境脚本，避免通信域等环境配置不一致。之前会话也用过直接 source ROS 和 install 的方式；不要在不同终端混用不同通信域配置。</p>
+<p>按 Ctrl+C 停止。当前示例停止时可能输出 KeyboardInterrupt 堆栈，这是主动中断 spin 导致的，需与启动失败区分。</p>
+<h2 id="8-日志怎样读"><a href="#8-日志怎样读" class="headerlink" title="8. 日志怎样读"></a>8. 日志怎样读</h2><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[INFO] [1793281519.285533820] [topic_subscriber_02]: 大家好，我是topic_subscriber_02!</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>部分</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>INFO</td>
+<td>普通信息日志级别</td>
+</tr>
+<tr>
+<td>1793281519.285533820</td>
+<td>日志时间戳，单位为秒</td>
+</tr>
+<tr>
+<td>topic_subscriber_02</td>
+<td>日志记录器名称，本例与节点名称一致</td>
+</tr>
+<tr>
+<td>大家好……</td>
+<td>代码指定的日志正文</td>
+</tr>
+</tbody></table>
+<p>问候由订阅节点自身的 <code>__init__</code> 打印，即使发布者没有启动也会出现。真正收到消息后，才会执行订阅回调并打印“收到[backup]”。</p>
+<h2 id="9-RQT-节点关系图"><a href="#9-RQT-节点关系图" class="headerlink" title="9. RQT 节点关系图"></a>9. RQT 节点关系图</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> /home/linx/fishros_ros2/scripts/activate.bash</span><br><span class="line">rqt</span><br></pre></td></tr></table></figure>
+
+<p>菜单：<code>Plugins → Introspection → Node Graph</code>。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/topic_publisher_02 ── /command [std_msgs/msg/String] ──▶ /topic_subscriber_02</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>原文引用的 RQT 截图未随 Markdown 文件提供，此处根据本次运行记录保留等价的连接关系示意。</p>
+</blockquote>
+<p>椭圆表示节点，箭头表示数据流向。当前 Nodes only 模式把话题 <code>/command</code> 标在连线上。没有设置额外命名空间时，相对名称 <code>command</code> 解析为 <code>/command</code>。</p>
+<table>
+<thead>
+<tr>
+<th>控件</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>蓝色刷新按钮</td>
+<td>更新节点和连接关系</td>
+</tr>
+<tr>
+<td>Nodes only</td>
+<td>以节点为主体显示；可以切换其他图模式</td>
+</tr>
+<tr>
+<td>名称过滤框</td>
+<td>筛选节点和话题</td>
+</tr>
+<tr>
+<td>Group &#x2F; Namespaces</td>
+<td>按命名空间分组</td>
+</tr>
+<tr>
+<td>Highlight</td>
+<td>指向元素时突出相关连接</td>
+</tr>
+<tr>
+<td>Fit</td>
+<td>将图适配到窗口</td>
+</tr>
+<tr>
+<td>Hide</td>
+<td>勾选表示隐藏对应类别</td>
+</tr>
+</tbody></table>
+<p>看不到话题时，可尝试切换显示模式，取消 Hide 中的 Leaf topics、Dead sinks 并刷新。</p>
+<p>关系图用于观察连接结构，不能单凭箭头判断消息内容或实际频率。通过命令行继续验证：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ros2 node list</span><br><span class="line">ros2 topic list -t</span><br><span class="line">ros2 topic info /command</span><br><span class="line">ros2 interface show std_msgs/msg/String</span><br><span class="line">ros2 topic <span class="built_in">echo</span> /command</span><br><span class="line">ros2 topic hz /command</span><br></pre></td></tr></table></figure>
+
+<p><code>echo</code> 应看到 <code>data: backup</code>；<code>hz</code> 测量接收频率，通常接近 2 Hz，实际会受调度和系统负载影响。</p>
+<h2 id="10-本次遇到的问题与修复"><a href="#10-本次遇到的问题与修复" class="headerlink" title="10. 本次遇到的问题与修复"></a>10. 本次遇到的问题与修复</h2><h3 id="10-1-找不到生成的功能包"><a href="#10-1-找不到生成的功能包" class="headerlink" title="10.1 找不到生成的功能包"></a>10.1 找不到生成的功能包</h3><p>最初包生成在 <code>/home/linx/example_topic_rclpy</code>。教程的 <code>cd chapt3/chapt3_ws/src/</code> 是相对路径，目录不存在时切换失败，下一行创建命令仍可能执行。</p>
+<p>现在包已移动到 learning_ws 的 src 下，无需再次移动或重新创建。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">pwd</span></span><br><span class="line"><span class="built_in">ls</span></span><br></pre></td></tr></table></figure>
+
+<p>执行创建操作前先确认当前目录；可用 <code>cd 目标目录 &amp;&amp; 下一条命令</code>，保证切换成功后再执行。</p>
+<h3 id="10-2-NameError-name-‘String’-is-not-defined"><a href="#10-2-NameError-name-‘String’-is-not-defined" class="headerlink" title="10.2 NameError: name ‘String’ is not defined"></a>10.2 NameError: name ‘String’ is not defined</h3><p>两个节点都使用了 String，但没有导入。修复：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> std_msgs.msg <span class="keyword">import</span> String</span><br></pre></td></tr></table></figure>
+
+<p>Python 区分大小写：String、string、STRING 是不同名称。</p>
+<h3 id="10-3-回调写到了类外"><a href="#10-3-回调写到了类外" class="headerlink" title="10.3 回调写到了类外"></a>10.3 回调写到了类外</h3><p><code>timer_callback</code> 和 <code>command_callback</code> 原来与 class 顶格，未成为类的方法。修复时将整个方法缩进到类内。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Example</span>(<span class="title class_ inherited__">Node</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__(name)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">callback</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+
+<p>类方法通常缩进 4 个空格，方法体再缩进 4 个空格。</p>
+<h3 id="10-4-发布器变量名不一致"><a href="#10-4-发布器变量名不一致" class="headerlink" title="10.4 发布器变量名不一致"></a>10.4 发布器变量名不一致</h3><p>创建时使用 <code>self.command_publisher</code>，调用时却使用 <code>self.command_publisher_</code>。末尾下划线也是变量名的一部分，必须统一。</p>
+<p>本次统一为 <code>self.command_publisher</code>。</p>
+<h3 id="10-5-验证结果"><a href="#10-5-验证结果" class="headerlink" title="10.5 验证结果"></a>10.5 验证结果</h3><p>修复后指定包构建成功。两个节点同时运行时，订阅端连续收到了 backup 消息；RQT 截图也显示了发布节点经 &#x2F;command 连接到订阅节点。</p>
+<h2 id="11-后续练习"><a href="#11-后续练习" class="headerlink" title="11. 后续练习"></a>11. 后续练习</h2><ul>
+<li><input disabled="" type="checkbox"> 把定时周期从 0.5 秒改成 1 秒，观察接收频率。</li>
+<li><input disabled="" type="checkbox"> 修改发送字符串，观察订阅回调的分支变化。</li>
+<li><input disabled="" type="checkbox"> 给发布回调添加日志，区分“发布”和“收到”。</li>
+<li><input disabled="" type="checkbox"> 停止发布者，观察订阅者是否仍然运行。</li>
+<li><input disabled="" type="checkbox"> 修改一个节点的话题名称，观察通信和 RQT 图的变化。</li>
+<li><input disabled="" type="checkbox"> 补齐 package.xml 中的 std_msgs 依赖。</li>
+<li><input disabled="" type="checkbox"> 学习 try&#x2F;finally、destroy_node 和关闭上下文的处理。</li>
+<li><input disabled="" type="checkbox"> 下一步学习服务通信，对比 Topic 与 Service。</li>
+</ul>
+<h2 id="12-后续阅读路线"><a href="#12-后续阅读路线" class="headerlink" title="12. 后续阅读路线"></a>12. 后续阅读路线</h2><p>优先掌握：第 2 章节点与工作空间 → 第 3 章话题、服务和接口 → 第 4 章参数和 Action → 第 5 章 Launch 与调试工具 → 第 6～7 章坐标变换和 TF → 第 8 章建模。</p>
+<p>移动机器人再进入第 9 章仿真、第 17 章建图与坐标约定、第 11 章 Nav2 和第 18 章导航 API。自己做底盘时，重点补第 16 章编码器、PID、差速运动学和里程计。</p>
+<p>本地资料存在空白：第 12 章三篇正文为空，部分 QoS、执行器、代价地图等文章只有占位内容。第 19 章 MoveIt2 目前也不足以支撑完整机械臂实践，需要后续补充资料。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linx29853.github.io">LenoVo</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linx29853.github.io/2026/10/29/ROS2%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-%E8%AF%9D%E9%A2%98%E5%8F%91%E5%B8%83%E4%B8%8E%E8%AE%A2%E9%98%85/">https://linx29853.github.io/2026/10/29/ROS2%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-%E8%AF%9D%E9%A2%98%E5%8F%91%E5%B8%83%E4%B8%8E%E8%AE%A2%E9%98%85/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://linx29853.github.io" target="_blank">LenoVo的小站</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/ROS2/">ROS2</a><a class="post-meta__tags" href="/tags/Python/">Python</a><a class="post-meta__tags" href="/tags/RCLPY/">RCLPY</a><a class="post-meta__tags" href="/tags/%E8%AF%9D%E9%A2%98%E9%80%9A%E4%BF%A1/">话题通信</a><a class="post-meta__tags" href="/tags/%E5%8F%91%E5%B8%83%E4%B8%8E%E8%AE%A2%E9%98%85/">发布与订阅</a></div><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/10/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%8A%A8%E5%8A%9B%E5%AD%A6%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-1/" title="机器人动力学学习记录（1）"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">机器人动力学学习记录（1）</div></div><div class="info-2"><div class="info-item-1"> 按原分享对话的学习顺序整理：先理解竖直质点，再推导二连杆，最后理解惯性矩阵并练习正动力学。 沿用原来的符号：动能为 $K$，势能为 $P$，拉格朗日函数为 $L&#x3D;K-P$；杆长为 $L_1,L_2$，关节角为 $\theta_1,\theta_2$。一般方程中的 $q&#x3D;(\theta_1,\theta_2)^T$。标量 $g$ 是重力加速度，向量 $g(q)$ 是重力补偿力矩。原交互演示改为可直接阅读的文字、公式和练习。  一、先理解广义坐标和广义力广义坐标的意思是：用一组独立变量，完整描述系统的构型。 竖直运动质点只需要位置 $x$；二连杆机械臂则可以选择两个关节角： $$q&#x3D;\begin{bmatrix}\theta_1\\\theta_2\end{bmatrix}.$$ 虽然末端在二维空间运动，但只要知道两个关节角，就能确定整个机械臂的构型。 对于转动关节，广义力就是关节力矩。广义力与广义速度的内积等于功率： $$f^T\dot q&#x3D;\mathcal P_{\mathrm{power}}.$$ 对二连杆机械臂： $$\mathcal...</div></div></div></a><a class="pagination-related" href="/2026/10/07/A-star-%E4%B8%8E%E6%A0%85%E6%A0%BC%E6%B3%95%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" title="A* 与栅格法学习总结"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">A* 与栅格法学习总结</div></div><div class="info-2"><div class="info-item-1"> 整理日期：2026-10-07。阅读依据：《Modern Robotics》§10.2.3–10.2.4、§10.4；本地 MR-tablet-v2.pdf 中对应 PDF 第 386–390 页、391–394 页，书内页码约 366–370、371–374。本文结合学习对话与平面二连杆项目解释概念，由 AI 协助整理。它是学习笔记，不代表已实现或验证 A*。具体项目进度仍以代码、实验报告和本人反馈为准。  1. A* 要解决什么问题给定起点、终点和一张图，寻找一条总代价尽可能小的可行路径。 对于平面二连杆，构型用两个关节角表示： $$q&#x3D;(q_1,q_2)$$ 构型空间中的一个点代表机械臂的一种姿态。A* 搜索的是关节姿态组成的路线；机械臂末端在 XY 空间中不一定沿直线移动。 在当前学习方案中，先把关节角离散成网格，再在有效节点和有效连接组成的图上搜索。 2. 图、节点、边与树图由节点和边组成，可以写成： $$G&#x3D;(V,E)$$    概念 在项目中的对应    节点 一个关节角采样姿态，通常用网格下标标识   边 两个姿态之间允许执行的运动连接   ...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/08/25/%E6%9C%BA%E5%99%A8%E4%BA%BA%E8%BF%90%E5%8A%A8%E5%AD%A6%E4%B8%A4%E5%91%A8%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" title="机器人运动学两周学习总结"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-25</div><div class="info-item-2">机器人运动学两周学习总结</div></div><div class="info-2"><div class="info-item-1"> 学习主线：位姿表示 → 正运动学 → 逆运动学 → DH 建模 → 雅可比与奇异性 → 综合验证与路径规划  一、两周学习目标经过两周学习，应当能够：  看懂并计算旋转矩阵、平移矩阵和齐次变换矩阵； 根据机器人 DH 参数建立正运动学模型； 使用几何法求解平面 2R 机械臂的逆运动学； 使用数值迭代法求解一般机器人的逆运动学； 理解逆解多解、初值依赖、关节限位和解的选择； 理解雅可比的速度映射意义，并能判断奇异性； 使用“逆解后代回正解”的方式验证计算结果； 理解运动学在机器人完整软件系统中的位置。   第一周：通过仿真建立直觉Day 1–2：工具准备与数学热身1. 工具 RoboDK：拖动机器人、查看关节角和末端位姿、验证运动学结果； Python：实现矩阵运算和运动学算法； NumPy：处理向量、矩阵、三角函数和线性方程。  建议统一使用弧度参与程序内部计算： 1234import numpy as npq_deg = 30.0q_rad = np.deg2rad(q_deg)  2. 齐次变换矩阵刚体位姿由位置和姿态组成： $${}^A T_B&#x3D;\begin{b...</div></div></div></a><a class="pagination-related" href="/2026/09/07/%E6%AD%A3%E9%80%86%E8%BF%90%E5%8A%A8%E5%AD%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="二连杆机械臂正逆运动学学习笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-09-07</div><div class="info-item-2">二连杆机械臂正逆运动学学习笔记</div></div><div class="info-2"><div class="info-item-1"> 项目：2-Link Manipulator Learning机械臂：平面二自由度旋转关节机械臂（2R）连杆长度：$a_1&#x3D;0.30\,\text{m}$，$a_2&#x3D;0.25\,\text{m}$  1. 学习目标本阶段的目标不是只让原仓库代码运行，而是能够独立完成下面的闭环：  根据关节角计算末端位置，即正运动学； 根据目标位置计算关节角，即逆运动学； 使用正运动学回代逆运动学的结果； 判断目标点是否可达； 理解多解、边界状态和数值误差； 能够发现并定位矩阵运算中的实现错误。   2. 二连杆机械臂模型机械臂由两个旋转关节组成：  $q_1$：第一关节相对基坐标系的角度； $q_2$：第二关节相对第一连杆的角度； $a_1$：第一连杆长度； $a_2$：第二连杆长度； $(x,y)$：末端执行器在基坐标系中的位置。  需要特别注意：第二连杆相对基坐标系的绝对角度不是 $q_2$，而是： $$q_1+q_2$$ 因此两个关节角共同决定末端位置。  3. 正运动学3.1 正运动学解决什么问题已知关节角和连杆长度： $$(q_1,q_2,a_1,a_2)$$ 计算...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">LenoVo</div><div class="author-info-description">记录轨道交通、公交与卡车见闻，以及技术学习笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">19</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">57</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/linx29853"><i class="fab fa-github"></i><span>访问 GitHub</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LenoVo 的小站</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%9C%AC%E6%AC%A1%E5%AE%8C%E6%88%90%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-text">1. 本次完成了什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%8A%9F%E8%83%BD%E5%8C%85%E3%80%81%E6%96%87%E4%BB%B6%E5%92%8C%E8%8A%82%E7%82%B9%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-text">2. 功能包、文件和节点的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E8%8A%82%E7%82%B9%E5%9F%BA%E7%A1%80%E4%BB%A3%E7%A0%81%E6%80%8E%E6%A0%B7%E6%89%A7%E8%A1%8C"><span class="toc-text">3. 节点基础代码怎样执行</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#args-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">args 是什么</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%8F%91%E5%B8%83%E8%8A%82%E7%82%B9%EF%BC%9A%E5%BD%93%E5%89%8D%E6%BA%90%E4%BB%A3%E7%A0%81"><span class="toc-text">4. 发布节点：当前源代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E8%AE%A2%E9%98%85%E8%8A%82%E7%82%B9%EF%BC%9A%E5%BD%93%E5%89%8D%E6%BA%90%E4%BB%A3%E7%A0%81"><span class="toc-text">5. 订阅节点：当前源代码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-setup-py-%E8%BF%90%E8%A1%8C%E5%85%A5%E5%8F%A3"><span class="toc-text">6. setup.py 运行入口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E7%BC%96%E8%AF%91%E4%B8%8E%E8%BF%90%E8%A1%8C%E5%91%BD%E4%BB%A4"><span class="toc-text">7. 编译与运行命令</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#7-1-%E7%BC%96%E8%AF%91"><span class="toc-text">7.1 编译</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-2-%E7%BB%88%E7%AB%AF%E4%B8%80%EF%BC%9A%E5%8F%91%E5%B8%83%E8%80%85"><span class="toc-text">7.2 终端一：发布者</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-3-%E7%BB%88%E7%AB%AF%E4%BA%8C%EF%BC%9A%E8%AE%A2%E9%98%85%E8%80%85"><span class="toc-text">7.3 终端二：订阅者</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%97%A5%E5%BF%97%E6%80%8E%E6%A0%B7%E8%AF%BB"><span class="toc-text">8. 日志怎样读</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-RQT-%E8%8A%82%E7%82%B9%E5%85%B3%E7%B3%BB%E5%9B%BE"><span class="toc-text">9. RQT 节点关系图</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E6%9C%AC%E6%AC%A1%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98%E4%B8%8E%E4%BF%AE%E5%A4%8D"><span class="toc-text">10. 本次遇到的问题与修复</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#10-1-%E6%89%BE%E4%B8%8D%E5%88%B0%E7%94%9F%E6%88%90%E7%9A%84%E5%8A%9F%E8%83%BD%E5%8C%85"><span class="toc-text">10.1 找不到生成的功能包</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-2-NameError-name-%E2%80%98String%E2%80%99-is-not-defined"><span class="toc-text">10.2 NameError: name ‘String’ is not defined</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-3-%E5%9B%9E%E8%B0%83%E5%86%99%E5%88%B0%E4%BA%86%E7%B1%BB%E5%A4%96"><span class="toc-text">10.3 回调写到了类外</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-4-%E5%8F%91%E5%B8%83%E5%99%A8%E5%8F%98%E9%87%8F%E5%90%8D%E4%B8%8D%E4%B8%80%E8%87%B4"><span class="toc-text">10.4 发布器变量名不一致</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#10-5-%E9%AA%8C%E8%AF%81%E7%BB%93%E6%9E%9C"><span class="toc-text">10.5 验证结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E5%90%8E%E7%BB%AD%E7%BB%83%E4%B9%A0"><span class="toc-text">11. 后续练习</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E5%90%8E%E7%BB%AD%E9%98%85%E8%AF%BB%E8%B7%AF%E7%BA%BF"><span class="toc-text">12. 后续阅读路线</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%8A%A8%E5%8A%9B%E5%AD%A6%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-1/" title="机器人动力学学习记录（1）">机器人动力学学习记录（1）</a><time datetime="2026-10-29T09:35:00.000Z" title="发表于 2026-10-29 17:35:00">2026-10-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/29/ROS2%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-%E8%AF%9D%E9%A2%98%E5%8F%91%E5%B8%83%E4%B8%8E%E8%AE%A2%E9%98%85/" title="ROS2 学习记录：Python 话题发布与订阅">ROS2 学习记录：Python 话题发布与订阅</a><time datetime="2026-10-29T06:25:24.000Z" title="发表于 2026-10-29 14:25:24">2026-10-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/07/A-star-%E4%B8%8E%E6%A0%85%E6%A0%BC%E6%B3%95%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" title="A* 与栅格法学习总结">A* 与栅格法学习总结</a><time datetime="2026-10-07T08:26:15.000Z" title="发表于 2026-10-07 16:26:15">2026-10-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/22/Modern-Robotics-%E7%AC%AC2%E7%AB%A0-%E6%9E%84%E5%9E%8B%E7%A9%BA%E9%97%B4%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" title="Modern Robotics 第2章：构型空间学习总结">Modern Robotics 第2章：构型空间学习总结</a><time datetime="2026-09-22T11:53:58.000Z" title="发表于 2026-09-22 19:53:58">2026-09-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/20/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AD%A6%E5%AF%BC%E8%AE%BA-%E7%AC%AC2%E7%AB%A0-%E7%A9%BA%E9%97%B4%E6%8F%8F%E8%BF%B0%E4%B8%8E%E5%8F%98%E6%8D%A2/" title="机器人学导论（第3版）第2章：空间描述与变换">机器人学导论（第3版）第2章：空间描述与变换</a><time datetime="2026-09-20T11:16:52.000Z" title="发表于 2026-09-20 19:16:52">2026-09-20</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2025 - 2026 By LenoVo</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
