@@ -1,0 +1,533 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>机器人动力学学习记录（1） | LenoVo的小站</title><meta name="author" content="LenoVo"><meta name="copyright" content="LenoVo"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="从竖直质点和拉格朗日方程出发，完整推导平面二连杆机械臂动力学，并理解质量矩阵、科氏与离心项、重力项、特征方向及正动力学求解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器人动力学学习记录（1）">
+<meta property="og:url" content="https://linx29853.github.io/2026/10/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%8A%A8%E5%8A%9B%E5%AD%A6%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-1/">
+<meta property="og:site_name" content="LenoVo的小站">
+<meta property="og:description" content="从竖直质点和拉格朗日方程出发，完整推导平面二连杆机械臂动力学，并理解质量矩阵、科氏与离心项、重力项、特征方向及正动力学求解。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linx29853.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-10-29T09:35:00.000Z">
+<meta property="article:modified_time" content="2026-10-29T09:35:14.595Z">
+<meta property="article:author" content="LenoVo">
+<meta property="article:tag" content="机器人学">
+<meta property="article:tag" content="Modern Robotics">
+<meta property="article:tag" content="机器人动力学">
+<meta property="article:tag" content="拉格朗日方程">
+<meta property="article:tag" content="二连杆机械臂">
+<meta property="article:tag" content="惯性矩阵">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linx29853.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "机器人动力学学习记录（1）",
+  "url": "https://linx29853.github.io/2026/10/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%8A%A8%E5%8A%9B%E5%AD%A6%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-1/",
+  "image": "https://linx29853.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-10-29T09:35:00.000Z",
+  "dateModified": "2026-10-29T09:35:14.595Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LenoVo",
+      "url": "https://linx29853.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://linx29853.github.io/2026/10/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%8A%A8%E5%8A%9B%E5%AD%A6%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-1/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?aeb05b46d9af3b7840e1a58e05c8aefc";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+btf.addGlobalFn('pjaxComplete', () => {
+  _hmt.push(['_trackPageview',window.location.pathname])
+}, 'baidu_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '机器人动力学学习记录（1）',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/bilibili.css"><link rel="stylesheet" href="/css/travel-gallery.css"><link rel="stylesheet" href="/css/music-profile.css"><link rel="stylesheet" href="/css/books.css"><link rel="stylesheet" href="/css/category-cover.css"><link rel="stylesheet" href="/css/skill-tree.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">53</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/skill-tree/"><i class="fa-fw fas fa-list-check"></i><span> 技能树</span></a></div><div class="menus_item"><a class="site-page" href="/books/"><i class="fa-fw fas fa-book-open"></i><span> 资料</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LenoVo的小站</span></a><a class="nav-page-title" href="/"><span class="site-name">机器人动力学学习记录（1）</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/skill-tree/"><i class="fa-fw fas fa-list-check"></i><span> 技能树</span></a></div><div class="menus_item"><a class="site-page" href="/books/"><i class="fa-fw fas fa-book-open"></i><span> 资料</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">机器人动力学学习记录（1）</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-10-29T09:35:00.000Z" title="发表于 2026-10-29 17:35:00">2026-10-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-10-29T09:35:14.595Z" title="更新于 2026-10-29 17:35:14">2026-10-29</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/">技术学习</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AD%A6/">机器人学</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>按<a target="_blank" rel="noopener" href="https://chatgpt.com/share/6ae30da7-6cd0-83ea-822a-9077464ba160">原分享对话</a>的学习顺序整理：先理解竖直质点，再推导二连杆，最后理解惯性矩阵并练习正动力学。</p>
+<p>沿用原来的符号：动能为 $K$，势能为 $P$，拉格朗日函数为 $L&#x3D;K-P$；杆长为 $L_1,L_2$，关节角为 $\theta_1,\theta_2$。一般方程中的 $q&#x3D;(\theta_1,\theta_2)^T$。标量 $g$ 是重力加速度，向量 $g(q)$ 是重力补偿力矩。原交互演示改为可直接阅读的文字、公式和练习。</p>
+</blockquote>
+<h2 id="一、先理解广义坐标和广义力"><a href="#一、先理解广义坐标和广义力" class="headerlink" title="一、先理解广义坐标和广义力"></a>一、先理解广义坐标和广义力</h2><p>广义坐标的意思是：用一组独立变量，完整描述系统的构型。</p>
+<p>竖直运动质点只需要位置 $x$；二连杆机械臂则可以选择两个关节角：</p>
+<p>$$<br>q&#x3D;\begin{bmatrix}\theta_1\\\theta_2\end{bmatrix}.<br>$$</p>
+<p>虽然末端在二维空间运动，但只要知道两个关节角，就能确定整个机械臂的构型。</p>
+<p>对于转动关节，广义力就是关节力矩。广义力与广义速度的内积等于功率：</p>
+<p>$$<br>f^T\dot q&#x3D;\mathcal P_{\mathrm{power}}.<br>$$</p>
+<p>对二连杆机械臂：</p>
+<p>$$<br>\mathcal P_{\mathrm{power}}&#x3D;\tau_1\dot\theta_1+\tau_2\dot\theta_2.<br>$$</p>
+<p>这对应熟悉的转动功率关系。注意，功率与后文表示势能的 $P$ 是不同物理量。</p>
+<h2 id="二、用竖直运动质点，把拉格朗日方程讲清楚"><a href="#二、用竖直运动质点，把拉格朗日方程讲清楚" class="headerlink" title="二、用竖直运动质点，把拉格朗日方程讲清楚"></a>二、用竖直运动质点，把拉格朗日方程讲清楚</h2><h3 id="1-先从牛顿第二定律看这个系统"><a href="#1-先从牛顿第二定律看这个系统" class="headerlink" title="1. 先从牛顿第二定律看这个系统"></a>1. 先从牛顿第二定律看这个系统</h3><p>考虑质量为 $m$ 的质点，只能沿竖直方向运动。规定向上为正，向上的外力为 $f$，重力为 $-mg$。质量和重力加速度均为常量，忽略阻力。</p>
+<p>牛顿第二定律给出：</p>
+<p>$$<br>f-mg&#x3D;m\ddot x.<br>$$</p>
+<p>移项：</p>
+<p>$$<br>\boxed{f&#x3D;m\ddot x+mg.}<br>$$</p>
+<p>这个式子回答的是：希望质点产生指定加速度，需要施加多大的外力？</p>
+<p>例如，$m&#x3D;2\,\mathrm{kg}$、$g&#x3D;9.8\,\mathrm{m&#x2F;s^2}$，希望向上加速度为 $3\,\mathrm{m&#x2F;s^2}$：</p>
+<p>$$<br>f&#x3D;2\times3+2\times9.8&#x3D;25.6\,\mathrm N.<br>$$</p>
+<p>其中 $19.6\,\mathrm N$ 用来抵消重力，$6\,\mathrm N$ 用来产生加速度。加速度向上不代表当前速度一定向上。</p>
+<h3 id="2-为什么先研究动能和势能？"><a href="#2-为什么先研究动能和势能？" class="headerlink" title="2. 为什么先研究动能和势能？"></a>2. 为什么先研究动能和势能？</h3><p>牛顿方法从受力分析出发，拉格朗日方法则从位置、速度和能量出发。</p>
+<p>动能为：</p>
+<p>$$<br>K&#x3D;\frac12m\dot x^2.<br>$$</p>
+<p>质量为 $2\,\mathrm{kg}$，速度大小为 $3\,\mathrm{m&#x2F;s}$ 时，动能为 $9\,\mathrm J$；速度大小加倍，动能变为 $36\,\mathrm J$。同样大小的向上、向下速度，动能相同。</p>
+<p>以 $x&#x3D;0$ 为势能零点：</p>
+<p>$$<br>P&#x3D;mgx.<br>$$</p>
+<p>质点升高，势能增加。为什么势能写成正的 $mgx$，而重力却是负的？因为保守力与势能满足：</p>
+<p>$$<br>F_g&#x3D;-\frac{dP}{dx}&#x3D;-mg.<br>$$</p>
+<p>势能对位置的变化率，告诉我们对应保守力的大小和方向。势能加上常数不会改变这个结果。</p>
+<h3 id="3-为什么构造-L-K-P-？"><a href="#3-为什么构造-L-K-P-？" class="headerlink" title="3. 为什么构造 $L&#x3D;K-P$？"></a>3. 为什么构造 $L&#x3D;K-P$？</h3><p>拉格朗日函数定义为：</p>
+<p>$$<br>\boxed{L(x,\dot x)&#x3D;K-P&#x3D;\frac12m\dot x^2-mgx.}<br>$$</p>
+<p>它与总机械能 $E&#x3D;K+P$ 的用途不同。拉格朗日函数用于构造作用量：</p>
+<p>$$<br>S&#x3D;\int_{t_1}^{t_2}L\,dt.<br>$$</p>
+<p>无额外非保守广义力时，真实运动满足驻定作用量条件 $\delta S&#x3D;0$。驻定不一定是最小值。存在外加广义力时，需要把它的虚功计入。</p>
+<p>目前先抓住这个直觉：动能对速度的依赖，经过求导后产生惯性效应；势能对位置的依赖，经过求导后产生保守力对应的项。把两者按欧拉–拉格朗日方程组合，就能建立运动方程。</p>
+<h3 id="4-按四步运算，亲自验证"><a href="#4-按四步运算，亲自验证" class="headerlink" title="4. 按四步运算，亲自验证"></a>4. 按四步运算，亲自验证</h3><p>欧拉–拉格朗日方程为：</p>
+<p>$$<br>\boxed{f&#x3D;\frac{d}{dt}\left(\frac{\partial L}{\partial\dot x}\right)-\frac{\partial L}{\partial x}.}<br>$$</p>
+<p><strong>第一步：对速度求偏导。</strong></p>
+<p>偏导时，把 $x$ 和 $\dot x$ 视为独立变量。所以：</p>
+<p>$$<br>\frac{\partial}{\partial\dot x}\left(\frac12m\dot x^2\right)&#x3D;m\dot x,<br>\qquad<br>\frac{\partial}{\partial\dot x}(-mgx)&#x3D;0.<br>$$</p>
+<p>得到：</p>
+<p>$$<br>\frac{\partial L}{\partial\dot x}&#x3D;m\dot x.<br>$$</p>
+<p>这恰好是质点的动量。一般情况下，$\partial L&#x2F;\partial\dot q_i$ 称为广义动量。</p>
+<p><strong>第二步：对时间求导。</strong></p>
+<p>因为 $m$ 为常量：</p>
+<p>$$<br>\frac{d}{dt}\left(\frac{\partial L}{\partial\dot x}\right)<br>&#x3D;\frac{d}{dt}(m\dot x)&#x3D;m\ddot x.<br>$$</p>
+<p>这一步把动量变为动量变化率，得到了惯性项。</p>
+<p><strong>第三步：对位置求偏导。</strong></p>
+<p>动能不显含 $x$，所以：</p>
+<p>$$<br>\frac{\partial L}{\partial x}&#x3D;0-mg&#x3D;-mg.<br>$$</p>
+<p><strong>第四步：组合起来。</strong></p>
+<p>$$<br>f&#x3D;m\ddot x-(-mg)&#x3D;\boxed{m\ddot x+mg}.<br>$$</p>
+<p>它与牛顿第二定律的结果完全一致。注意这里减去的是 $-mg$，不能漏掉外层负号。</p>
+<h3 id="5-从能量和功再理解一次"><a href="#5-从能量和功再理解一次" class="headerlink" title="5. 从能量和功再理解一次"></a>5. 从能量和功再理解一次</h3><p>总机械能为：</p>
+<p>$$<br>E&#x3D;\frac12m\dot x^2+mgx.<br>$$</p>
+<p>外力的功率满足：</p>
+<p>$$<br>\frac{dE}{dt}&#x3D;f\dot x.<br>$$</p>
+<p>展开：</p>
+<p>$$<br>m\dot x\ddot x+mg\dot x&#x3D;f\dot x,<br>$$</p>
+<p>即：</p>
+<p>$$<br>(m\ddot x+mg-f)\dot x&#x3D;0.<br>$$</p>
+<p>在 $\dot x\ne0$ 时约去速度，同样得到 $f&#x3D;m\ddot x+mg$。但速度为零的瞬间不能直接约去；单靠这一条能量关系，也不能一般地确定多自由度系统全部运动方程。它帮助理解，不能代替完整动力学推导。</p>
+<h3 id="6-一般欧拉–拉格朗日方程从哪里来？"><a href="#6-一般欧拉–拉格朗日方程从哪里来？" class="headerlink" title="6. 一般欧拉–拉格朗日方程从哪里来？"></a>6. 一般欧拉–拉格朗日方程从哪里来？</h3><p>这部分作为补充推导，可以在四步运算熟练后回看。对独立广义坐标、理想完整约束，将保守力计入势能，其余广义力记为 $Q_i$：</p>
+<p>$$<br>\delta S+\int_{t_1}^{t_2}\sum_iQ_i\delta q_i\,dt&#x3D;0.<br>$$</p>
+<p>展开作用量的变分：</p>
+<p>$$<br>\delta S&#x3D;\int_{t_1}^{t_2}\sum_i\left(<br>\frac{\partial L}{\partial q_i}\delta q_i+<br>\frac{\partial L}{\partial\dot q_i}\delta\dot q_i\right)dt.<br>$$</p>
+<p>对第二项分部积分，利用固定端点条件消去边界项：</p>
+<p>$$<br>\int_{t_1}^{t_2}\sum_i\left(<br>\frac{\partial L}{\partial q_i}-\frac{d}{dt}\frac{\partial L}{\partial\dot q_i}+Q_i<br>\right)\delta q_i\,dt&#x3D;0.<br>$$</p>
+<p>由于各独立坐标的变分任意：</p>
+<p>$$<br>\boxed{Q_i&#x3D;\frac{d}{dt}\frac{\partial L}{\partial\dot q_i}-\frac{\partial L}{\partial q_i}.}<br>$$</p>
+<p>对机械臂的转动关节，$Q_i&#x3D;\tau_i$。这种方法在理想约束下，可以避免逐个求出约束反力。</p>
+<h2 id="三、先看清楚二连杆模型，再写位置和速度"><a href="#三、先看清楚二连杆模型，再写位置和速度" class="headerlink" title="三、先看清楚二连杆模型，再写位置和速度"></a>三、先看清楚二连杆模型，再写位置和速度</h2><p><img src="/images/robot-dynamics-1/figure-8-1-2r-model.png" alt="Modern Robotics 图8.1：二连杆模型及直角姿态" loading='lazy'></p>
+<p><em>原书图 8.1，印刷页 271（PDF 第 291 页）。</em></p>
+<p><strong>先看图，再看下面的位置公式。</strong> 左图中，$\theta_1$ 从水平轴量起；$\theta_2$ 从第一杆的延长虚线量起，所以第二杆相对水平轴的角度是 $\theta_1+\theta_2$。两个黑点分别是集中质量 $m_1,m_2$，向下箭头是重力方向。</p>
+<p>右图是后面反复使用的姿态：第一杆水平、第二杆竖直，即 $(\theta_1,\theta_2)&#x3D;(0,\pi&#x2F;2)$。试着先指认两个质点，再代入位置公式：应得到 $(x_1,y_1)&#x3D;(L_1,0)$、$(x_2,y_2)&#x3D;(L_1,L_2)$。</p>
+<p>沿用原对话的模型：两根无质量刚杆，质量 $m_1,m_2&gt;0$ 分别集中在各杆末端，杆长为 $L_1,L_2&gt;0$。机械臂在竖直平面运动，忽略摩擦、弹性和接触力。</p>
+<p>$\theta_1$ 是第一杆相对水平向右方向的角度；$\theta_2$ 是第二杆相对第一杆延长方向的角度。因此，第二杆的绝对角度是 $\theta_1+\theta_2$。</p>
+<p>这里最容易混淆的是：即使 $\dot\theta_2&#x3D;0$，只要第一关节转动，第二杆仍可能整体运动。第二杆的绝对角速度是 $\dot\theta_1+\dot\theta_2$。原理解检查选择 B，正确。</p>
+<h3 id="1-两个质点的位置"><a href="#1-两个质点的位置" class="headerlink" title="1. 两个质点的位置"></a>1. 两个质点的位置</h3><p>$$<br>x_1&#x3D;L_1\cos\theta_1,\qquad y_1&#x3D;L_1\sin\theta_1.<br>$$</p>
+<p>$$<br>\begin{aligned}<br>x_2&amp;&#x3D;L_1\cos\theta_1+L_2\cos(\theta_1+\theta_2),\\<br>y_2&amp;&#x3D;L_1\sin\theta_1+L_2\sin(\theta_1+\theta_2).<br>\end{aligned}<br>$$</p>
+<p>第二质点的位置，是第一杆末端的位置加上第二杆相对第一杆末端的位移。</p>
+<h3 id="2-从位置求速度"><a href="#2-从位置求速度" class="headerlink" title="2. 从位置求速度"></a>2. 从位置求速度</h3><p>第一质点：</p>
+<p>$$<br>\dot x_1&#x3D;-L_1\sin\theta_1\dot\theta_1,\qquad<br>\dot y_1&#x3D;L_1\cos\theta_1\dot\theta_1.<br>$$</p>
+<p>所以：</p>
+<p>$$<br>v_1^2&#x3D;\dot x_1^2+\dot y_1^2&#x3D;L_1^2\dot\theta_1^2,<br>\qquad K_1&#x3D;\frac12m_1L_1^2\dot\theta_1^2.<br>$$</p>
+<p>为看清第二质点的交叉项，暂时定义：</p>
+<p>$$<br>\alpha&#x3D;\theta_1,\qquad\beta&#x3D;\theta_1+\theta_2,<br>\qquad\dot\beta&#x3D;\dot\theta_1+\dot\theta_2.<br>$$</p>
+<p>则：</p>
+<p>$$<br>\dot x_2&#x3D;-L_1\sin\alpha\dot\alpha-L_2\sin\beta\dot\beta,<br>$$</p>
+<p>$$<br>\dot y_2&#x3D;L_1\cos\alpha\dot\alpha+L_2\cos\beta\dot\beta.<br>$$</p>
+<h2 id="四、完整展开-K-2-：交叉项与余弦从哪里来？"><a href="#四、完整展开-K-2-：交叉项与余弦从哪里来？" class="headerlink" title="四、完整展开 $K_2$：交叉项与余弦从哪里来？"></a>四、完整展开 $K_2$：交叉项与余弦从哪里来？</h2><h3 id="1-分别展开两个平方"><a href="#1-分别展开两个平方" class="headerlink" title="1. 分别展开两个平方"></a>1. 分别展开两个平方</h3><p>$$<br>\dot x_2^2&#x3D;L_1^2\sin^2\alpha\dot\alpha^2<br>+L_2^2\sin^2\beta\dot\beta^2<br>+2L_1L_2\sin\alpha\sin\beta\dot\alpha\dot\beta.<br>$$</p>
+<p>$$<br>\dot y_2^2&#x3D;L_1^2\cos^2\alpha\dot\alpha^2<br>+L_2^2\cos^2\beta\dot\beta^2<br>+2L_1L_2\cos\alpha\cos\beta\dot\alpha\dot\beta.<br>$$</p>
+<p>将两式相加，利用 $\sin^2\alpha+\cos^2\alpha&#x3D;1$ 和 $\sin^2\beta+\cos^2\beta&#x3D;1$：</p>
+<p>$$<br>v_2^2&#x3D;L_1^2\dot\alpha^2+L_2^2\dot\beta^2<br>+2L_1L_2\dot\alpha\dot\beta<br>(\sin\alpha\sin\beta+\cos\alpha\cos\beta).<br>$$</p>
+<h3 id="2-用差角公式得到-cos-theta-2"><a href="#2-用差角公式得到-cos-theta-2" class="headerlink" title="2. 用差角公式得到 $\cos\theta_2$"></a>2. 用差角公式得到 $\cos\theta_2$</h3><p>$$<br>\sin\alpha\sin\beta+\cos\alpha\cos\beta&#x3D;\cos(\alpha-\beta).<br>$$</p>
+<p>因为：</p>
+<p>$$<br>\alpha-\beta&#x3D;\theta_1-(\theta_1+\theta_2)&#x3D;-\theta_2,<br>$$</p>
+<p>而余弦是偶函数，所以：</p>
+<p>$$<br>\cos(\alpha-\beta)&#x3D;\cos(-\theta_2)&#x3D;\cos\theta_2.<br>$$</p>
+<p>这就是余弦项出现的数学过程。物理上，第二质点的速度是两个速度贡献的向量和，平方后含有它们的点积：</p>
+<p>$$<br>|v_a+v_b|^2&#x3D;|v_a|^2+|v_b|^2+2v_a\cdot v_b.<br>$$</p>
+<p>这里的点积带来 $\cos\theta_2$；速度及角速度的正负仍需保留在公式中。</p>
+<h3 id="3-换回关节角速度，再展开一次"><a href="#3-换回关节角速度，再展开一次" class="headerlink" title="3. 换回关节角速度，再展开一次"></a>3. 换回关节角速度，再展开一次</h3><p>$$<br>v_2^2&#x3D;L_1^2\dot\theta_1^2+L_2^2(\dot\theta_1+\dot\theta_2)^2<br>+2L_1L_2\cos\theta_2\dot\theta_1(\dot\theta_1+\dot\theta_2).<br>$$</p>
+<p>分别展开：</p>
+<p>$$<br>(\dot\theta_1+\dot\theta_2)^2<br>&#x3D;\dot\theta_1^2+2\dot\theta_1\dot\theta_2+\dot\theta_2^2,<br>$$</p>
+<p>$$<br>\dot\theta_1(\dot\theta_1+\dot\theta_2)<br>&#x3D;\dot\theta_1^2+\dot\theta_1\dot\theta_2.<br>$$</p>
+<p>得到：</p>
+<p>$$<br>\boxed{K_2&#x3D;\frac12m_2\left[<br>(L_1^2+L_2^2+2L_1L_2\cos\theta_2)\dot\theta_1^2<br>+2(L_2^2+L_1L_2\cos\theta_2)\dot\theta_1\dot\theta_2<br>+L_2^2\dot\theta_2^2\right].}<br>$$</p>
+<p>请分清三类项：$\dot\theta_1^2$、$\dot\theta_2^2$、$\dot\theta_1\dot\theta_2$。最后一种是两个关节共同运动产生的交叉项，不能漏掉。</p>
+<h2 id="五、把动能、势能写成容易求导的形式"><a href="#五、把动能、势能写成容易求导的形式" class="headerlink" title="五、把动能、势能写成容易求导的形式"></a>五、把动能、势能写成容易求导的形式</h2><p>总动能 $K&#x3D;K_1+K_2$。沿用原对话，定义：</p>
+<p>$$<br>A&#x3D;(m_1+m_2)L_1^2+m_2L_2^2+2m_2L_1L_2\cos\theta_2,<br>$$</p>
+<p>$$<br>B&#x3D;m_2(L_2^2+L_1L_2\cos\theta_2),\qquad D&#x3D;m_2L_2^2.<br>$$</p>
+<p>于是：</p>
+<p>$$<br>\boxed{K&#x3D;\frac12A\dot\theta_1^2+B\dot\theta_1\dot\theta_2+\frac12D\dot\theta_2^2.}<br>$$</p>
+<p><strong>注意：$A,B$ 随 $\theta_2$ 变化，$D$ 是常量。</strong></p>
+<p>竖直向上为正，以基座高度为势能零点：</p>
+<p>$$<br>P&#x3D;m_1gy_1+m_2gy_2<br>&#x3D;(m_1+m_2)gL_1\sin\theta_1+m_2gL_2\sin(\theta_1+\theta_2).<br>$$</p>
+<p>先计算两个重力项：</p>
+<p>$$<br>G_1&#x3D;\frac{\partial P}{\partial\theta_1}<br>&#x3D;(m_1+m_2)gL_1\cos\theta_1+m_2gL_2\cos(\theta_1+\theta_2),<br>$$</p>
+<p>$$<br>G_2&#x3D;\frac{\partial P}{\partial\theta_2}&#x3D;m_2gL_2\cos(\theta_1+\theta_2).<br>$$</p>
+<p>它们是方程左侧的重力补偿项；重力自身产生的广义力为 $-G_i$。两杆都水平向右时：</p>
+<p>$$<br>G_1&#x3D;(m_1+m_2)gL_1+m_2gL_2,\qquad G_2&#x3D;m_2gL_2.<br>$$</p>
+<p>第一关节要支撑两个质点，第二关节只需支撑第二个质点。接下来使用 $L&#x3D;K-P$ 求两个关节力矩。</p>
+<h2 id="六、详细推导第一关节力矩-tau-1"><a href="#六、详细推导第一关节力矩-tau-1" class="headerlink" title="六、详细推导第一关节力矩 $\tau_1$"></a>六、详细推导第一关节力矩 $\tau_1$</h2><h3 id="第一步：对-dot-theta-1-求偏导"><a href="#第一步：对-dot-theta-1-求偏导" class="headerlink" title="第一步：对 $\dot\theta_1$ 求偏导"></a>第一步：对 $\dot\theta_1$ 求偏导</h3><p>势能不依赖速度，因此：</p>
+<p>$$<br>\frac{\partial L}{\partial\dot\theta_1}<br>&#x3D;\frac{\partial K}{\partial\dot\theta_1}<br>&#x3D;A\dot\theta_1+B\dot\theta_2.<br>$$</p>
+<h3 id="第二步：对时间求导"><a href="#第二步：对时间求导" class="headerlink" title="第二步：对时间求导"></a>第二步：对时间求导</h3><p>这是最容易出错的一步。因为 $A,B$ 随时间变化，必须使用乘积法则：</p>
+<p>$$<br>\frac{d}{dt}(A\dot\theta_1+B\dot\theta_2)<br>&#x3D;A\ddot\theta_1+B\ddot\theta_2+\dot A\dot\theta_1+\dot B\dot\theta_2.<br>$$</p>
+<p>再用链式法则：</p>
+<p>$$<br>\dot A&#x3D;-2m_2L_1L_2\sin\theta_2\dot\theta_2,<br>\qquad\dot B&#x3D;-m_2L_1L_2\sin\theta_2\dot\theta_2.<br>$$</p>
+<p>定义：</p>
+<p>$$<br>h&#x3D;m_2L_1L_2\sin\theta_2.<br>$$</p>
+<p>则 $\dot A&#x3D;-2h\dot\theta_2$、$\dot B&#x3D;-h\dot\theta_2$。代回：</p>
+<p>$$<br>\frac{d}{dt}\frac{\partial L}{\partial\dot\theta_1}<br>&#x3D;A\ddot\theta_1+B\ddot\theta_2-2h\dot\theta_1\dot\theta_2-h\dot\theta_2^2.<br>$$</p>
+<h3 id="第三步：对-theta-1-求偏导"><a href="#第三步：对-theta-1-求偏导" class="headerlink" title="第三步：对 $\theta_1$ 求偏导"></a>第三步：对 $\theta_1$ 求偏导</h3><p>总动能不显含 $\theta_1$。整体旋转不会改变两杆的相对夹角，也不会改变相同关节速度下的动能。因此：</p>
+<p>$$<br>\frac{\partial K}{\partial\theta_1}&#x3D;0,<br>\qquad\frac{\partial L}{\partial\theta_1}&#x3D;-G_1.<br>$$</p>
+<h3 id="第四步：代入欧拉–拉格朗日方程"><a href="#第四步：代入欧拉–拉格朗日方程" class="headerlink" title="第四步：代入欧拉–拉格朗日方程"></a>第四步：代入欧拉–拉格朗日方程</h3><p>$$<br>\tau_1&#x3D;\frac{d}{dt}\frac{\partial L}{\partial\dot\theta_1}<br>-\frac{\partial L}{\partial\theta_1}.<br>$$</p>
+<p>所以：</p>
+<p>$$<br>\boxed{\tau_1&#x3D;A\ddot\theta_1+B\ddot\theta_2<br>-2h\dot\theta_1\dot\theta_2-h\dot\theta_2^2+G_1.}<br>$$</p>
+<p>前两项是惯性项，中间两项与速度相关，最后一项是重力补偿。</p>
+<h2 id="七、详细推导第二关节力矩-tau-2"><a href="#七、详细推导第二关节力矩-tau-2" class="headerlink" title="七、详细推导第二关节力矩 $\tau_2$"></a>七、详细推导第二关节力矩 $\tau_2$</h2><h3 id="第一步：对-dot-theta-2-求偏导"><a href="#第一步：对-dot-theta-2-求偏导" class="headerlink" title="第一步：对 $\dot\theta_2$ 求偏导"></a>第一步：对 $\dot\theta_2$ 求偏导</h3><p>$$<br>\frac{\partial L}{\partial\dot\theta_2}&#x3D;B\dot\theta_1+D\dot\theta_2.<br>$$</p>
+<h3 id="第二步：对时间求导-1"><a href="#第二步：对时间求导-1" class="headerlink" title="第二步：对时间求导"></a>第二步：对时间求导</h3><p>因为 $D$ 为常量：</p>
+<p>$$<br>\frac{d}{dt}\frac{\partial L}{\partial\dot\theta_2}<br>&#x3D;B\ddot\theta_1+D\ddot\theta_2+\dot B\dot\theta_1<br>&#x3D;B\ddot\theta_1+D\ddot\theta_2-h\dot\theta_1\dot\theta_2.<br>$$</p>
+<h3 id="第三步：对-theta-2-求偏导"><a href="#第三步：对-theta-2-求偏导" class="headerlink" title="第三步：对 $\theta_2$ 求偏导"></a>第三步：对 $\theta_2$ 求偏导</h3><p>这次动能的偏导不为零，因为 $A,B$ 都依赖 $\theta_2$：</p>
+<p>$$<br>\frac{\partial K}{\partial\theta_2}<br>&#x3D;\frac12\frac{\partial A}{\partial\theta_2}\dot\theta_1^2<br>+\frac{\partial B}{\partial\theta_2}\dot\theta_1\dot\theta_2.<br>$$</p>
+<p>利用 $\partial A&#x2F;\partial\theta_2&#x3D;-2h$、$\partial B&#x2F;\partial\theta_2&#x3D;-h$：</p>
+<p>$$<br>\frac{\partial L}{\partial\theta_2}<br>&#x3D;-h\dot\theta_1^2-h\dot\theta_1\dot\theta_2-G_2.<br>$$</p>
+<h3 id="第四步：代入，展开负号，再合并"><a href="#第四步：代入，展开负号，再合并" class="headerlink" title="第四步：代入，展开负号，再合并"></a>第四步：代入，展开负号，再合并</h3><p>$$<br>\begin{aligned}<br>\tau_2&#x3D;{}&amp;B\ddot\theta_1+D\ddot\theta_2-h\dot\theta_1\dot\theta_2\\<br>&amp;-(-h\dot\theta_1^2-h\dot\theta_1\dot\theta_2-G_2)\\<br>&#x3D;{}&amp;B\ddot\theta_1+D\ddot\theta_2-h\dot\theta_1\dot\theta_2<br>+h\dot\theta_1^2+h\dot\theta_1\dot\theta_2+G_2.<br>\end{aligned}<br>$$</p>
+<p>两个混合速度项恰好抵消，所以：</p>
+<p>$$<br>\boxed{\tau_2&#x3D;B\ddot\theta_1+D\ddot\theta_2+h\dot\theta_1^2+G_2.}<br>$$</p>
+<h2 id="八、合并方程，认识三个组成部分"><a href="#八、合并方程，认识三个组成部分" class="headerlink" title="八、合并方程，认识三个组成部分"></a>八、合并方程，认识三个组成部分</h2><p>$$<br>\begin{bmatrix}\tau_1\\\tau_2\end{bmatrix}<br>&#x3D;\begin{bmatrix}A&amp;B\\B&amp;D\end{bmatrix}<br>\begin{bmatrix}\ddot\theta_1\\\ddot\theta_2\end{bmatrix}<br>+\begin{bmatrix}-2h\dot\theta_1\dot\theta_2-h\dot\theta_2^2\\h\dot\theta_1^2\end{bmatrix}<br>+\begin{bmatrix}G_1\\G_2\end{bmatrix}.<br>$$</p>
+<p>这就是一般形式：</p>
+<p>$$<br>\boxed{M(q)\ddot q+C(q,\dot q)\dot q+g(q)&#x3D;\tau.}<br>$$</p>
+<h3 id="1-质量矩阵为什么也叫惯性矩阵？"><a href="#1-质量矩阵为什么也叫惯性矩阵？" class="headerlink" title="1. 质量矩阵为什么也叫惯性矩阵？"></a>1. 质量矩阵为什么也叫惯性矩阵？</h3><p>$$<br>M(q)&#x3D;\begin{bmatrix}A&amp;B\\B&amp;D\end{bmatrix},<br>\qquad K&#x3D;\frac12\dot q^TM(q)\dot q.<br>$$</p>
+<p>它描述当前姿态下，关节加速度与惯性力矩的关系。非对角元素 $B$ 表示加速度耦合。二次型中的两个非对角项合并后，交叉项系数是 $B$，不能再多除一次二。</p>
+<p>对本模型：</p>
+<p>$$<br>\det M&#x3D;m_2L_1^2L_2^2(m_1+m_2\sin^2\theta_2)&gt;0,<br>\qquad A&gt;0.<br>$$</p>
+<p>因此 $M$ 对称正定：非零速度对应正动能，且 $M$ 可逆。</p>
+<h3 id="2-科氏项和离心项是什么？"><a href="#2-科氏项和离心项是什么？" class="headerlink" title="2. 科氏项和离心项是什么？"></a>2. 科氏项和离心项是什么？</h3><p>$$<br>C(q,\dot q)\dot q<br>&#x3D;\begin{bmatrix}-2h\dot\theta_1\dot\theta_2-h\dot\theta_2^2\\h\dot\theta_1^2\end{bmatrix}.<br>$$</p>
+<p>混合速度乘积通常称为科里奥利项，速度平方项通常称为离心项；教材也常把整个向量统称为科氏与离心项。它们来自构型相关的动能，不是摩擦力。</p>
+<p>一种可用的矩阵写法为：</p>
+<p>$$<br>C&#x3D;\begin{bmatrix}<br>-h\dot\theta_2&amp;-h(\dot\theta_1+\dot\theta_2)\\<br>h\dot\theta_1&amp;0<br>\end{bmatrix}.<br>$$</p>
+<p>$C$ 的表示可以不唯一，但乘积 $C\dot q$ 应与实际动力学一致。这里 $h$ 是前文定义的标量，不是整个速度项向量。</p>
+<h4 id="配图理解：关节角加速度为零，质点为什么仍有加速度？"><a href="#配图理解：关节角加速度为零，质点为什么仍有加速度？" class="headerlink" title="配图理解：关节角加速度为零，质点为什么仍有加速度？"></a>配图理解：关节角加速度为零，质点为什么仍有加速度？</h4><p><img src="/images/robot-dynamics-1/figure-8-2-accelerations.png" alt="Modern Robotics 图8.2：向心加速度和科里奥利加速度" loading='lazy'></p>
+<p><em>原书图 8.2，印刷页 275（PDF 第 295 页）。图中均为直角姿态，且 $\ddot\theta&#x3D;0$。</em></p>
+<p><strong>从左到右读这三幅图。</strong></p>
+<ol>
+<li>左图只让第一关节匀速转动，第二关节相对角度不变。整个折臂绕基座转动，$m_2$ 需要指向基座的向心加速度 $a_{\mathrm{cent}1}$。</li>
+<li>中图只让第二关节匀速转动。$m_2$ 绕肘部转动，向心加速度 $a_{\mathrm{cent}2}$ 沿第二杆指向肘部。</li>
+<li>右图两个关节同时正向转动。除了前两种速度平方项，还出现与 $\dot\theta_1\dot\theta_2$ 成正比的科里奥利加速度 $a_{\mathrm{cor}}$。</li>
+</ol>
+<p>在这个姿态、$\ddot\theta&#x3D;0$ 时，质点 $m_2$ 的加速度可拆为：</p>
+<p>$$<br>\begin{bmatrix}\ddot x_2\\\ddot y_2\end{bmatrix}<br>&#x3D;\underbrace{\begin{bmatrix}-L_1\dot\theta_1^2\\-L_2\dot\theta_1^2-L_2\dot\theta_2^2\end{bmatrix}}_{\text{向心项}}<br>+\underbrace{\begin{bmatrix}0\\-2L_2\dot\theta_1\dot\theta_2\end{bmatrix}}_{\text{科里奥利项}}.<br>$$</p>
+<p><strong>注意图中的箭头表示笛卡尔加速度，不是关节力矩。</strong> 原书这里使用 centripetal（向心）描述质点的运动学加速度；前文按常见动力学习惯把速度平方力矩项称作离心项。两者不能直接把箭头和力矩正负号一一对应，还要结合力臂及运动方程的移项约定。</p>
+<p>这幅图最值得记住的是：<strong>关节角加速度为零，并不意味着质点的空间加速度为零。</strong> 匀速转动仍然要不断改变速度方向。</p>
+<h3 id="3-重力项在什么情况下仍然存在？"><a href="#3-重力项在什么情况下仍然存在？" class="headerlink" title="3. 重力项在什么情况下仍然存在？"></a>3. 重力项在什么情况下仍然存在？</h3><p>$$<br>g(q)&#x3D;\begin{bmatrix}G_1\\G_2\end{bmatrix}.<br>$$</p>
+<p>机械臂静止保持姿态、没有其他外力时：</p>
+<p>$$<br>\dot q&#x3D;0,\qquad\ddot q&#x3D;0,\qquad\tau&#x3D;g(q).<br>$$</p>
+<p>速度为零只能消去速度相关项，不能消去重力项，也不能说明加速度一定为零。</p>
+<h3 id="4-用原来的数值例子看耦合"><a href="#4-用原来的数值例子看耦合" class="headerlink" title="4. 用原来的数值例子看耦合"></a>4. 用原来的数值例子看耦合</h3><p>取 $m_1&#x3D;m_2&#x3D;1\,\mathrm{kg}$、$L_1&#x3D;L_2&#x3D;1\,\mathrm m$、$g&#x3D;9.8\,\mathrm{m&#x2F;s^2}$，姿态为 $\theta_1&#x3D;0$、$\theta_2&#x3D;\pi&#x2F;2$，速度为零。</p>
+<p>此时：</p>
+<p>$$<br>A&#x3D;3,\qquad B&#x3D;1,\qquad D&#x3D;1,<br>\qquad M&#x3D;\begin{bmatrix}3&amp;1\\1&amp;1\end{bmatrix},<br>\qquad g(q)&#x3D;\begin{bmatrix}19.6\\0\end{bmatrix}.<br>$$</p>
+<p>希望 $\ddot\theta_1&#x3D;1\,\mathrm{rad&#x2F;s^2}$、$\ddot\theta_2&#x3D;0$，则：</p>
+<p>$$<br>\tau&#x3D;\begin{bmatrix}3&amp;1\\1&amp;1\end{bmatrix}\begin{bmatrix}1\\0\end{bmatrix}<br>+\begin{bmatrix}19.6\\0\end{bmatrix}<br>&#x3D;\begin{bmatrix}22.6\\1\end{bmatrix}\,\mathrm{N\,m}.<br>$$</p>
+<p>第二关节加速度明明为零，为什么还需要 $1\,\mathrm{N\,m}$？因为第一关节加速时也带动第二质点。为了让第二关节保持相对角度不变，需要相应力矩。这就是动力学耦合。</p>
+<h2 id="九、从惯性矩阵理解特征值、特征向量和力矩椭圆"><a href="#九、从惯性矩阵理解特征值、特征向量和力矩椭圆" class="headerlink" title="九、从惯性矩阵理解特征值、特征向量和力矩椭圆"></a>九、从惯性矩阵理解特征值、特征向量和力矩椭圆</h2><h3 id="1-先计算特征值"><a href="#1-先计算特征值" class="headerlink" title="1. 先计算特征值"></a>1. 先计算特征值</h3><p>仍使用：</p>
+<p>$$<br>M&#x3D;\begin{bmatrix}3&amp;1\\1&amp;1\end{bmatrix}.<br>$$</p>
+<p>由 $Mv&#x3D;\lambda v$，得到特征方程：</p>
+<p>$$<br>\det(M-\lambda I)&#x3D;(3-\lambda)(1-\lambda)-1&#x3D;0,<br>$$</p>
+<p>$$<br>\lambda^2-4\lambda+2&#x3D;0.<br>$$</p>
+<p>因此：</p>
+<p>$$<br>\lambda_1&#x3D;2+\sqrt2\approx3.414,\qquad<br>\lambda_2&#x3D;2-\sqrt2\approx0.586.<br>$$</p>
+<h3 id="2-再计算特征向量"><a href="#2-再计算特征向量" class="headerlink" title="2. 再计算特征向量"></a>2. 再计算特征向量</h3><p>对于 $\lambda_1$，第一行给出：</p>
+<p>$$<br>(3-\lambda_1)v_{11}+v_{12}&#x3D;0,<br>\qquad v_{12}&#x3D;(\sqrt2-1)v_{11}.<br>$$</p>
+<p>归一化后，两组单位特征向量可以取：</p>
+<p>$$<br>v_1\approx\begin{bmatrix}0.924\\0.383\end{bmatrix},<br>\qquad v_2\approx\begin{bmatrix}-0.383\\0.924\end{bmatrix}.<br>$$</p>
+<p>它们相互垂直。一般方向经过矩阵作用会改变方向，但特征向量经过作用后仍与原方向共线。这里特征值为正，所以方向相同。</p>
+<h3 id="3-把公式变成物理解释"><a href="#3-把公式变成物理解释" class="headerlink" title="3. 把公式变成物理解释"></a>3. 把公式变成物理解释</h3><p>先扣除重力和速度项，仅考虑 $\tau_{\mathrm{inertia}}&#x3D;M\ddot q$。</p>
+<p>沿第一特征方向产生单位加速度：</p>
+<p>$$<br>\ddot q&#x3D;v_1,\qquad\tau_{\mathrm{inertia}}&#x3D;\lambda_1v_1<br>\approx\begin{bmatrix}3.154\\1.307\end{bmatrix}.<br>$$</p>
+<p>沿第二特征方向产生单位加速度：</p>
+<p>$$<br>\ddot q&#x3D;v_2,\qquad\tau_{\mathrm{inertia}}&#x3D;\lambda_2v_2<br>\approx\begin{bmatrix}-0.224\\0.541\end{bmatrix}.<br>$$</p>
+<p>对应力矩范数分别约为 $3.414$ 和 $0.586$。同样大小的加速度，沿大特征值方向需要更大的惯性力矩。</p>
+<p>这里讨论的是采用相同单位的转动关节空间，不能把特征向量直接当成末端在物理空间的移动方向。</p>
+<h3 id="4-为什么单位加速度圆变成力矩椭圆？"><a href="#4-为什么单位加速度圆变成力矩椭圆？" class="headerlink" title="4. 为什么单位加速度圆变成力矩椭圆？"></a>4. 为什么单位加速度圆变成力矩椭圆？</h3><p><img src="/images/robot-dynamics-1/figure-8-3-mass-ellipses.png" alt="Modern Robotics 图8.3：不同姿态下的加速度圆与力矩椭圆" loading='lazy'></p>
+<p><em>原书图 8.3，印刷页 278（PDF 第 298 页）。</em></p>
+<p><strong>第一次看，先只看上排的粗实线。</strong> 左边坐标是关节加速度 $(\ddot\theta_1,\ddot\theta_2)$，右边坐标是惯性力矩 $(\tau_1,\tau_2)$。左边单位圆上的每一点，代表一种“大小相同、方向不同”的关节加速度组合。通过 $M$ 计算后，这些点在右边组成倾斜椭圆。</p>
+<p>椭圆的倾斜说明两个关节存在惯性耦合；长短轴差异说明，同样大小的关节加速度沿不同方向需要不同大小的力矩。长轴、短轴的方向就是下面讨论的特征方向。</p>
+<p><strong>第二次看，再比较上、下两排。</strong> 上排第二关节为 $90^\circ$，下排为 $150^\circ$。下排力矩椭圆更接近圆，正好对应后面表格中更接近的两个特征值。</p>
+<p><strong>最后再看细虚线。</strong> 右边的虚线单位力矩圆，经 $M^{-1}$ 映射到左边的虚线加速度椭圆。粗实线是“给加速度，求力矩”，细虚线是“给力矩，求加速度”，不要把两组半轴公式混在一起。</p>
+<p>这里应理解为已扣除重力和速度项的惯性映射。零速度会消去速度项，但竖直平面机械臂的重力仍需补偿。图上的横纵轴属于关节空间，并不是末端的 $x,y$ 坐标。</p>
+<p>固定姿态，让加速度方向变化，同时保持：</p>
+<p>$$<br>\ddot q^T\ddot q&#x3D;1.<br>$$</p>
+<p>通过 $\tau_{\mathrm{inertia}}&#x3D;M\ddot q$，得到：</p>
+<p>$$<br>\tau_{\mathrm{inertia}}^TM^{-2}\tau_{\mathrm{inertia}}&#x3D;1.<br>$$</p>
+<p>力矩椭圆的长轴沿 $v_1$，短轴沿 $v_2$，半轴长度分别为 $\lambda_1,\lambda_2$。对应本例，方向约为 $22.5^\circ$ 和 $112.5^\circ$。</p>
+<p>若 $M&#x3D;2I$，所有方向都放大两倍，单位圆变成半径为 2 的圆。这是各方向惯性相同的特殊情况。</p>
+<h3 id="5-等效惯性与力矩长度要区分"><a href="#5-等效惯性与力矩长度要区分" class="headerlink" title="5. 等效惯性与力矩长度要区分"></a>5. 等效惯性与力矩长度要区分</h3><p>指定单位方向 $u$，若局部沿该固定方向运动，$\dot q&#x3D;u\dot s$，则：</p>
+<p>$$<br>K&#x3D;\frac12\dot s^2u^TMu.<br>$$</p>
+<p>因此动能等效惯性为：</p>
+<p>$$<br>\boxed{m_{\mathrm{eff}}(u)&#x3D;u^TMu.}<br>$$</p>
+<p>产生单位方向加速度需要的惯性力矩是 $Mu$，其长度为 $|Mu|$。一般方向上，$u^TMu$ 与 $|Mu|$ 不相等；在单位特征方向上，两者都等于相应特征值。</p>
+<p>对于特征分解 $M&#x3D;U\Lambda U^T$，令 $\dot z&#x3D;U^T\dot q$，则：</p>
+<p>$$<br>K&#x3D;\frac12\dot z^T\Lambda\dot z&#x3D;\frac12\sum_i\lambda_i\dot z_i^2.<br>$$</p>
+<p>它说明固定姿态下，可以沿正交特征方向理解动能的组成。</p>
+<h3 id="6-姿态变化为什么会改变椭圆？"><a href="#6-姿态变化为什么会改变椭圆？" class="headerlink" title="6. 姿态变化为什么会改变椭圆？"></a>6. 姿态变化为什么会改变椭圆？</h3><p>因为 $A,B$ 含 $\cos\theta_2$，所以姿态变化会改变 $M$，也会改变特征值与特征方向。仍取两个质量和杆长的数值都为 1：</p>
+<table>
+<thead>
+<tr>
+<th>比较量</th>
+<th>$\theta_2&#x3D;90^\circ$</th>
+<th>$\theta_2&#x3D;150^\circ$</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$M_{11}$</td>
+<td>3</td>
+<td>约 1.268</td>
+</tr>
+<tr>
+<td>$M_{12}$</td>
+<td>1</td>
+<td>约 0.134</td>
+</tr>
+<tr>
+<td>$M_{22}$</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>最大特征值</td>
+<td>约 3.414</td>
+<td>约 1.323</td>
+</tr>
+<tr>
+<td>最小特征值</td>
+<td>约 0.586</td>
+<td>约 0.945</td>
+</tr>
+<tr>
+<td>特征值比值</td>
+<td>约 5.83</td>
+<td>约 1.40</td>
+</tr>
+</tbody></table>
+<p>第二种姿态的力矩椭圆更接近圆，但是否适合实际任务，还要结合重力、力矩限制、末端雅可比矩阵与奇异性判断。</p>
+<h3 id="7-另外两种椭圆，作为补充辨析"><a href="#7-另外两种椭圆，作为补充辨析" class="headerlink" title="7. 另外两种椭圆，作为补充辨析"></a>7. 另外两种椭圆，作为补充辨析</h3><p>固定净力矩范数为 1，映射得到的加速度椭圆半轴为 $1&#x2F;\lambda_i$。</p>
+<p>固定动能 $K&#x3D;K_0$ 时，速度椭圆满足：</p>
+<p>$$<br>\dot q^TM\dot q&#x3D;2K_0,<br>$$</p>
+<p>半轴为 $\sqrt{2K_0&#x2F;\lambda_i}$。这与原图讨论的“单位加速度圆映射到力矩椭圆”是不同约束，需要先看清固定的是什么。</p>
+<h3 id="8-原理解检查的进度"><a href="#8-原理解检查的进度" class="headerlink" title="8. 原理解检查的进度"></a>8. 原理解检查的进度</h3><p>惯性矩阵理解检查两题选择 B、B，均正确：非对角项产生惯性耦合；$2I$ 将单位圆变成圆。</p>
+<p>进阶检查选择 A、B，均符合上述结论：特征值为 5 的方向，比特征值为 1 的方向需要更大惯性力矩；沿特征方向的加速度对应同方向、按特征值缩放的惯性力矩。</p>
+<h2 id="十、从逆动力学转向正动力学"><a href="#十、从逆动力学转向正动力学" class="headerlink" title="十、从逆动力学转向正动力学"></a>十、从逆动力学转向正动力学</h2><p>以下用 $c(q,\dot q)&#x3D;C(q,\dot q)\dot q$ 表示整个速度相关向量，避免与前文的标量 $h$ 混淆。</p>
+<p>逆动力学：给定 $q,\dot q,\ddot q$，计算所需关节力矩：</p>
+<p>$$<br>\tau&#x3D;M(q)\ddot q+c(q,\dot q)+g(q).<br>$$</p>
+<p>正动力学：给定 $q,\dot q,\tau$，求关节加速度：</p>
+<p>$$<br>M(q)\ddot q&#x3D;\tau-c(q,\dot q)-g(q).<br>$$</p>
+<p>形式上可写为：</p>
+<p>$$<br>\ddot q&#x3D;M(q)^{-1}\left[\tau-c(q,\dot q)-g(q)\right].<br>$$</p>
+<p>实际计算可以直接求解线性方程组，不必先显式计算逆矩阵。当前学习重点是矩阵乘法和消元法，再理解逆矩阵。</p>
+<h2 id="十一、一步一步求关节加速度"><a href="#十一、一步一步求关节加速度" class="headerlink" title="十一、一步一步求关节加速度"></a>十一、一步一步求关节加速度</h2><p>以下数值来自原学习记录，是某个当前姿态下的给定数据；它与前面重力力矩为 $(19.6,0)^T$ 的例子属于不同的给定条件。</p>
+<p>$$<br>M&#x3D;\begin{bmatrix}3&amp;1\\1&amp;1\end{bmatrix},\qquad<br>g(q)&#x3D;\begin{bmatrix}10\\2\end{bmatrix},\qquad<br>\tau&#x3D;\begin{bmatrix}14\\4\end{bmatrix},\qquad\dot q&#x3D;0.<br>$$</p>
+<p>力矩单位为 $\mathrm{N\,m}$，惯性矩阵元素单位为 $\mathrm{kg\,m^2}$，关节角加速度单位为 $\mathrm{rad&#x2F;s^2}$。</p>
+<h3 id="8-1-先计算用于产生加速度的净力矩"><a href="#8-1-先计算用于产生加速度的净力矩" class="headerlink" title="8.1 先计算用于产生加速度的净力矩"></a>8.1 先计算用于产生加速度的净力矩</h3><p>因为 $\dot q&#x3D;0$，速度相关项为零：</p>
+<p>$$<br>M\ddot q&#x3D;\tau-g(q).<br>$$</p>
+<p>$$<br>\tau-g(q)&#x3D;\begin{bmatrix}14\\4\end{bmatrix}<br>-\begin{bmatrix}10\\2\end{bmatrix}<br>&#x3D;\boxed{\begin{bmatrix}4\\2\end{bmatrix}}.<br>$$</p>
+<p>原记录中，这一步选择 B，判断正确。它表示抵消重力后，两个关节分别剩余 $4\,\mathrm{N\,m}$ 与 $2\,\mathrm{N\,m}$ 的净惯性力矩。</p>
+<h3 id="8-2-不跳步地展开矩阵乘法"><a href="#8-2-不跳步地展开矩阵乘法" class="headerlink" title="8.2 不跳步地展开矩阵乘法"></a>8.2 不跳步地展开矩阵乘法</h3><p>$$<br>\begin{bmatrix}3&amp;1\\1&amp;1\end{bmatrix}<br>\begin{bmatrix}\ddot q_1\\\ddot q_2\end{bmatrix}<br>&#x3D;\begin{bmatrix}4\\2\end{bmatrix}.<br>$$</p>
+<p>矩阵乘法按“行乘列”进行。第一行：</p>
+<p>$$<br>3\times\ddot q_1+1\times\ddot q_2&#x3D;4,<br>$$</p>
+<p>即：</p>
+<p>$$<br>3\ddot q_1+\ddot q_2&#x3D;4.\tag{1}<br>$$</p>
+<p>第二行：</p>
+<p>$$<br>1\times\ddot q_1+1\times\ddot q_2&#x3D;2,<br>$$</p>
+<p>即：</p>
+<p>$$<br>\ddot q_1+\ddot q_2&#x3D;2.\tag{2}<br>$$</p>
+<p>于是矩阵方程变成普通二元一次方程组：</p>
+<p>$$<br>\begin{cases}<br>3\ddot q_1+\ddot q_2&#x3D;4,\\<br>\ddot q_1+\ddot q_2&#x3D;2.<br>\end{cases}<br>$$</p>
+<h3 id="8-3-用消元法求解"><a href="#8-3-用消元法求解" class="headerlink" title="8.3 用消元法求解"></a>8.3 用消元法求解</h3><p>用式（1）减去式（2）：</p>
+<p>$$<br>(3\ddot q_1+\ddot q_2)-(\ddot q_1+\ddot q_2)&#x3D;4-2.<br>$$</p>
+<p>展开括号并合并同类项：</p>
+<p>$$<br>3\ddot q_1+\ddot q_2-\ddot q_1-\ddot q_2&#x3D;2,<br>\qquad 2\ddot q_1&#x3D;2.<br>$$</p>
+<p>因此：</p>
+<p>$$<br>\ddot q_1&#x3D;1\,\mathrm{rad&#x2F;s^2}.<br>$$</p>
+<p>代回式（2）：</p>
+<p>$$<br>1+\ddot q_2&#x3D;2,\qquad\ddot q_2&#x3D;1\,\mathrm{rad&#x2F;s^2}.<br>$$</p>
+<p>最终结果及验算：</p>
+<p>$$<br>\boxed{\ddot q&#x3D;\begin{bmatrix}1\\1\end{bmatrix}\,\mathrm{rad&#x2F;s^2}},<br>\qquad<br>\begin{bmatrix}3&amp;1\\1&amp;1\end{bmatrix}\begin{bmatrix}1\\1\end{bmatrix}<br>&#x3D;\begin{bmatrix}3+1\\1+1\end{bmatrix}<br>&#x3D;\begin{bmatrix}4\\2\end{bmatrix}.<br>$$</p>
+<h3 id="8-4-为什么不能分别除以对角元素？"><a href="#8-4-为什么不能分别除以对角元素？" class="headerlink" title="8.4 为什么不能分别除以对角元素？"></a>8.4 为什么不能分别除以对角元素？</h3><p>不能直接写 $\ddot q_1&#x3D;4&#x2F;3$、$\ddot q_2&#x3D;2&#x2F;1$，因为这漏掉了非对角元素带来的耦合。第一个方程同时包含两个关节加速度，第二个方程也一样。</p>
+<p>若惯性矩阵确实为对角矩阵：</p>
+<p>$$<br>M&#x3D;\begin{bmatrix}3&amp;0\\0&amp;1\end{bmatrix},<br>$$</p>
+<p>在相同净力矩下才会得到独立方程 $3\ddot q_1&#x3D;4$、$\ddot q_2&#x3D;2$。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linx29853.github.io">LenoVo</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linx29853.github.io/2026/10/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%8A%A8%E5%8A%9B%E5%AD%A6%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-1/">https://linx29853.github.io/2026/10/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%8A%A8%E5%8A%9B%E5%AD%A6%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-1/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://linx29853.github.io" target="_blank">LenoVo的小站</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AD%A6/">机器人学</a><a class="post-meta__tags" href="/tags/Modern-Robotics/">Modern Robotics</a><a class="post-meta__tags" href="/tags/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%8A%A8%E5%8A%9B%E5%AD%A6/">机器人动力学</a><a class="post-meta__tags" href="/tags/%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E6%96%B9%E7%A8%8B/">拉格朗日方程</a><a class="post-meta__tags" href="/tags/%E4%BA%8C%E8%BF%9E%E6%9D%86%E6%9C%BA%E6%A2%B0%E8%87%82/">二连杆机械臂</a><a class="post-meta__tags" href="/tags/%E6%83%AF%E6%80%A7%E7%9F%A9%E9%98%B5/">惯性矩阵</a></div><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2026/10/07/A-star-%E4%B8%8E%E6%A0%85%E6%A0%BC%E6%B3%95%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" title="A* 与栅格法学习总结"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">A* 与栅格法学习总结</div></div><div class="info-2"><div class="info-item-1"> 整理日期：2026-10-07。阅读依据：《Modern Robotics》§10.2.3–10.2.4、§10.4；本地 MR-tablet-v2.pdf 中对应 PDF 第 386–390 页、391–394 页，书内页码约 366–370、371–374。本文结合学习对话与平面二连杆项目解释概念，由 AI 协助整理。它是学习笔记，不代表已实现或验证 A*。具体项目进度仍以代码、实验报告和本人反馈为准。  1. A* 要解决什么问题给定起点、终点和一张图，寻找一条总代价尽可能小的可行路径。 对于平面二连杆，构型用两个关节角表示： $$q&#x3D;(q_1,q_2)$$ 构型空间中的一个点代表机械臂的一种姿态。A* 搜索的是关节姿态组成的路线；机械臂末端在 XY 空间中不一定沿直线移动。 在当前学习方案中，先把关节角离散成网格，再在有效节点和有效连接组成的图上搜索。 2. 图、节点、边与树图由节点和边组成，可以写成： $$G&#x3D;(V,E)$$    概念 在项目中的对应    节点 一个关节角采样姿态，通常用网格下标标识   边 两个姿态之间允许执行的运动连接   ...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/09/22/Modern-Robotics-%E7%AC%AC2%E7%AB%A0-%E6%9E%84%E5%9E%8B%E7%A9%BA%E9%97%B4%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" title="Modern Robotics 第2章：构型空间学习总结"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-09-22</div><div class="info-item-2">Modern Robotics 第2章：构型空间学习总结</div></div><div class="info-2"><div class="info-item-1"> 来源：《Modern Robotics》Chapter 2, Configuration Space（书页 11-37）。整理日期：2026-09-22。本文以书中概念为主，并在“结合 ArmLab 项目”部分加入当前平面二连杆项目的对应解释。  1. 本章解决什么问题研究机器人时，最基础的问题之一是：机器人现在处于什么状态？ 机器人由多个刚性连杆和关节组成。直接记录机器人上每一个点的位置既复杂又重复，因为连杆长度固定、关节连接关系也固定。构型空间的思想是：只用最少的一组独立变量，完整表示机器人所有部位的位置。 对本项目的平面二连杆机械臂，这组变量就是两个关节角： $$q &#x3D; (q_1,q_2)$$ 只要给定 $q_1$ 和 $q_2$，就能用正运动学确定基座、肘部、末端以及两根连杆上所有点的位置。  2. 构型、自由度与构型空间2.1 构型 Configuration一个机器人的构型，是对机器人所有点的位置的完整描述。 “完整描述”不等于把每个点都列出来，而是提供足以推导出所有点位置的信息。例如：    系统 可使用的构型坐标 自由度    绕固定合页转动的门 合页...</div></div></div></a><a class="pagination-related" href="/2026/09/20/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AD%A6%E5%AF%BC%E8%AE%BA-%E7%AC%AC2%E7%AB%A0-%E7%A9%BA%E9%97%B4%E6%8F%8F%E8%BF%B0%E4%B8%8E%E5%8F%98%E6%8D%A2/" title="机器人学导论（第3版）第2章：空间描述与变换"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-09-20</div><div class="info-item-2">机器人学导论（第3版）第2章：空间描述与变换</div></div><div class="info-2"><div class="info-item-1"> 原书：John J. Craig, Introduction to Robotics: Mechanics and Control, 3rd Edition对应范围：PDF 第 27-62 页，书内页码 19-54本文是知识点整理与学习笔记。  1. 本章解决什么问题机器人需要在三维空间中描述零件、工具和机械臂自身的位置与姿态。同一个几何对象还可能需要在基座、末端、相机或工件等不同坐标系中表达。 本章建立了后续运动学、速度、力和力矩分析所需的统一语言：  用位置向量描述点； 用旋转矩阵描述姿态； 用坐标系（frame）同时描述位置和姿态； 用齐次变换统一表示旋转和平移； 用变换乘法、求逆和变换方程处理坐标系链； 用固定角、欧拉角、轴角和四元数表达姿态。   2. 基本记号与核心对象2.1 位置向量点 $P$ 在坐标系 ${A}$ 中的位置写作 $${}^{A}\mathbf{p}&#x3D;\begin{bmatrix}p_x\\p_y\\p_z\end{bmatrix}.$$ 左上标表示“该向量的分量在哪个坐标系中表达”。几何点 $P$ 没有变化时，${}^{A}\mathb...</div></div></div></a><a class="pagination-related" href="/2026/10/07/A-star-%E4%B8%8E%E6%A0%85%E6%A0%BC%E6%B3%95%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" title="A* 与栅格法学习总结"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-10-07</div><div class="info-item-2">A* 与栅格法学习总结</div></div><div class="info-2"><div class="info-item-1"> 整理日期：2026-10-07。阅读依据：《Modern Robotics》§10.2.3–10.2.4、§10.4；本地 MR-tablet-v2.pdf 中对应 PDF 第 386–390 页、391–394 页，书内页码约 366–370、371–374。本文结合学习对话与平面二连杆项目解释概念，由 AI 协助整理。它是学习笔记，不代表已实现或验证 A*。具体项目进度仍以代码、实验报告和本人反馈为准。  1. A* 要解决什么问题给定起点、终点和一张图，寻找一条总代价尽可能小的可行路径。 对于平面二连杆，构型用两个关节角表示： $$q&#x3D;(q_1,q_2)$$ 构型空间中的一个点代表机械臂的一种姿态。A* 搜索的是关节姿态组成的路线；机械臂末端在 XY 空间中不一定沿直线移动。 在当前学习方案中，先把关节角离散成网格，再在有效节点和有效连接组成的图上搜索。 2. 图、节点、边与树图由节点和边组成，可以写成： $$G&#x3D;(V,E)$$    概念 在项目中的对应    节点 一个关节角采样姿态，通常用网格下标标识   边 两个姿态之间允许执行的运动连接   ...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">LenoVo</div><div class="author-info-description">记录轨道交通、公交与卡车见闻，以及技术学习笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">53</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/linx29853"><i class="fab fa-github"></i><span>访问 GitHub</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LenoVo 的小站</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%85%88%E7%90%86%E8%A7%A3%E5%B9%BF%E4%B9%89%E5%9D%90%E6%A0%87%E5%92%8C%E5%B9%BF%E4%B9%89%E5%8A%9B"><span class="toc-text">一、先理解广义坐标和广义力</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E7%94%A8%E7%AB%96%E7%9B%B4%E8%BF%90%E5%8A%A8%E8%B4%A8%E7%82%B9%EF%BC%8C%E6%8A%8A%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E6%96%B9%E7%A8%8B%E8%AE%B2%E6%B8%85%E6%A5%9A"><span class="toc-text">二、用竖直运动质点，把拉格朗日方程讲清楚</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%85%88%E4%BB%8E%E7%89%9B%E9%A1%BF%E7%AC%AC%E4%BA%8C%E5%AE%9A%E5%BE%8B%E7%9C%8B%E8%BF%99%E4%B8%AA%E7%B3%BB%E7%BB%9F"><span class="toc-text">1. 先从牛顿第二定律看这个系统</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%85%88%E7%A0%94%E7%A9%B6%E5%8A%A8%E8%83%BD%E5%92%8C%E5%8A%BF%E8%83%BD%EF%BC%9F"><span class="toc-text">2. 为什么先研究动能和势能？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%9E%84%E9%80%A0-L-K-P-%EF%BC%9F"><span class="toc-text">3. 为什么构造 $L&#x3D;K-P$？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%8C%89%E5%9B%9B%E6%AD%A5%E8%BF%90%E7%AE%97%EF%BC%8C%E4%BA%B2%E8%87%AA%E9%AA%8C%E8%AF%81"><span class="toc-text">4. 按四步运算，亲自验证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E4%BB%8E%E8%83%BD%E9%87%8F%E5%92%8C%E5%8A%9F%E5%86%8D%E7%90%86%E8%A7%A3%E4%B8%80%E6%AC%A1"><span class="toc-text">5. 从能量和功再理解一次</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E4%B8%80%E8%88%AC%E6%AC%A7%E6%8B%89%E2%80%93%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E6%96%B9%E7%A8%8B%E4%BB%8E%E5%93%AA%E9%87%8C%E6%9D%A5%EF%BC%9F"><span class="toc-text">6. 一般欧拉–拉格朗日方程从哪里来？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%85%88%E7%9C%8B%E6%B8%85%E6%A5%9A%E4%BA%8C%E8%BF%9E%E6%9D%86%E6%A8%A1%E5%9E%8B%EF%BC%8C%E5%86%8D%E5%86%99%E4%BD%8D%E7%BD%AE%E5%92%8C%E9%80%9F%E5%BA%A6"><span class="toc-text">三、先看清楚二连杆模型，再写位置和速度</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%A4%E4%B8%AA%E8%B4%A8%E7%82%B9%E7%9A%84%E4%BD%8D%E7%BD%AE"><span class="toc-text">1. 两个质点的位置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%BB%8E%E4%BD%8D%E7%BD%AE%E6%B1%82%E9%80%9F%E5%BA%A6"><span class="toc-text">2. 从位置求速度</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E5%AE%8C%E6%95%B4%E5%B1%95%E5%BC%80-K-2-%EF%BC%9A%E4%BA%A4%E5%8F%89%E9%A1%B9%E4%B8%8E%E4%BD%99%E5%BC%A6%E4%BB%8E%E5%93%AA%E9%87%8C%E6%9D%A5%EF%BC%9F"><span class="toc-text">四、完整展开 $K_2$：交叉项与余弦从哪里来？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%88%86%E5%88%AB%E5%B1%95%E5%BC%80%E4%B8%A4%E4%B8%AA%E5%B9%B3%E6%96%B9"><span class="toc-text">1. 分别展开两个平方</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%94%A8%E5%B7%AE%E8%A7%92%E5%85%AC%E5%BC%8F%E5%BE%97%E5%88%B0-cos-theta-2"><span class="toc-text">2. 用差角公式得到 $\cos\theta_2$</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%8D%A2%E5%9B%9E%E5%85%B3%E8%8A%82%E8%A7%92%E9%80%9F%E5%BA%A6%EF%BC%8C%E5%86%8D%E5%B1%95%E5%BC%80%E4%B8%80%E6%AC%A1"><span class="toc-text">3. 换回关节角速度，再展开一次</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%8A%8A%E5%8A%A8%E8%83%BD%E3%80%81%E5%8A%BF%E8%83%BD%E5%86%99%E6%88%90%E5%AE%B9%E6%98%93%E6%B1%82%E5%AF%BC%E7%9A%84%E5%BD%A2%E5%BC%8F"><span class="toc-text">五、把动能、势能写成容易求导的形式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E8%AF%A6%E7%BB%86%E6%8E%A8%E5%AF%BC%E7%AC%AC%E4%B8%80%E5%85%B3%E8%8A%82%E5%8A%9B%E7%9F%A9-tau-1"><span class="toc-text">六、详细推导第一关节力矩 $\tau_1$</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E5%AF%B9-dot-theta-1-%E6%B1%82%E5%81%8F%E5%AF%BC"><span class="toc-text">第一步：对 $\dot\theta_1$ 求偏导</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E5%AF%B9%E6%97%B6%E9%97%B4%E6%B1%82%E5%AF%BC"><span class="toc-text">第二步：对时间求导</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E5%AF%B9-theta-1-%E6%B1%82%E5%81%8F%E5%AF%BC"><span class="toc-text">第三步：对 $\theta_1$ 求偏导</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E4%BB%A3%E5%85%A5%E6%AC%A7%E6%8B%89%E2%80%93%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E6%96%B9%E7%A8%8B"><span class="toc-text">第四步：代入欧拉–拉格朗日方程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%83%E3%80%81%E8%AF%A6%E7%BB%86%E6%8E%A8%E5%AF%BC%E7%AC%AC%E4%BA%8C%E5%85%B3%E8%8A%82%E5%8A%9B%E7%9F%A9-tau-2"><span class="toc-text">七、详细推导第二关节力矩 $\tau_2$</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E5%AF%B9-dot-theta-2-%E6%B1%82%E5%81%8F%E5%AF%BC"><span class="toc-text">第一步：对 $\dot\theta_2$ 求偏导</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9A%E5%AF%B9%E6%97%B6%E9%97%B4%E6%B1%82%E5%AF%BC-1"><span class="toc-text">第二步：对时间求导</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%9A%E5%AF%B9-theta-2-%E6%B1%82%E5%81%8F%E5%AF%BC"><span class="toc-text">第三步：对 $\theta_2$ 求偏导</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%9A%E4%BB%A3%E5%85%A5%EF%BC%8C%E5%B1%95%E5%BC%80%E8%B4%9F%E5%8F%B7%EF%BC%8C%E5%86%8D%E5%90%88%E5%B9%B6"><span class="toc-text">第四步：代入，展开负号，再合并</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E3%80%81%E5%90%88%E5%B9%B6%E6%96%B9%E7%A8%8B%EF%BC%8C%E8%AE%A4%E8%AF%86%E4%B8%89%E4%B8%AA%E7%BB%84%E6%88%90%E9%83%A8%E5%88%86"><span class="toc-text">八、合并方程，认识三个组成部分</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%B4%A8%E9%87%8F%E7%9F%A9%E9%98%B5%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B9%9F%E5%8F%AB%E6%83%AF%E6%80%A7%E7%9F%A9%E9%98%B5%EF%BC%9F"><span class="toc-text">1. 质量矩阵为什么也叫惯性矩阵？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E7%A7%91%E6%B0%8F%E9%A1%B9%E5%92%8C%E7%A6%BB%E5%BF%83%E9%A1%B9%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">2. 科氏项和离心项是什么？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%85%8D%E5%9B%BE%E7%90%86%E8%A7%A3%EF%BC%9A%E5%85%B3%E8%8A%82%E8%A7%92%E5%8A%A0%E9%80%9F%E5%BA%A6%E4%B8%BA%E9%9B%B6%EF%BC%8C%E8%B4%A8%E7%82%B9%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BB%8D%E6%9C%89%E5%8A%A0%E9%80%9F%E5%BA%A6%EF%BC%9F"><span class="toc-text">配图理解：关节角加速度为零，质点为什么仍有加速度？</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E9%87%8D%E5%8A%9B%E9%A1%B9%E5%9C%A8%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E4%B8%8B%E4%BB%8D%E7%84%B6%E5%AD%98%E5%9C%A8%EF%BC%9F"><span class="toc-text">3. 重力项在什么情况下仍然存在？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E7%94%A8%E5%8E%9F%E6%9D%A5%E7%9A%84%E6%95%B0%E5%80%BC%E4%BE%8B%E5%AD%90%E7%9C%8B%E8%80%A6%E5%90%88"><span class="toc-text">4. 用原来的数值例子看耦合</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B9%9D%E3%80%81%E4%BB%8E%E6%83%AF%E6%80%A7%E7%9F%A9%E9%98%B5%E7%90%86%E8%A7%A3%E7%89%B9%E5%BE%81%E5%80%BC%E3%80%81%E7%89%B9%E5%BE%81%E5%90%91%E9%87%8F%E5%92%8C%E5%8A%9B%E7%9F%A9%E6%A4%AD%E5%9C%86"><span class="toc-text">九、从惯性矩阵理解特征值、特征向量和力矩椭圆</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%85%88%E8%AE%A1%E7%AE%97%E7%89%B9%E5%BE%81%E5%80%BC"><span class="toc-text">1. 先计算特征值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%86%8D%E8%AE%A1%E7%AE%97%E7%89%B9%E5%BE%81%E5%90%91%E9%87%8F"><span class="toc-text">2. 再计算特征向量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%8A%8A%E5%85%AC%E5%BC%8F%E5%8F%98%E6%88%90%E7%89%A9%E7%90%86%E8%A7%A3%E9%87%8A"><span class="toc-text">3. 把公式变成物理解释</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E4%B8%BA%E4%BB%80%E4%B9%88%E5%8D%95%E4%BD%8D%E5%8A%A0%E9%80%9F%E5%BA%A6%E5%9C%86%E5%8F%98%E6%88%90%E5%8A%9B%E7%9F%A9%E6%A4%AD%E5%9C%86%EF%BC%9F"><span class="toc-text">4. 为什么单位加速度圆变成力矩椭圆？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E7%AD%89%E6%95%88%E6%83%AF%E6%80%A7%E4%B8%8E%E5%8A%9B%E7%9F%A9%E9%95%BF%E5%BA%A6%E8%A6%81%E5%8C%BA%E5%88%86"><span class="toc-text">5. 等效惯性与力矩长度要区分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E5%A7%BF%E6%80%81%E5%8F%98%E5%8C%96%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E6%94%B9%E5%8F%98%E6%A4%AD%E5%9C%86%EF%BC%9F"><span class="toc-text">6. 姿态变化为什么会改变椭圆？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-%E5%8F%A6%E5%A4%96%E4%B8%A4%E7%A7%8D%E6%A4%AD%E5%9C%86%EF%BC%8C%E4%BD%9C%E4%B8%BA%E8%A1%A5%E5%85%85%E8%BE%A8%E6%9E%90"><span class="toc-text">7. 另外两种椭圆，作为补充辨析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-%E5%8E%9F%E7%90%86%E8%A7%A3%E6%A3%80%E6%9F%A5%E7%9A%84%E8%BF%9B%E5%BA%A6"><span class="toc-text">8. 原理解检查的进度</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E3%80%81%E4%BB%8E%E9%80%86%E5%8A%A8%E5%8A%9B%E5%AD%A6%E8%BD%AC%E5%90%91%E6%AD%A3%E5%8A%A8%E5%8A%9B%E5%AD%A6"><span class="toc-text">十、从逆动力学转向正动力学</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E4%B8%80%E6%AD%A5%E4%B8%80%E6%AD%A5%E6%B1%82%E5%85%B3%E8%8A%82%E5%8A%A0%E9%80%9F%E5%BA%A6"><span class="toc-text">十一、一步一步求关节加速度</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#8-1-%E5%85%88%E8%AE%A1%E7%AE%97%E7%94%A8%E4%BA%8E%E4%BA%A7%E7%94%9F%E5%8A%A0%E9%80%9F%E5%BA%A6%E7%9A%84%E5%87%80%E5%8A%9B%E7%9F%A9"><span class="toc-text">8.1 先计算用于产生加速度的净力矩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-2-%E4%B8%8D%E8%B7%B3%E6%AD%A5%E5%9C%B0%E5%B1%95%E5%BC%80%E7%9F%A9%E9%98%B5%E4%B9%98%E6%B3%95"><span class="toc-text">8.2 不跳步地展开矩阵乘法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-3-%E7%94%A8%E6%B6%88%E5%85%83%E6%B3%95%E6%B1%82%E8%A7%A3"><span class="toc-text">8.3 用消元法求解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-4-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E8%83%BD%E5%88%86%E5%88%AB%E9%99%A4%E4%BB%A5%E5%AF%B9%E8%A7%92%E5%85%83%E7%B4%A0%EF%BC%9F"><span class="toc-text">8.4 为什么不能分别除以对角元素？</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%8A%A8%E5%8A%9B%E5%AD%A6%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-1/" title="机器人动力学学习记录（1）">机器人动力学学习记录（1）</a><time datetime="2026-10-29T09:35:00.000Z" title="发表于 2026-10-29 17:35:00">2026-10-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/07/A-star-%E4%B8%8E%E6%A0%85%E6%A0%BC%E6%B3%95%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" title="A* 与栅格法学习总结">A* 与栅格法学习总结</a><time datetime="2026-10-07T08:26:15.000Z" title="发表于 2026-10-07 16:26:15">2026-10-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/22/Modern-Robotics-%E7%AC%AC2%E7%AB%A0-%E6%9E%84%E5%9E%8B%E7%A9%BA%E9%97%B4%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" title="Modern Robotics 第2章：构型空间学习总结">Modern Robotics 第2章：构型空间学习总结</a><time datetime="2026-09-22T11:53:58.000Z" title="发表于 2026-09-22 19:53:58">2026-09-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/20/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AD%A6%E5%AF%BC%E8%AE%BA-%E7%AC%AC2%E7%AB%A0-%E7%A9%BA%E9%97%B4%E6%8F%8F%E8%BF%B0%E4%B8%8E%E5%8F%98%E6%8D%A2/" title="机器人学导论（第3版）第2章：空间描述与变换">机器人学导论（第3版）第2章：空间描述与变换</a><time datetime="2026-09-20T11:16:52.000Z" title="发表于 2026-09-20 19:16:52">2026-09-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/09/08/2021-MRACon-%E7%B2%BE%E8%AF%BB%E8%AE%B2%E8%A7%A3%E6%8A%A5%E5%91%8A/" title="有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告">有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告</a><time datetime="2026-09-08T12:53:45.000Z" title="发表于 2026-09-08 20:53:45">2026-09-08</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2025 - 2026 By LenoVo</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
