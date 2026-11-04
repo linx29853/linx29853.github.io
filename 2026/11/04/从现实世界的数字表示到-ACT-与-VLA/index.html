@@ -1,0 +1,331 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>从现实世界的数字表示到 ACT 与 VLA | LenoVo的小站</title><meta name="author" content="LenoVo"><meta name="copyright" content="LenoVo"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="以 SO-ARM101 抓取任务为线索，梳理现实世界数据如何表示为向量与张量、梯度怎样训练模型，以及 ACT 动作块策略如何连接到 VLA。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从现实世界的数字表示到 ACT 与 VLA">
+<meta property="og:url" content="https://linx29853.github.io/2026/11/04/%E4%BB%8E%E7%8E%B0%E5%AE%9E%E4%B8%96%E7%95%8C%E7%9A%84%E6%95%B0%E5%AD%97%E8%A1%A8%E7%A4%BA%E5%88%B0-ACT-%E4%B8%8E-VLA/">
+<meta property="og:site_name" content="LenoVo的小站">
+<meta property="og:description" content="以 SO-ARM101 抓取任务为线索，梳理现实世界数据如何表示为向量与张量、梯度怎样训练模型，以及 ACT 动作块策略如何连接到 VLA。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linx29853.github.io/img/butterfly-icon.png">
+<meta property="article:published_time" content="2026-11-04T00:11:03.000Z">
+<meta property="article:modified_time" content="2026-11-04T00:11:32.169Z">
+<meta property="article:author" content="LenoVo">
+<meta property="article:tag" content="具身智能">
+<meta property="article:tag" content="机器人学习">
+<meta property="article:tag" content="模仿学习">
+<meta property="article:tag" content="ACT">
+<meta property="article:tag" content="VLA">
+<meta property="article:tag" content="PyTorch">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linx29853.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "从现实世界的数字表示到 ACT 与 VLA",
+  "url": "https://linx29853.github.io/2026/11/04/%E4%BB%8E%E7%8E%B0%E5%AE%9E%E4%B8%96%E7%95%8C%E7%9A%84%E6%95%B0%E5%AD%97%E8%A1%A8%E7%A4%BA%E5%88%B0-ACT-%E4%B8%8E-VLA/",
+  "image": "https://linx29853.github.io/img/butterfly-icon.png",
+  "datePublished": "2026-11-04T00:11:03.000Z",
+  "dateModified": "2026-11-04T00:11:32.169Z",
+  "author": [
+    {
+      "@type": "Person",
+      "name": "LenoVo",
+      "url": "https://linx29853.github.io"
+    }
+  ]
+}</script><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://linx29853.github.io/2026/11/04/%E4%BB%8E%E7%8E%B0%E5%AE%9E%E4%B8%96%E7%95%8C%E7%9A%84%E6%95%B0%E5%AD%97%E8%A1%A8%E7%A4%BA%E5%88%B0-ACT-%E4%B8%8E-VLA/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?aeb05b46d9af3b7840e1a58e05c8aefc";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();
+btf.addGlobalFn('pjaxComplete', () => {
+  _hmt.push(['_trackPageview',window.location.pathname])
+}, 'baidu_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyloadPlugin: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '从现实世界的数字表示到 ACT 与 VLA',
+  isHighlightShrink: false,
+  isToc: true,
+  pageType: 'post'
+}</script><link rel="stylesheet" href="/css/bilibili.css"><link rel="stylesheet" href="/css/travel-gallery.css"><link rel="stylesheet" href="/css/music-profile.css"><link rel="stylesheet" href="/css/books.css"><link rel="stylesheet" href="/css/category-cover.css"><link rel="stylesheet" href="/css/skill-tree.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">21</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">66</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/skill-tree/"><i class="fa-fw fas fa-list-check"></i><span> 技能树</span></a></div><div class="menus_item"><a class="site-page" href="/books/"><i class="fa-fw fas fa-book-open"></i><span> 资料</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LenoVo的小站</span></a><a class="nav-page-title" href="/"><span class="site-name">从现实世界的数字表示到 ACT 与 VLA</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/skill-tree/"><i class="fa-fw fas fa-list-check"></i><span> 技能树</span></a></div><div class="menus_item"><a class="site-page" href="/books/"><i class="fa-fw fas fa-book-open"></i><span> 资料</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">从现实世界的数字表示到 ACT 与 VLA</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-11-04T00:11:03.000Z" title="发表于 2026-11-04 08:11:03">2026-11-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-11-04T00:11:32.169Z" title="更新于 2026-11-04 08:11:32">2026-11-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/">技术学习</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AD%A6/">机器人学</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><blockquote>
+<p>一份给机器人学习入门者的笔记。沿着 SO-ARM101 抓方块的例子，追踪传感器读数怎样成为训练数据、损失怎样改变参数，以及模型怎样输出机器人动作。</p>
+</blockquote>
+<h2 id="1-现实世界怎样进入模型"><a href="#1-现实世界怎样进入模型" class="headerlink" title="1. 现实世界怎样进入模型"></a>1. 现实世界怎样进入模型</h2><h3 id="1-1-关节读数-→-状态向量"><a href="#1-1-关节读数-→-状态向量" class="headerlink" title="1.1 关节读数 → 状态向量"></a>1.1 关节读数 → 状态向量</h3><p>想象 SO-ARM101 正把夹爪伸向桌上的红色方块。编码器给出位置读数，相机给出像素。取其中三个旋转关节举例，若角度依次为 30°、45°、−20°，可以写成：</p>
+<p>$$<br>q&#x3D;\begin{bmatrix}30\\45\\-20\end{bmatrix}.<br>$$</p>
+<p>向量的每个位置都有约定好的意义。交换前两项会改变它描述的构型。用正运动学（Forward Kinematics, FK），结合机械臂几何和坐标系约定，可以由关节构型算出末端位姿：</p>
+<p>$$<br>T_{0e}&#x3D;f_{\mathrm{FK}}(q).<br>$$</p>
+<p>这里只取三个关节演示写法。对完整机械臂做 FK 时，需要完整的相关关节构型，并按所用函数的要求处理角度单位。关节读数能描述机械臂的构型，桌上方块的位置还需要来自视觉等观测。</p>
+<h3 id="1-2-单帧状态-→-轨迹张量"><a href="#1-2-单帧状态-→-轨迹张量" class="headerlink" title="1.2 单帧状态 → 轨迹张量"></a>1.2 单帧状态 → 轨迹张量</h3><p>按时间采样，把每一帧的关节向量排成一行：</p>
+<p>$$<br>Q&#x3D;<br>\begin{bmatrix}<br>10&amp;20&amp;30\\<br>12&amp;22&amp;31\\<br>15&amp;25&amp;33\\<br>20&amp;29&amp;35<br>\end{bmatrix}<br>\in\mathbb R^{4\times3}.<br>$$</p>
+<p>形状（Shape）是 [4, 3]，分别表示四个时间步和三个通道。如果每隔 0.1 秒采一帧，首末两帧相隔 0.3 秒。采样频率和时间戳要另行保存，单看矩阵无法知道机器人动得多快。</p>
+<table>
+<thead>
+<tr>
+<th>信息</th>
+<th>一种常见的数字表示</th>
+<th>形状示意</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>关节和夹爪状态</td>
+<td>固定顺序的读数</td>
+<td>[D]</td>
+</tr>
+<tr>
+<td>关节轨迹</td>
+<td>按时间排列的状态</td>
+<td>[T, D]</td>
+</tr>
+<tr>
+<td>RGB 图像</td>
+<td>三个颜色通道的像素网格</td>
+<td>[3, H, W]</td>
+</tr>
+<tr>
+<td>文本指令</td>
+<td>分词器（Tokenizer）产生的整数 Token ID</td>
+<td>[L]</td>
+</tr>
+<tr>
+<td>文本嵌入</td>
+<td>每个 Token 对应一个浮点向量</td>
+<td>[L, d]</td>
+</tr>
+</tbody></table>
+<p>图像和轨迹可以保留各自的轴。把图像展平当然也能得到向量，但卷积等运算会利用原有的空间邻接关系。Token ID 是词表索引，ID 的差值没有语义距离的含义。</p>
+<h3 id="1-3-一条-SO-ARM101-示范包含什么"><a href="#1-3-一条-SO-ARM101-示范包含什么" class="headerlink" title="1.3 一条 SO-ARM101 示范包含什么"></a>1.3 一条 SO-ARM101 示范包含什么</h3><p>以单臂、单相机、30 Hz、约 10 秒的<strong>教学设定</strong>为例，一条示范（Episode）约有 300 个时间步。用五个关节位置加一个夹爪位置举例：</p>
+<table>
+<thead>
+<tr>
+<th>数据</th>
+<th>含义</th>
+<th>整条示范的示意形状</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>图像</td>
+<td>相机拍到的方块与夹爪</td>
+<td>[300, 3, H, W]</td>
+</tr>
+<tr>
+<td>状态</td>
+<td>从臂（Follower）的实测位置</td>
+<td>[300, 6]</td>
+</tr>
+<tr>
+<td>动作</td>
+<td>映射到从臂的目标位置指令</td>
+<td>[300, 6]</td>
+</tr>
+</tbody></table>
+<p>主臂（Leader）遥操作提供示范指令，从臂反馈提供实测状态。例如，命令关节转到 30° 时，电机反馈可能还在 27°。两列都能用六维向量保存，却对应不同的东西。动作还可以定义为位置增量或速度，取决于控制接口。训练和部署需要一致的通道顺序、单位、标定、归一化及动作语义。实际数据字段和采样频率以采集配置为准。<a target="_blank" rel="noopener" href="https://huggingface.co/docs/lerobot/so101">LeRobot SO-101 文档</a></p>
+<h2 id="2-向量化与表示学习"><a href="#2-向量化与表示学习" class="headerlink" title="2. 向量化与表示学习"></a>2. 向量化与表示学习</h2><p>**向量化（Vectorization，在这里指把信息组织成数值向量）**解决的是输入怎么写。把像素装进张量，模型就有了可计算的输入。是否能从中提取目标位置，还要看模型和训练。</p>
+<ul>
+<li>**手工特征（Handcrafted Feature）**由人定义，例如末端坐标、关节速度、夹爪到目标的距离。特征可以通过测量或计算得到。</li>
+<li>**学习到的表示（Learned Representation）**由带参数的模型产生。例如视觉编码器输出 $h&#x3D;g_\phi(I)$。向量的某一维可能混合颜色、轮廓和背景信息，单独拿出来未必有明确含义。</li>
+<li>**表示学习（Representation Learning）**指训练过程塑造编码器，使其输出有助于任务。如果编码器与动作预测器端到端训练，动作损失可以沿计算图更新编码器参数 $\phi$。如果编码器被冻结，这一轮只使用它已有的表示。</li>
+</ul>
+<p>假如训练时红色方块总在桌面左边，成功抓取可能来自记住左侧位置。改变方块位置、交换物体颜色、变更背景并观察表现，能帮助分辨策略依赖了哪些线索。单次成功无法回答模型学到了多少可迁移的信息。</p>
+<h2 id="3-“学习”怎样改变模型"><a href="#3-“学习”怎样改变模型" class="headerlink" title="3. “学习”怎样改变模型"></a>3. “学习”怎样改变模型</h2><h3 id="3-1-预测与损失"><a href="#3-1-预测与损失" class="headerlink" title="3.1 预测与损失"></a>3.1 预测与损失</h3><p>把抓取任务缩成一个关节。假设专家给了四组示范 $(q,a)&#x3D;(1,3),(2,5),(3,7),(4,9)$，其中 $q$ 是实测位置，$a$ 是目标动作。模型采用 $\hat a&#x3D;wq+b$，要从样本中拟合权重（Weight）$w$ 和偏置（Bias）$b$。这里的线性规律是教学设定。</p>
+<p>单样本的平方损失（Squared Error）和批量均方误差（Mean Squared Error, MSE）分别为：</p>
+<p>$$<br>L&#x3D;(\hat a-a)^2,\qquad<br>L_{\mathrm{MSE}}&#x3D;\frac{1}{N}\sum_{i&#x3D;1}^{N}(wq_i+b-a_i)^2.<br>$$</p>
+<p>损失（Loss）是优化目标的一部分或全部。在模仿学习里，动作损失衡量预测与示范之间的差异。真机上的抓取成功率需要在执行中另行评估。</p>
+<h3 id="3-2-梯度、反向传播与参数更新"><a href="#3-2-梯度、反向传播与参数更新" class="headerlink" title="3.2 梯度、反向传播与参数更新"></a>3.2 梯度、反向传播与参数更新</h3><p>对单样本写出两条链式法则（Chain Rule）：</p>
+<p>$$<br>\begin{aligned}<br>\frac{\partial L}{\partial w}<br>&amp;&#x3D;\frac{\partial L}{\partial\hat a}\frac{\partial\hat a}{\partial w}<br>&#x3D;2(wq+b-a)q,\\<br>\frac{\partial L}{\partial b}<br>&amp;&#x3D;\frac{\partial L}{\partial\hat a}\frac{\partial\hat a}{\partial b}<br>&#x3D;2(wq+b-a).<br>\end{aligned}<br>$$</p>
+<p>梯度（Gradient）把这些偏导数组在一起，描述当前位置附近的损失变化。令 $q&#x3D;2,a&#x3D;5,w&#x3D;b&#x3D;0$，则预测是 0，损失是 25，梯度为 $(-20,-10)$。按梯度下降（Gradient Descent）更新：</p>
+<p>$$<br>\theta_{\mathrm{new}}&#x3D;\theta-\eta\nabla_\theta L,\qquad \theta&#x3D;(w,b).<br>$$</p>
+<p>取学习率（Learning Rate）$\eta&#x3D;0.01$，得到 $w_{\mathrm{new}}&#x3D;0.2,\ b_{\mathrm{new}}&#x3D;0.1$。同一个样本的预测变成 0.5，损失变成 20.25。负梯度给的是局部下降方向，步子过大仍可能跨过低点。这个手算用了一个样本，下面的代码用四个样本的平均损失，因此第一步数值会不同。</p>
+<p>**反向传播（Backpropagation）**沿计算图反向应用链式法则，算出梯度。**优化器（Optimizer）**使用梯度更新参数。简单 SGD 直接用当前批次的梯度，Adam 还会跟踪梯度的历史统计量。以上是基于梯度的训练流程，机器学习也包含其他学习机制。</p>
+<h2 id="4-PyTorch、Tensor-与计算图"><a href="#4-PyTorch、Tensor-与计算图" class="headerlink" title="4. PyTorch、Tensor 与计算图"></a>4. PyTorch、Tensor 与计算图</h2><p>PyTorch 是软件框架。它提供张量运算、自动微分（Automatic Differentiation, Autograd）、网络层和优化器实现，并支持在 CPU 或 GPU 上执行计算。模型结构、动作语义、损失和优化方法由训练方案决定。</p>
+<p>张量（Tensor）可以先理解成带有形状、数据类型和设备信息的多维数值数组。标量形状是 []，关节向量是 [D]，批量图像是 [B, 3, H, W]，其中 B 是批大小。形状一致的两个张量也可能分别是实测状态和动作指令，意义由数据定义。</p>
+<p>PyTorch 在常规 eager 模式下会随前向运算记录需要求导的依赖。例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">q、w、b → 预测值</span><br><span class="line">预测值、标签 a → 损失</span><br><span class="line">损失 → 沿依赖反向求导 → w.grad、b.grad</span><br><span class="line">优化器读取梯度 → 更新 w、b</span><br></pre></td></tr></table></figure>
+
+<p>模型参数是默认需要梯度的叶张量。普通输入即使无需计算自身梯度，也可以参与参数梯度的计算。重复调用反向传播时，梯度默认会累加到相应的梯度缓冲区，因此每次独立更新前要清空旧梯度。<a target="_blank" rel="noopener" href="https://docs.pytorch.org/tutorials/beginner/basics/autogradqs_tutorial.html">PyTorch 自动微分教程</a></p>
+<h3 id="4-1-可运行示例"><a href="#4-1-可运行示例" class="headerlink" title="4.1 可运行示例"></a>4.1 可运行示例</h3><p>下面的代码在装有 PyTorch 的 Python 环境中运行，使用 CPU。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> nn</span><br><span class="line"></span><br><span class="line">q = torch.tensor([[<span class="number">1.</span>], [<span class="number">2.</span>], [<span class="number">3.</span>], [<span class="number">4.</span>]])</span><br><span class="line">a = torch.tensor([[<span class="number">3.</span>], [<span class="number">5.</span>], [<span class="number">7.</span>], [<span class="number">9.</span>]])</span><br><span class="line"></span><br><span class="line">model = nn.Linear(<span class="number">1</span>, <span class="number">1</span>)</span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    model.weight.zero_()</span><br><span class="line">    model.bias.zero_()</span><br><span class="line"></span><br><span class="line">loss_fn = nn.MSELoss()</span><br><span class="line">optimizer = torch.optim.SGD(model.parameters(), lr=<span class="number">0.04</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> step <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">401</span>):</span><br><span class="line">    optimizer.zero_grad()</span><br><span class="line">    prediction = model(q)</span><br><span class="line">    loss = loss_fn(prediction, a)</span><br><span class="line">    loss.backward()</span><br><span class="line">    <span class="keyword">if</span> step == <span class="number">0</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;初始损失&quot;</span>, loss.item())</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;首步梯度&quot;</span>, model.weight.grad.item(), model.bias.grad.item())</span><br><span class="line">    optimizer.step()</span><br><span class="line"></span><br><span class="line">model.<span class="built_in">eval</span>()</span><br><span class="line"><span class="keyword">with</span> torch.no_grad():</span><br><span class="line">    test_prediction = model(torch.tensor([[<span class="number">5.</span>]]))</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;训练后 w、b&quot;</span>, model.weight.item(), model.bias.item())</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;q=5 时的预测&quot;</span>, test_prediction.item())</span><br></pre></td></tr></table></figure>
+
+<p>首步应看到损失 41、梯度 −35 和 −12。训练后 $w$ 接近 2，$b$ 接近 1，未见输入 $q&#x3D;5$ 的预测接近 11。这里的外推得益于线性模型和数据生成规律恰好匹配。真实机器人的泛化（Generalization）要在独立示范和不同执行条件下评估。</p>
+<h2 id="5-从一个目标值到-ACT-的动作块"><a href="#5-从一个目标值到-ACT-的动作块" class="headerlink" title="5. 从一个目标值到 ACT 的动作块"></a>5. 从一个目标值到 ACT 的动作块</h2><p>ACT（Action Chunking with Transformers）从专家示范中做模仿学习（Imitation Learning）。从一条示范里取时刻 $t$ 的观测以及接下来 $K$ 个动作：</p>
+<p>$$<br>o_t&#x3D;(I_t,q_t),\qquad<br>A_t&#x3D;[a_t,a_{t+1},\ldots,a_{t+K-1}]\in\mathbb R^{K\times D_a}.<br>$$</p>
+<p>例如取 $K&#x3D;30$、$D_a&#x3D;6$，策略每次预测一个 [30, 6] 的动作块（Action Chunk）。30 Hz 下，它覆盖约一秒的动作，$K$ 是可配置的教学取值。训练采样接近轨迹尾部时，可对不足长度的动作补齐，并用掩码排除填充步的动作损失。</p>
+<p>原版 ACT 用视觉骨干提取图像特征，再通过 Transformer 处理视觉、关节位置与潜变量，生成动作块。训练时，条件变分自编码器（Conditional Variational Autoencoder, CVAE）的编码器根据示范动作块和当前关节位置得到潜变量 $z$ 的分布。动作预测器用当前观测和采样得到的 $z$ 重建示范动作块。一个简化的目标写法是：</p>
+<p>$$<br>\begin{aligned}<br>\hat A_t &amp;&#x3D; f_\theta(o_t,z),\\<br>\mathcal L_{\mathrm{ACT}}<br>&amp;&#x3D;\operatorname{MAE}(\hat A_t,A_t)<br>+\beta D_{\mathrm{KL}}!\left(<br>q_\phi(z\mid A_t,q_t)\,\Vert\,\mathcal N(0,I)<br>\right).<br>\end{aligned}<br>$$</p>
+<p>第一项是动作重建的平均绝对误差（MAE，L1 型损失），第二项用 KL 散度约束潜变量分布，$\beta$ 控制权重。$z$ 可以承载示范方式的差异，例如接近目标时的路径变化，单个潜变量维度的语义没有预先定义。原论文在部署时使用先验均值 $z&#x3D;0$，动作预测器只需当前观测和这个固定潜变量。原论文还使用时间集成（Temporal Ensembling），把多个重叠动作块对同一时刻的预测加权合并。输出长度和重新观测、预测的频率是两个不同的设定。<a target="_blank" rel="noopener" href="https://arxiv.org/html/2304.13705">ACT 原论文，第 IV 节</a></p>
+<h2 id="6-ACT-怎样连接到-VLA"><a href="#6-ACT-怎样连接到-VLA" class="headerlink" title="6. ACT 怎样连接到 VLA"></a>6. ACT 怎样连接到 VLA</h2><p>VLA（Vision-Language-Action，视觉—语言—动作模型）把语言指令也作为策略的条件。可以把接口概括为：</p>
+<p>$$<br>\hat A_t&#x3D;\pi_\theta(I_t,\ell,q_t),<br>$$</p>
+<p>其中 $\ell$ 是指令，例如“把红色方块放进右边的托盘”。关节状态和输出是否为动作块取决于具体模型。原版 ACT 以视觉和关节观测为条件，未使用语言指令。VLA 可能预测离散动作 Token，也可能直接生成连续动作。RT-2 是把动作表示为 Token 的一个例子。<a target="_blank" rel="noopener" href="https://arxiv.org/html/2304.13705">ACT 原论文</a> · <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2307.15818">RT-2 原论文</a></p>
+<p>把红色方块换成蓝色方块，或把“右边托盘”改成“左边托盘”，可以在控制其他条件的情况下测试策略是否随语言改变行为。无论模型采用哪种动作表示，输出最终都要映射到机器人控制接口认可的目标值。执行后，下一帧图像和关节反馈又构成新的观测，这就形成了感知与执行的闭环。</p>
+<hr>
+<p>Typora 中如需渲染行内公式，可在 Markdown 偏好设置中启用行内公式。块公式使用双美元符号，代码使用 Markdown 围栏。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linx29853.github.io">LenoVo</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linx29853.github.io/2026/11/04/%E4%BB%8E%E7%8E%B0%E5%AE%9E%E4%B8%96%E7%95%8C%E7%9A%84%E6%95%B0%E5%AD%97%E8%A1%A8%E7%A4%BA%E5%88%B0-ACT-%E4%B8%8E-VLA/">https://linx29853.github.io/2026/11/04/%E4%BB%8E%E7%8E%B0%E5%AE%9E%E4%B8%96%E7%95%8C%E7%9A%84%E6%95%B0%E5%AD%97%E8%A1%A8%E7%A4%BA%E5%88%B0-ACT-%E4%B8%8E-VLA/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://linx29853.github.io" target="_blank">LenoVo的小站</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%85%B7%E8%BA%AB%E6%99%BA%E8%83%BD/">具身智能</a><a class="post-meta__tags" href="/tags/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%AD%A6%E4%B9%A0/">机器人学习</a><a class="post-meta__tags" href="/tags/%E6%A8%A1%E4%BB%BF%E5%AD%A6%E4%B9%A0/">模仿学习</a><a class="post-meta__tags" href="/tags/ACT/">ACT</a><a class="post-meta__tags" href="/tags/VLA/">VLA</a><a class="post-meta__tags" href="/tags/PyTorch/">PyTorch</a></div><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/11/04/ACT-Action-Chunking-with-Transformers-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="ACT（Action Chunking with Transformers）学习笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">ACT（Action Chunking with Transformers）学习笔记</div></div><div class="info-2"><div class="info-item-1">一、Introduction：为什么提出ACT1. 研究背景：机器人精细操作很困难论文关注机器人精细操作，例如拉拉链，将电池装入电池槽等等。这些任务与简单的抓取放置不同，需要很高的操作精度、接触控制能力和视觉反馈。传统操作需要昂贵的机械臂，精密传感器，以及复杂的物理模型。 “Can learning enable low-cost and imprecise hardware to perform these fine manipulation tasks?“ 使用低成本机械臂，通过模仿学习实现高精度操作，这就是这篇论文研究的核心话题。 传统的模型驱动方法需要建立复杂的环境动力学模型： $$x_{t+1}&#x3D;f(x_t,u_t)$$ 但对于复杂操作来说非常困难。所以作者这里选用通过人类示范学习： $$\pi_\theta(o_t)\rightarrow a_t$$ 其中：  $o_t$：机器人当前观测，例如图像、关节位置。 $a_t$：机器人应该执行的动作。 $\pi_\theta$：通过模仿学习得到的策略。  这样就可以绕开显式建立复杂接触模型的难题。 2. 现有模型的...</div></div></div></a><a class="pagination-related" href="/2026/10/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%8A%A8%E5%8A%9B%E5%AD%A6%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-1/" title="机器人动力学学习记录（1）"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">机器人动力学学习记录（1）</div></div><div class="info-2"><div class="info-item-1"> 按原分享对话的学习顺序整理：先理解竖直质点，再推导二连杆，最后理解惯性矩阵并练习正动力学。 沿用原来的符号：动能为 $K$，势能为 $P$，拉格朗日函数为 $L&#x3D;K-P$；杆长为 $L_1,L_2$，关节角为 $\theta_1,\theta_2$。一般方程中的 $q&#x3D;(\theta_1,\theta_2)^T$。标量 $g$ 是重力加速度，向量 $g(q)$ 是重力补偿力矩。原交互演示改为可直接阅读的文字、公式和练习。  一、先理解广义坐标和广义力广义坐标的意思是：用一组独立变量，完整描述系统的构型。 竖直运动质点只需要位置 $x$；二连杆机械臂则可以选择两个关节角： $$q&#x3D;\begin{bmatrix}\theta_1\\\theta_2\end{bmatrix}.$$ 虽然末端在二维空间运动，但只要知道两个关节角，就能确定整个机械臂的构型。 对于转动关节，广义力就是关节力矩。广义力与广义速度的内积等于功率： $$f^T\dot q&#x3D;\mathcal P_{\mathrm{power}}.$$ 对二连杆机械臂： $$\mathcal...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/11/04/ACT-Action-Chunking-with-Transformers-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="ACT（Action Chunking with Transformers）学习笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-11-04</div><div class="info-item-2">ACT（Action Chunking with Transformers）学习笔记</div></div><div class="info-2"><div class="info-item-1">一、Introduction：为什么提出ACT1. 研究背景：机器人精细操作很困难论文关注机器人精细操作，例如拉拉链，将电池装入电池槽等等。这些任务与简单的抓取放置不同，需要很高的操作精度、接触控制能力和视觉反馈。传统操作需要昂贵的机械臂，精密传感器，以及复杂的物理模型。 “Can learning enable low-cost and imprecise hardware to perform these fine manipulation tasks?“ 使用低成本机械臂，通过模仿学习实现高精度操作，这就是这篇论文研究的核心话题。 传统的模型驱动方法需要建立复杂的环境动力学模型： $$x_{t+1}&#x3D;f(x_t,u_t)$$ 但对于复杂操作来说非常困难。所以作者这里选用通过人类示范学习： $$\pi_\theta(o_t)\rightarrow a_t$$ 其中：  $o_t$：机器人当前观测，例如图像、关节位置。 $a_t$：机器人应该执行的动作。 $\pi_\theta$：通过模仿学习得到的策略。  这样就可以绕开显式建立复杂接触模型的难题。 2. 现有模型的...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">LenoVo</div><div class="author-info-description">记录轨道交通、公交与卡车见闻，以及技术学习笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">21</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">66</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/linx29853"><i class="fab fa-github"></i><span>访问 GitHub</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LenoVo 的小站</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E7%8E%B0%E5%AE%9E%E4%B8%96%E7%95%8C%E6%80%8E%E6%A0%B7%E8%BF%9B%E5%85%A5%E6%A8%A1%E5%9E%8B"><span class="toc-text">1. 现实世界怎样进入模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-1-%E5%85%B3%E8%8A%82%E8%AF%BB%E6%95%B0-%E2%86%92-%E7%8A%B6%E6%80%81%E5%90%91%E9%87%8F"><span class="toc-text">1.1 关节读数 → 状态向量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-2-%E5%8D%95%E5%B8%A7%E7%8A%B6%E6%80%81-%E2%86%92-%E8%BD%A8%E8%BF%B9%E5%BC%A0%E9%87%8F"><span class="toc-text">1.2 单帧状态 → 轨迹张量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-%E4%B8%80%E6%9D%A1-SO-ARM101-%E7%A4%BA%E8%8C%83%E5%8C%85%E5%90%AB%E4%BB%80%E4%B9%88"><span class="toc-text">1.3 一条 SO-ARM101 示范包含什么</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%90%91%E9%87%8F%E5%8C%96%E4%B8%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0"><span class="toc-text">2. 向量化与表示学习</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E2%80%9C%E5%AD%A6%E4%B9%A0%E2%80%9D%E6%80%8E%E6%A0%B7%E6%94%B9%E5%8F%98%E6%A8%A1%E5%9E%8B"><span class="toc-text">3. “学习”怎样改变模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E9%A2%84%E6%B5%8B%E4%B8%8E%E6%8D%9F%E5%A4%B1"><span class="toc-text">3.1 预测与损失</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%A2%AF%E5%BA%A6%E3%80%81%E5%8F%8D%E5%90%91%E4%BC%A0%E6%92%AD%E4%B8%8E%E5%8F%82%E6%95%B0%E6%9B%B4%E6%96%B0"><span class="toc-text">3.2 梯度、反向传播与参数更新</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-PyTorch%E3%80%81Tensor-%E4%B8%8E%E8%AE%A1%E7%AE%97%E5%9B%BE"><span class="toc-text">4. PyTorch、Tensor 与计算图</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-%E5%8F%AF%E8%BF%90%E8%A1%8C%E7%A4%BA%E4%BE%8B"><span class="toc-text">4.1 可运行示例</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%BB%8E%E4%B8%80%E4%B8%AA%E7%9B%AE%E6%A0%87%E5%80%BC%E5%88%B0-ACT-%E7%9A%84%E5%8A%A8%E4%BD%9C%E5%9D%97"><span class="toc-text">5. 从一个目标值到 ACT 的动作块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-ACT-%E6%80%8E%E6%A0%B7%E8%BF%9E%E6%8E%A5%E5%88%B0-VLA"><span class="toc-text">6. ACT 怎样连接到 VLA</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/04/ACT-Action-Chunking-with-Transformers-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="ACT（Action Chunking with Transformers）学习笔记">ACT（Action Chunking with Transformers）学习笔记</a><time datetime="2026-11-04T00:14:24.000Z" title="发表于 2026-11-04 08:14:24">2026-11-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/04/%E4%BB%8E%E7%8E%B0%E5%AE%9E%E4%B8%96%E7%95%8C%E7%9A%84%E6%95%B0%E5%AD%97%E8%A1%A8%E7%A4%BA%E5%88%B0-ACT-%E4%B8%8E-VLA/" title="从现实世界的数字表示到 ACT 与 VLA">从现实世界的数字表示到 ACT 与 VLA</a><time datetime="2026-11-04T00:11:03.000Z" title="发表于 2026-11-04 08:11:03">2026-11-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%8A%A8%E5%8A%9B%E5%AD%A6%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-1/" title="机器人动力学学习记录（1）">机器人动力学学习记录（1）</a><time datetime="2026-10-29T09:35:00.000Z" title="发表于 2026-10-29 17:35:00">2026-10-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/29/ROS2%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-%E8%AF%9D%E9%A2%98%E5%8F%91%E5%B8%83%E4%B8%8E%E8%AE%A2%E9%98%85/" title="ROS2 学习记录：Python 话题发布与订阅">ROS2 学习记录：Python 话题发布与订阅</a><time datetime="2026-10-29T06:25:24.000Z" title="发表于 2026-10-29 14:25:24">2026-10-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/07/A-star-%E4%B8%8E%E6%A0%85%E6%A0%BC%E6%B3%95%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" title="A* 与栅格法学习总结">A* 与栅格法学习总结</a><time datetime="2026-10-07T08:26:15.000Z" title="发表于 2026-10-07 16:26:15">2026-10-07</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2025 - 2026 By LenoVo</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(() => {
+  const loadMathjax = () => {
+    if (!window.MathJax) {
+      window.MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          tags: 'none',
+        },
+        chtml: {
+          scale: 1.1
+        },
+        options: {
+          enableMenu: true,
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/)
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+                const text = document.createTextNode('')
+                node.parentNode.replaceChild(text, node)
+                math.start = {node: text, delim: '', n: 0}
+                math.end = {node: text, delim: '', n: 0}
+                doc.math.push(math)
+              }
+            }, '']
+          }
+        }
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+      script.id = 'MathJax-script'
+      script.async = true
+      document.head.appendChild(script)
+    } else {
+      MathJax.startup.document.state(0)
+      MathJax.texReset()
+      MathJax.typesetPromise()
+    }
+  }
+
+  btf.addGlobalFn('encrypt', loadMathjax, 'mathjax')
+  window.pjax ? loadMathjax() : window.addEventListener('load', loadMathjax)
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
