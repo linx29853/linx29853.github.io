@@ -1,0 +1,30 @@
+/home/linx/Documents/Codex/2026-11-11/new-chat/outputs/cnn-learning/official_cifar10_tutorial.py:105: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+  plt.show()
+frog  truck frog  deer 
+[1,  2000] loss: 2.234
+[1,  4000] loss: 1.896
+[1,  6000] loss: 1.676
+[1,  8000] loss: 1.582
+[1, 10000] loss: 1.501
+[1, 12000] loss: 1.484
+[2,  2000] loss: 1.378
+[2,  4000] loss: 1.373
+[2,  6000] loss: 1.340
+[2,  8000] loss: 1.314
+[2, 10000] loss: 1.280
+[2, 12000] loss: 1.281
+Finished Training
+GroundTruth:  cat   ship  ship  plane
+Predicted:  frog  car   ship  plane
+Accuracy of the network on the 10000 test images: 55 %
+Accuracy for class: plane is 69.3 %
+Accuracy for class: car   is 77.8 %
+Accuracy for class: bird  is 53.7 %
+Accuracy for class: cat   is 24.4 %
+Accuracy for class: deer  is 53.7 %
+Accuracy for class: dog   is 31.0 %
+Accuracy for class: frog  is 72.6 %
+Accuracy for class: horse is 64.7 %
+Accuracy for class: ship  is 58.5 %
+Accuracy for class: truck is 53.6 %
+cuda
