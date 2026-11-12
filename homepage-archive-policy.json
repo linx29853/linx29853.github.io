@@ -1,0 +1,33 @@
+{
+  "description": "首页列表隐藏的旧方向文章；全文、时间归档、分类、标签及搜索继续保留。后续发布文章重建首页时，按 excluded_posts 中的 URL 排除，并重新分页。",
+  "excluded_posts": [
+    {
+      "title": "有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告",
+      "url": "/2026/09/08/2021-MRACon-%E7%B2%BE%E8%AF%BB%E8%AE%B2%E8%A7%A3%E6%8A%A5%E5%91%8A/"
+    },
+    {
+      "title": "线性系统基础学习笔记",
+      "url": "/2026/08/30/%E7%BA%BF%E6%80%A7%E7%B3%BB%E7%BB%9F%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"
+    },
+    {
+      "title": "同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制",
+      "url": "/2026/08/29/%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A-MRACon-MRASCon%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6/"
+    },
+    {
+      "title": "基于 Popov 超稳定性理论的模型参考自适应控制器",
+      "url": "/2026/08/29/Popov%E8%B6%85%E7%A8%B3%E5%AE%9A%E6%96%B9%E6%B3%95%E4%B8%8EMRAC-%E7%B2%BE%E7%AE%80%E7%AC%94%E8%AE%B0/"
+    },
+    {
+      "title": "MRASC 领导者-跟随者一致性论文阅读笔记",
+      "url": "/2026/08/27/MRASC_leader_following_consensus_%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/"
+    },
+    {
+      "title": "李雅普诺夫稳定性与线性系统方法：精简笔记",
+      "url": "/2026/08/26/%E6%9D%8E%E9%9B%85%E6%99%AE%E8%AF%BA%E5%A4%AB%E7%A8%B3%E5%AE%9A%E6%80%A7%E4%B8%8E%E7%BA%BF%E6%80%A7%E7%B3%BB%E7%BB%9F%E6%96%B9%E6%B3%95-%E7%B2%BE%E7%AE%80%E7%AC%94%E8%AE%B0/"
+    },
+    {
+      "title": "MRAC 数学基础知识点笔记",
+      "url": "/2026/08/26/MRAC%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AC%94%E8%AE%B0/"
+    }
+  ]
+}
