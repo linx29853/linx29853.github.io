@@ -1,350 +1,316 @@
-(() => {
-  const btfFn = {
-    debounce: (func, wait = 0, immediate = false) => {
-      let timeout
-      return (...args) => {
-        const later = () => {
-          timeout = null
-          if (!immediate) func(...args)
-        }
-        const callNow = immediate && !timeout
-        clearTimeout(timeout)
-        timeout = setTimeout(later, wait)
-        if (callNow) func(...args)
+(function () {
+  // 防重复执行：utils.js 可能被重复加载，二次执行直接跳过，避免重复声明报错。
+  if (window.__stellarUtilsLoaded) return;
+  window.__stellarUtilsLoaded = true;
+
+  const utils = {
+    // 已加载样式缓存
+    _loadedStyles: new Set(),
+
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    css: (href, before, media, attributes) => {
+      // 如果样式已加载，直接返回 null
+      if (utils._loadedStyles.has(href)) {
+        return null;
       }
-    },
-
-    throttle: function (func, wait, options = {}) {
-      let timeout, context, args
-      let previous = 0
-
-      const later = () => {
-        previous = options.leading === false ? 0 : new Date().getTime()
-        timeout = null
-        func.apply(context, args)
-        if (!timeout) context = args = null
-      }
-
-      const throttled = (...params) => {
-        const now = new Date().getTime()
-        if (!previous && options.leading === false) previous = now
-        const remaining = wait - (now - previous)
-        context = this
-        args = params
-        if (remaining <= 0 || remaining > wait) {
-          if (timeout) {
-            clearTimeout(timeout)
-            timeout = null
-          }
-          previous = now
-          func.apply(context, args)
-          if (!timeout) context = args = null
-        } else if (!timeout && options.trailing !== false) {
-          timeout = setTimeout(later, remaining)
-        }
-      }
-
-      return throttled
-    },
-
-    overflowPaddingR: {
-      add: () => {
-        const paddingRight = window.innerWidth - document.body.clientWidth
-
-        if (paddingRight > 0) {
-          document.body.style.paddingRight = `${paddingRight}px`
-          document.body.style.overflow = 'hidden'
-          const menuElement = document.querySelector('#page-header.nav-fixed #menus')
-          if (menuElement) {
-            menuElement.style.paddingRight = `${paddingRight}px`
-          }
-        }
-      },
-      remove: () => {
-        document.body.style.paddingRight = ''
-        document.body.style.overflow = ''
-        const menuElement = document.querySelector('#page-header.nav-fixed #menus')
-        if (menuElement) {
-          menuElement.style.paddingRight = ''
-        }
-      }
-    },
-
-    snackbarShow: (text, showAction = false, duration = 2000) => {
-      const { position, bgLight, bgDark } = GLOBAL_CONFIG.Snackbar
-      const bg = document.documentElement.getAttribute('data-theme') === 'light' ? bgLight : bgDark
-      Snackbar.show({
-        text,
-        backgroundColor: bg,
-        showAction,
-        duration,
-        pos: position,
-        customClass: 'snackbar-css'
-      })
-    },
-
-    diffDate: (inputDate, more = false) => {
-      const dateNow = new Date()
-      const datePost = new Date(inputDate)
-      const diffMs = dateNow - datePost
-      const diffSec = diffMs / 1000
-      const diffMin = diffSec / 60
-      const diffHour = diffMin / 60
-      const diffDay = diffHour / 24
-      const diffMonth = diffDay / 30
-      const { dateSuffix } = GLOBAL_CONFIG
-
-      if (!more) return Math.floor(diffDay)
-
-      if (diffMonth > 12) return datePost.toISOString().slice(0, 10)
-      if (diffMonth >= 1) return `${Math.floor(diffMonth)} ${dateSuffix.month}`
-      if (diffDay >= 1) return `${Math.floor(diffDay)} ${dateSuffix.day}`
-      if (diffHour >= 1) return `${Math.floor(diffHour)} ${dateSuffix.hour}`
-      if (diffMin >= 1) return `${Math.floor(diffMin)} ${dateSuffix.min}`
-      return dateSuffix.just
-    },
-
-    loadComment: (dom, callback) => {
-      if ('IntersectionObserver' in window) {
-        const observerItem = new IntersectionObserver((entries) => {
-          if (entries[0].isIntersecting) {
-            callback()
-            observerItem.disconnect()
-          }
-        }, { threshold: [0] })
-        observerItem.observe(dom)
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
       } else {
-        callback()
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
       }
-    },
-
-    scrollToDest: (pos, time = 500) => {
-      const currentPos = window.scrollY
-      const isNavFixed = document.getElementById('page-header').classList.contains('fixed')
-      if (currentPos > pos || isNavFixed) pos = pos - 70
-
-      if ('scrollBehavior' in document.documentElement.style) {
-        window.scrollTo({
-          top: pos,
-          behavior: 'smooth'
-        })
-        return
-      }
-
-      const startTime = performance.now()
-      const animate = currentTime => {
-        const timeElapsed = currentTime - startTime
-        const progress = Math.min(timeElapsed / time, 1)
-        window.scrollTo(0, currentPos + (pos - currentPos) * progress)
-        if (progress < 1) {
-          requestAnimationFrame(animate)
-        }
-      }
-      requestAnimationFrame(animate)
-    },
-
-    animateIn: (ele, animation) => {
-      ele.style.display = 'block'
-      ele.style.animation = animation
-    },
-
-    animateOut: (ele, animation) => {
-      const handleAnimationEnd = () => {
-        ele.style.display = ''
-        ele.style.animation = ''
-        ele.removeEventListener('animationend', handleAnimationEnd)
-      }
-      ele.addEventListener('animationend', handleAnimationEnd)
-      ele.style.animation = animation
-    },
-
-    wrap: (selector, eleType, options) => {
-      const createEle = document.createElement(eleType)
-      for (const [key, value] of Object.entries(options)) {
-        createEle.setAttribute(key, value)
-      }
-      selector.parentNode.insertBefore(createEle, selector)
-      createEle.appendChild(selector)
-    },
-
-    isHidden: ele => ele.offsetHeight === 0 && ele.offsetWidth === 0,
-
-    getEleTop: ele => {
-      let actualTop = ele.offsetTop
-      let current = ele.offsetParent
-
-      while (current !== null) {
-        actualTop += current.offsetTop
-        current = current.offsetParent
-      }
-
-      return actualTop
-    },
-
-    loadLightbox: ele => {
-      const service = GLOBAL_CONFIG.lightbox
-
-      if (service === 'medium_zoom') {
-        mediumZoom(ele, { background: 'var(--zoom-bg)' })
-        return
-      }
-
-      if (service === 'fancybox') {
-        Array.from(ele).forEach(i => {
-          if (i.parentNode.tagName !== 'A') {
-            const dataSrc = i.dataset.lazySrc || i.src
-            const dataCaption = i.title || i.alt || ''
-            btf.wrap(i, 'a', { href: dataSrc, 'data-fancybox': 'gallery', 'data-caption': dataCaption, 'data-thumb': dataSrc })
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (Object.prototype.hasOwnProperty.call(attributes, attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
           }
-        })
-
-        if (!window.fancyboxRun) {
-          let options = ''
-          if (Fancybox.version < '6') {
-            options = {
-              Hash: false,
-              Thumbs: {
-                showOnStart: false
-              },
-              Images: {
-                Panzoom: {
-                  maxScale: 4
-                }
-              },
-              Carousel: {
-                transition: 'slide'
-              },
-              Toolbar: {
-                display: {
-                  left: ['infobar'],
-                  middle: [
-                    'zoomIn',
-                    'zoomOut',
-                    'toggle1to1',
-                    'rotateCCW',
-                    'rotateCW',
-                    'flipX',
-                    'flipY'
-                  ],
-                  right: ['slideshow', 'thumbs', 'close']
-                }
-              }
-            }
-          } else {
-            options = {
-              Hash: false,
-              Carousel: {
-                transition: 'slide',
-                Thumbs: {
-                  showOnStart: false
-                },
-                Toolbar: {
-                  display: {
-                    left: ['counter'],
-                    middle: [
-                      'zoomIn',
-                      'zoomOut',
-                      'toggle1to1',
-                      'rotateCCW',
-                      'rotateCW',
-                      'flipX',
-                      'flipY',
-                      "reset"
-                    ],
-                    right: ['autoplay', 'thumbs', 'close']
-                  }
-                },
-                Zoomable: {
-                  Panzoom: {
-                    maxScale: 4
-                  }
-                }
-              }
-            }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      // 标记样式为已加载 (在创建元素后立即标记，防止重复创建)
+      utils._loadedStyles.add(href);
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
           }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
 
-          Fancybox.bind('[data-fancybox]', options)
-          window.fancyboxRun = true
+    // 已加载脚本缓存
+    _loadedScripts: new Set(),
+
+    // 已加载元素缓存 (使用 WeakSet 追踪元素实例,避免重复加载)
+    _loadedElements: new WeakSet(),
+
+    js: (src, opt) => new Promise((resolve, reject) => {
+      if (src.startsWith('/')) {
+        src = ctx.root + src.substring(1);
+      }
+      // 如果脚本已加载，直接返回
+      if (utils._loadedScripts.has(src)) {
+        resolve();
+        return;
+      }
+      var script = document.createElement('script');
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function () {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        utils._loadedScripts.add(src);
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    // 原生 DOM 工具：querySelector / querySelectorAll 简写
+    qs: (sel, ctx) => (ctx || document).querySelector(sel),
+    qsa: (sel, ctx) => Array.prototype.slice.call((ctx || document).querySelectorAll(sel)),
+
+    // 原生 DOM 封装：常用 DOM 操作方法子集（find/append/class/attr/事件等）
+    dom: (selector, ctx) => {
+      var els = [];
+      if (typeof selector === 'string') {
+        els = utils.qsa(selector, ctx);
+      } else if (selector && selector.nodeType === 1) {
+        els = [selector];
+      } else if (selector && typeof selector.length === 'number') {
+        els = Array.prototype.slice.call(selector);
+      }
+      var api = {
+        length: els.length,
+        each: function (fn) {
+          els.forEach(function (el, i) {
+            fn.call(el, i, el);
+          });
+          return api;
+        },
+        find: function (sel) {
+          var result = [];
+          els.forEach(function (el) {
+            Array.prototype.push.apply(result, el.querySelectorAll(sel));
+          });
+          return utils.dom(result);
+        },
+        append: function (content) {
+          els.forEach(function (el) {
+            if (typeof content === 'string') {
+              el.insertAdjacentHTML('beforeend', content);
+            } else if (content && content.nodeType === 1) {
+              el.appendChild(content);
+            } else if (content && typeof content.length === 'number') {
+              Array.prototype.forEach.call(content, function (child) {
+                if (child && child.nodeType === 1) el.appendChild(child);
+              });
+            }
+          });
+          return api;
+        },
+        remove: function () {
+          els.forEach(function (el) {
+            el.remove();
+          });
+        },
+        addClass: function (cls) {
+          els.forEach(function (el) {
+            cls.trim().split(/\s+/).forEach(function (c) {
+              if (c) el.classList.add(c);
+            });
+          });
+          return api;
+        },
+        removeClass: function (cls) {
+          els.forEach(function (el) {
+            cls.trim().split(/\s+/).forEach(function (c) {
+              if (c) el.classList.remove(c);
+            });
+          });
+          return api;
+        },
+        toggleClass: function (cls, force) {
+          els.forEach(function (el) {
+            cls.trim().split(/\s+/).forEach(function (c) {
+              if (c) el.classList.toggle(c, force);
+            });
+          });
+          return api;
+        },
+        attr: function (name, value) {
+          if (value === undefined) {
+            return els[0] ? els[0].getAttribute(name) : undefined;
+          }
+          els.forEach(function (el) {
+            el.setAttribute(name, value);
+          });
+          return api;
+        },
+        data: function (name) {
+          return els[0] ? els[0].getAttribute('data-' + name) : undefined;
+        },
+        text: function (value) {
+          if (value === undefined) {
+            return els[0] ? els[0].textContent : undefined;
+          }
+          els.forEach(function (el) {
+            el.textContent = value;
+          });
+          return api;
+        },
+        html: function (content) {
+          if (content === undefined) {
+            return els[0] ? els[0].innerHTML : undefined;
+          }
+          els.forEach(function (el) {
+            if (typeof content !== 'string' && content && typeof content.length === 'number' && content[0] && content[0].nodeType === 1) {
+              var frag = document.createDocumentFragment();
+              Array.prototype.forEach.call(content, function (child) {
+                frag.appendChild(child);
+              });
+              el.replaceChildren(frag);
+            } else {
+              el.innerHTML = content;
+            }
+          });
+          return api;
+        },
+        val: function (value) {
+          if (value === undefined) {
+            return els[0] ? els[0].value : undefined;
+          }
+          els.forEach(function (el) {
+            el.value = value;
+          });
+          return api;
+        },
+        offset: function () {
+          var el = els[0];
+          if (!el) return { top: 0, left: 0 };
+          var rect = el.getBoundingClientRect();
+          return { top: rect.top + window.scrollY, left: rect.left + window.scrollX };
+        },
+        on: function (event, cb) {
+          els.forEach(function (el) {
+            el.addEventListener(event, cb);
+          });
+          return api;
+        },
+        click: function (cb) { return api.on('click', cb); },
+        focus: function (cb) { return api.on('focus', cb); },
+        keydown: function (cb) { return api.on('keydown', cb); },
+        empty: function () {
+          els.forEach(function (el) {
+            el.replaceChildren();
+          });
+          return api;
+        }
+      };
+      els.forEach(function (el, i) {
+        api[i] = el;
+      });
+      return api;
+    },
+
+    onLoading: (el) => {
+      if (el) {
+        if (el.querySelector('.loading-wrap') === null) {
+          el.insertAdjacentHTML('beforeend', `<div class="loading-wrap"><div class="lazy-icon"></div></div>`);
         }
       }
     },
-
-    setLoading: {
-      add: ele => {
-        const html = `
-        <div class="loading-container">
-          <div class="loading-item">
-            <div></div><div></div><div></div><div></div><div></div>
-          </div>
-        </div>
-      `
-        ele.insertAdjacentHTML('afterend', html)
-      },
-      remove: ele => {
-        ele.nextElementSibling.remove()
+    onLoadSuccess: (el) => {
+      if (el) {
+        var wrap = el.querySelector('.loading-wrap');
+        if (wrap) wrap.remove();
       }
     },
-
-    updateAnchor: anchor => {
-      if (anchor !== window.location.hash) {
-        if (!anchor) anchor = location.pathname
-        const title = GLOBAL_CONFIG_SITE.title
-        window.history.replaceState({
-          url: location.href,
-          title
-        }, title, anchor)
-      }
-    },
-
-    getScrollPercent: (() => {
-      let docHeight, winHeight, headerHeight, contentMath
-
-      return (currentTop, ele) => {
-        if (!docHeight || ele.clientHeight !== docHeight) {
-          docHeight = ele.clientHeight
-          winHeight = window.innerHeight
-          headerHeight = ele.offsetTop
-          contentMath = Math.max(docHeight - winHeight, document.documentElement.scrollHeight - winHeight)
-        }
-
-        const scrollPercent = (currentTop - headerHeight) / contentMath
-        return Math.max(0, Math.min(100, Math.round(scrollPercent * 100)))
-      }
-    })(),
-
-    addEventListenerPjax: (ele, event, fn, option = false) => {
-      ele.addEventListener(event, fn, option)
-      btf.addGlobalFn('pjaxSendOnce', () => {
-        ele.removeEventListener(event, fn, option)
-      })
-    },
-
-    removeGlobalFnEvent: (key, parent = window) => {
-      const globalFn = parent.globalFn || {}
-      const keyObj = globalFn[key]
-      if (!keyObj) return
-
-      Object.keys(keyObj).forEach(i => keyObj[i]())
-
-      delete globalFn[key]
-    },
-
-    switchComments: (el = document, path) => {
-      const switchBtn = el.querySelector('#switch-btn')
-      if (!switchBtn) return
-
-      let switchDone = false
-      const postComment = el.querySelector('#post-comment')
-      const handleSwitchBtn = () => {
-        postComment.classList.toggle('move')
-        if (!switchDone && typeof loadOtherComment === 'function') {
-          switchDone = true
-          loadOtherComment(el, path)
+    onLoadFailure: (el) => {
+      if (el) {
+        var wrap = el.querySelector('.loading-wrap');
+        if (wrap) {
+          var svg = wrap.querySelector('svg');
+          if (svg) svg.remove();
+          wrap.insertAdjacentHTML('beforeend', ctx.icons['default:warning']);
+          wrap.classList.add('error');
         }
       }
-      btf.addEventListenerPjax(switchBtn, 'click', handleSwitchBtn)
-    }
-  }
+    },
+    /********************** requestAnimationFrame ********************************/
+    // 1、requestAnimationFrame 会把每一帧中的所有 DOM 操作集中起来，在一次重绘或回流中就完成，并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率，一般来说，这个频率为每秒60帧。
+    // 2、在隐藏或不可见的元素中，requestAnimationFrame 将不会进行重绘或回流，这当然就意味着更少的的 cpu，gpu 和内存使用量。
+    requestAnimationFrame: (fn) => {
+      if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+      }
+      window.requestAnimationFrame(fn)
+    },
+  };
 
-  window.btf = { ...window.btf, ...btfFn }
-})()
+  // 自定义注入脚本可能在 type=module runtime 执行前调用 request；以 Promise 接缝排队，
+  // runtime 安装真实 adapter 后统一放行，不在经典脚本中复制任何网络或缓存算法。
+  var requestBridge = {};
+  requestBridge.ready = new Promise(function (resolve) {
+    requestBridge.resolve = resolve;
+  });
+  utils.request = function () {
+    var args = arguments;
+    return requestBridge.ready.then(function (adapter) {
+      return adapter.request.apply(null, args);
+    });
+  };
+  utils.requestWithoutLoading = function () {
+    var args = arguments;
+    return requestBridge.ready.then(function (adapter) {
+      return adapter.requestWithoutLoading.apply(null, args);
+    });
+  };
+
+  // 暴露到 window：迁移期经典核心脚本与 ESM runtime 的兼容接缝。
+  window.__stellarRequestBridge = requestBridge;
+  window.utils = utils;
+
+})();

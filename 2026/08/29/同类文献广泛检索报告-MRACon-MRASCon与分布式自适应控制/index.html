@@ -1,192 +1,615 @@
-<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制 | LenoVo的小站</title><meta name="author" content="LenoVo"><meta name="copyright" content="LenoVo"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="围绕 MRACon、MRASCon、全分布式有向图、DREM 参数辨识、输出反馈与事件触发控制，对相关研究脉络、优先文献和潜在研究空白进行系统整理。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制">
-<meta property="og:url" content="https://linx29853.github.io/2026/08/29/%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A-MRACon-MRASCon%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6/">
-<meta property="og:site_name" content="LenoVo的小站">
-<meta property="og:description" content="围绕 MRACon、MRASCon、全分布式有向图、DREM 参数辨识、输出反馈与事件触发控制，对相关研究脉络、优先文献和潜在研究空白进行系统整理。">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://linx29853.github.io/img/butterfly-icon.png">
-<meta property="article:published_time" content="2026-08-29T02:50:00.000Z">
-<meta property="article:modified_time" content="2026-08-31T02:52:56.112Z">
-<meta property="article:author" content="LenoVo">
-<meta property="article:tag" content="多智能体系统">
-<meta property="article:tag" content="MRACon">
-<meta property="article:tag" content="MRAC">
-<meta property="article:tag" content="文献综述">
-<meta property="article:tag" content="MRASCon">
-<meta property="article:tag" content="分布式自适应控制">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://linx29853.github.io/img/butterfly-icon.png"><script type="application/ld+json">{
-  "@context": "https://schema.org",
-  "@type": "BlogPosting",
-  "headline": "同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制",
-  "url": "https://linx29853.github.io/2026/08/29/%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A-MRACon-MRASCon%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6/",
-  "image": "https://linx29853.github.io/img/butterfly-icon.png",
-  "datePublished": "2026-08-29T02:50:00.000Z",
-  "dateModified": "2026-08-31T02:52:56.112Z",
-  "author": [
-    {
-      "@type": "Person",
-      "name": "LenoVo",
-      "url": "https://linx29853.github.io"
-    }
-  ]
-}</script><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="https://linx29853.github.io/2026/08/29/%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A-MRACon-MRASCon%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
-    (() => {
-      
-    const saveToLocal = {
-      set: (key, value, ttl) => {
-        if (!ttl) return
-        const expiry = Date.now() + ttl * 86400000
-        localStorage.setItem(key, JSON.stringify({ value, expiry }))
-      },
-      get: key => {
-        const itemStr = localStorage.getItem(key)
-        if (!itemStr) return undefined
-        const { value, expiry } = JSON.parse(itemStr)
-        if (Date.now() > expiry) {
-          localStorage.removeItem(key)
-          return undefined
-        }
-        return value
-      }
-    }
 
-    window.btf = {
-      saveToLocal,
-      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = url
-        script.async = true
-        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
-        script.onload = script.onreadystatechange = () => {
-          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
-        }
-        script.onerror = reject
-        document.head.appendChild(script)
-      }),
-      getCSS: (url, id) => new Promise((resolve, reject) => {
-        const link = document.createElement('link')
-        link.rel = 'stylesheet'
-        link.href = url
-        if (id) link.id = id
-        link.onload = link.onreadystatechange = () => {
-          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
-        }
-        link.onerror = reject
-        document.head.appendChild(link)
-      }),
-      addGlobalFn: (key, fn, name = false, parent = window) => {
-        if (!false && key.startsWith('pjax')) return
-        const globalFn = parent.globalFn || {}
-        globalFn[key] = globalFn[key] || {}
-        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
-        parent.globalFn = globalFn
-      }
-    }
+
+<!DOCTYPE html><html lang="zh-CN">
+
+<head>
   
-      
-      const activateDarkMode = () => {
-        document.documentElement.setAttribute('data-theme', 'dark')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
-        }
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/2.0.0" theme-name="Stellar" theme-version="2.0.0">
+  
+  
+  <meta name="generator" content="Hexo 8.1.2">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
+  <meta name="theme-color" content="#f9fafb">
+  <title data-stellar-page-meta>同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制 - LenoVo的小站</title>
+  <script data-stellar-script="core">
+    (function () {
+      var key = 'stellar:v2:leftbar-state';
+      var fallback = "expanded";
+      try {
+        var value = localStorage.getItem(key);
+        document.documentElement.dataset.leftbarState = value === 'collapsed' || value === 'expanded' ? value : fallback;
+      } catch (error) {
+        document.documentElement.dataset.leftbarState = fallback;
       }
-      const activateLightMode = () => {
-        document.documentElement.setAttribute('data-theme', 'light')
-        if (document.querySelector('meta[name="theme-color"]') !== null) {
-          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
-        }
-      }
+    })();
+  </script>
 
-      btf.activateDarkMode = activateDarkMode
-      btf.activateLightMode = activateLightMode
+  <meta name="description" content="围绕 MRACon、MRASCon、全分布式有向图、DREM 参数辨识、输出反馈与事件触发控制，对相关研究脉络、优先文献和潜在研究空白进行系统整理。" data-stellar-page-meta="">
+<meta property="og:type" content="article" data-stellar-page-meta="">
+<meta property="og:title" content="同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制" data-stellar-page-meta="">
+<meta property="og:url" content="https://linx29853.github.io/2026/08/29/%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A-MRACon-MRASCon%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6/" data-stellar-page-meta="">
+<meta property="og:site_name" content="LenoVo的小站" data-stellar-page-meta="">
+<meta property="og:description" content="围绕 MRACon、MRASCon、全分布式有向图、DREM 参数辨识、输出反馈与事件触发控制，对相关研究脉络、优先文献和潜在研究空白进行系统整理。" data-stellar-page-meta="">
+<meta property="og:locale" content="zh_CN" data-stellar-page-meta="">
+<meta property="article:author" content="LenoVo" data-stellar-page-meta="">
+<meta property="article:published_time" content="2026-08-29T02:50:00.000Z" data-stellar-page-meta="">
+<meta property="article:modified_time" content="2026-11-12T11:39:40.000Z" data-stellar-page-meta="">
+<meta property="article:tag" content="MRAC" data-stellar-page-meta="">
+<meta property="article:tag" content="MRACon" data-stellar-page-meta="">
+<meta property="article:tag" content="MRASCon" data-stellar-page-meta="">
+<meta property="article:tag" content="分布式自适应控制" data-stellar-page-meta="">
+<meta property="article:tag" content="多智能体系统" data-stellar-page-meta="">
+<meta property="article:tag" content="文献综述" data-stellar-page-meta="">
+<meta name="twitter:card" content="summary" data-stellar-page-meta=""><meta name="twitter:title" content="同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制" data-stellar-page-meta="">
+  
+  
+  <meta name="keywords" content="文献综述,MRACon,MRASCon,MRAC,多智能体系统,分布式自适应控制" data-stellar-page-meta="">
 
-      const theme = saveToLocal.get('theme')
+  <!-- feed -->
+  
+
+  <link rel="preload" href="/css/main.css?v=2.0.0" as="style">
+  <link rel="stylesheet" href="/css/main.css?v=2.0.0">
+  <style>:root{--text-loading:"正在加载";--text-loading-error:"加载失败，请稍后重试。"}</style>
+
+
+  
+
+  
+
+  <script type="application/ld+json" data-stellar-page-meta="">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"LenoVo","sameAs":[]},"dateCreated":"2026-08-29T10:50:00+08:00","dateModified":"2026-11-12T19:39:40+08:00","datePublished":"2026-08-29T10:50:00+08:00","description":"检索日期：2026-08-29\n1. 文件夹论文的共同研究画像文件夹中的论文主要落在以下交叉方向：\n\n有向图或切换有向图上的多智能体一致性、同步、编队与包容控制；\n不确定、异构、非线性或未知动力学下的分布式自适应控制；\n模型参考自适应控制（MRAC）、模型参考自适应一致性（MRACon）与模型参考自适应稳定化一致性（MRASCon）；\n全分布式设计，即不依赖 Laplacian 特征值、网络...","headline":"同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制","mainEntityOfPage":{"@type":"WebPage","@id":"https://linx29853.github.io/2026/08/29/%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A-MRACon-MRASCon%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6/"},"publisher":{"@type":"Organization","name":"LenoVo","sameAs":[]},"url":"https://linx29853.github.io/2026/08/29/%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A-MRACon-MRASCon%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6/","image":["https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg"],"keywords":"文献综述, MRACon, MRASCon, MRAC, 多智能体系统, 分布式自适应控制","thumbnailUrl":"https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg"}</script>
+  <link rel="stylesheet" href="/css/stellar-migration.css">
+<link rel="stylesheet" href="/css/books.css">
+<link rel="stylesheet" href="/css/music-profile.css">
+<link rel="stylesheet" href="/css/travel-gallery.css">
+<link rel="stylesheet" href="/css/skill-tree.css">
+<link rel="stylesheet" href="/css/bilibili.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+
+  <link rel="stylesheet" href="/css/stellar-icons.css?v=7c185ad1a9a79674">
+  <link rel="preload" as="script" href="/js/stellar-icons.js?v=39c6ac17e854ffe2">
+  
+  
+<style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+<body data-page-type="content" data-page-layout="post" data-article-style="tech"><div data-stellar-runtime-region id="site-cover" class="site-cover"></div><div class="site-shell" id="start" data-regions="leftbar rightbar"><div class="site-workspace">
+<aside data-stellar-runtime-region id="leftbar-region" class="site-region site-region--leftbar" data-region="leftbar" aria-label="Leftbar"><div class="site-region__surface ui-surface"><div class="site-region__decoration" aria-hidden="true"></div><div class="site-region__viewport"><header class="site-region__header site-region__zone site-region__zone--top">
+    <div class="widget-instance widget-instance--brand" data-widget-id="leftbar:fixed:brand" data-presentation="leftbar" data-leftbar-rail>
+<header class="brand-header brand-header--regular brand-header--site"><div class="brand-wrap"><a class="brand-title" href="&#x2F;"><div class="brand-name">LenoVo</div><div class="brand-tagline cap">技术学习与生活记录</div></a></div><div class="brand-search">
+
+<div class="ui-collection" data-layout="list" data-variant="nav" data-density="auto">
+  
     
-          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+<button class="ui-collection__item ui-interactive card-hover card-hover--spotlight search-trigger has-hover-surface" type="button" title="搜索" aria-label="搜索" data-shell-action="open-search" data-search-instance="leftbar-brand-search" data-search-domain="blog" data-search-domain-label="博客" data-search-domain-blog="true">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Adapted from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE --><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3M3 13h3M3 18h8M16.83 13.83l3.76 3.76"/><circle cx="14" cy="11" r="4"/></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">搜索</span>
+      
+      
+    </span>
+  
+  <kbd class="search-shortcut" aria-hidden="true">⌘K</kbd>
+
+  
+</button>
+
+  
+</div>
+
+
+</div></header>
+</div>
+  </header>
+  <div class="site-region__body site-region__zone site-region__zone--body">
+    <div class="widget-instance widget-instance--menu" data-widget-id="leftbar:fixed:menu" data-presentation="leftbar" data-leftbar-rail>
+
+
+<nav class="menu dis-select">
+<div class="ui-collection" data-layout="list" data-variant="nav" data-density="auto">
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight is-active" href="&#x2F;" title="近期文章" aria-current="page">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"/><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"/></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">近期文章</span>
+      
+      
+    </span>
+  
+  
+  <span class="ui-collection__indicator"></span>
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="&#x2F;categories&#x2F;" title="分类">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="currentColor"><path d="M2 6.94975C2 6.06722 2 5.62595 2.06935 5.25839C2.37464 3.64031 3.64031 2.37464 5.25839 2.06935C5.62595 2 6.06722 2 6.94975 2C7.33642 2 7.52976 2 7.71557 2.01738C8.51665 2.09229 9.27652 2.40704 9.89594 2.92051C10.0396 3.03961 10.1763 3.17633 10.4497 3.44975L11 4C11.8158 4.81578 12.2237 5.22367 12.7121 5.49543C12.9804 5.64471 13.2651 5.7626 13.5604 5.84678C14.0979 6 14.6747 6 15.8284 6H16.2021C18.8345 6 20.1506 6 21.0062 6.76946C21.0849 6.84024 21.1598 6.91514 21.2305 6.99383C22 7.84935 22 9.16554 22 11.7979V14C22 17.7712 22 19.6569 20.8284 20.8284C19.6569 22 17.7712 22 14 22H10C6.22876 22 4.34315 22 3.17157 20.8284C2 19.6569 2 17.7712 2 14V6.94975Z" opacity=".5"/><path d="M20 6.23751C19.9992 5.94016 19.9949 5.76263 19.9746 5.60842C19.7974 4.26222 18.7381 3.2029 17.3919 3.02567C17.1969 3 16.9647 3 16.5003 3H9.98828C10.1042 3.10392 10.2347 3.23445 10.45 3.44975L11.0003 4C11.8161 4.81578 12.2239 5.22367 12.7124 5.49543C12.9807 5.64471 13.2653 5.7626 13.5606 5.84678C14.0982 6 14.675 6 15.8287 6H16.2024C17.9814 6 19.1593 6 20 6.23751Z"/><path fill-rule="evenodd" d="M12.25 10C12.25 9.58579 12.5858 9.25 13 9.25H18C18.4142 9.25 18.75 9.58579 18.75 10C18.75 10.4142 18.4142 10.75 18 10.75H13C12.5858 10.75 12.25 10.4142 12.25 10Z" clip-rule="evenodd"/></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">分类</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="&#x2F;tags&#x2F;" title="标签">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><path fill="currentColor" fill-rule="evenodd" d="M10.7226 3.20068C10.8335 2.80158 10.5998 2.38817 10.2007 2.27731C9.80163 2.16645 9.38822 2.40011 9.27736 2.79921L7.76327 8.24995H4C3.58579 8.24995 3.25 8.58573 3.25 8.99995C3.25 9.41416 3.58579 9.74995 4 9.74995H7.3466L5.81882 15.2499H2C1.58579 15.2499 1.25 15.5857 1.25 15.9999C1.25 16.4142 1.58579 16.7499 2 16.7499H5.40216L4.27736 20.7992C4.1665 21.1983 4.40016 21.6117 4.79927 21.7226C5.19837 21.8334 5.61178 21.5998 5.72264 21.2007L6.95895 16.7499H14.4022L13.2774 20.7992C13.1665 21.1983 13.4002 21.6117 13.7993 21.7226C14.1984 21.8334 14.6118 21.5998 14.7226 21.2007L15.959 16.7499H20C20.4142 16.7499 20.75 16.4142 20.75 15.9999C20.75 15.5857 20.4142 15.2499 20 15.2499H16.3756L17.9034 9.74995H22C22.4142 9.74995 22.75 9.41416 22.75 8.99995C22.75 8.58573 22.4142 8.24995 22 8.24995H18.3201L19.7226 3.20068C19.8335 2.80158 19.5998 2.38817 19.2007 2.27731C18.8016 2.16645 18.3882 2.40011 18.2774 2.79921L16.7633 8.24995H9.32006L10.7226 3.20068ZM14.8188 15.2499L16.3466 9.74995H8.9034L7.37562 15.2499H14.8188Z" clip-rule="evenodd"/></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">标签</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="&#x2F;archives&#x2F;" title="归档">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><g fill="currentColor"><path d="M6.94028 2C7.35614 2 7.69326 2.32421 7.69326 2.72414V4.18487C8.36117 4.17241 9.10983 4.17241 9.95219 4.17241H13.9681C14.8104 4.17241 15.5591 4.17241 16.227 4.18487V2.72414C16.227 2.32421 16.5641 2 16.98 2C17.3958 2 17.733 2.32421 17.733 2.72414V4.24894C19.178 4.36022 20.1267 4.63333 20.8236 5.30359C21.5206 5.97385 21.8046 6.88616 21.9203 8.27586L22 9H2.92456H2V8.27586C2.11571 6.88616 2.3997 5.97385 3.09665 5.30359C3.79361 4.63333 4.74226 4.36022 6.1873 4.24894V2.72414C6.1873 2.32421 6.52442 2 6.94028 2Z"/><path d="M21.9995 14.0001V12.0001C21.9995 11.161 21.9963 9.66527 21.9834 9H2.00917C1.99626 9.66527 1.99953 11.161 1.99953 12.0001V14.0001C1.99953 17.7713 1.99953 19.6569 3.1711 20.8285C4.34267 22.0001 6.22829 22.0001 9.99953 22.0001H13.9995C17.7708 22.0001 19.6564 22.0001 20.828 20.8285C21.9995 19.6569 21.9995 17.7713 21.9995 14.0001Z" opacity=".5"/><path d="M18 17C18 17.5523 17.5523 18 17 18C16.4477 18 16 17.5523 16 17C16 16.4477 16.4477 16 17 16C17.5523 16 18 16.4477 18 17Z"/><path d="M18 13C18 13.5523 17.5523 14 17 14C16.4477 14 16 13.5523 16 13C16 12.4477 16.4477 12 17 12C17.5523 12 18 12.4477 18 13Z"/><path d="M13 17C13 17.5523 12.5523 18 12 18C11.4477 18 11 17.5523 11 17C11 16.4477 11.4477 16 12 16C12.5523 16 13 16.4477 13 17Z"/><path d="M13 13C13 13.5523 12.5523 14 12 14C11.4477 14 11 13.5523 11 13C11 12.4477 11.4477 12 12 12C12.5523 12 13 12.4477 13 13Z"/><path d="M8 17C8 17.5523 7.55228 18 7 18C6.44772 18 6 17.5523 6 17C6 16.4477 6.44772 16 7 16C7.55228 16 8 16.4477 8 17Z"/><path d="M8 13C8 13.5523 7.55228 14 7 14C6.44772 14 6 13.5523 6 13C6 12.4477 6.44772 12 7 12C7.55228 12 8 12.4477 8 13Z"/></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">归档</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="&#x2F;books&#x2F;" title="资料">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M5.879 2.879C5 3.757 5 5.172 5 8v8c0 2.828 0 4.243.879 5.121C6.757 22 8.172 22 11 22h2c2.828 0 4.243 0 5.121-.879C19 20.243 19 18.828 19 16V8c0-2.828 0-4.243-.879-5.121C17.243 2 15.828 2 13 2h-2c-2.828 0-4.243 0-5.121.879M8.25 17a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75M9 12.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zM8.25 9A.75.75 0 0 1 9 8.25h6a.75.75 0 0 1 0 1.5H9A.75.75 0 0 1 8.25 9" clip-rule="evenodd"/><path fill="currentColor" d="M5.235 4.058C5 4.941 5 6.177 5 8v8c0 1.823 0 3.058.235 3.942L5 19.924c-.975-.096-1.631-.313-2.121-.803C2 18.243 2 16.828 2 14v-4c0-2.829 0-4.243.879-5.121c.49-.49 1.146-.707 2.121-.803zm13.53 15.884C19 19.058 19 17.822 19 16V8c0-1.823 0-3.059-.235-3.942l.235.018c.975.096 1.631.313 2.121.803C22 5.757 22 7.17 22 9.999v4c0 2.83 0 4.243-.879 5.122c-.49.49-1.146.707-2.121.803z" opacity=".5"/></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">资料</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="&#x2F;images&#x2F;%E8%A7%81%E9%97%BB&#x2F;" title="旅行">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"/><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"/></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"/></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">旅行</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="&#x2F;link&#x2F;" title="友链">
+  
+  <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"/><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"/></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"/></g></svg></span>
+  
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">友链</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+</div>
+
+</nav>
+
+</div>
+    <div class="widgets widget-stack widget-stack--leftbar widget-stack--body"><div class="widget-instance widget-instance--recent" data-widget-id="leftbar:1:recent" data-presentation="leftbar">
+
+<widget class="widget-wrapper slide-up recent-widget">
+  
+    <div class="widget-header dis-select">
+      <span class="name">最近更新</span>
+      
+    </div>
+  
+  <div class="widget-body"><div class="ui-collection" data-layout="list" data-variant="nav" data-density="compact">
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="&#x2F;2026&#x2F;11&#x2F;12&#x2F;Transformer-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E4%BB%8E-Token-%E5%88%B0-Encoder-Decoder-%E4%B8%8E-ACT&#x2F;" title="Transformer 学习笔记">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">T</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Transformer 学习笔记</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="&#x2F;2026&#x2F;11&#x2F;11&#x2F;%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-%E4%BB%8E%E5%9B%BE%E5%83%8F%E5%BC%A0%E9%87%8F%E5%88%B0-CNN-%E4%B8%8E-PyTorch&#x2F;" title="深度学习学习记录：从图像张量到 CNN 与 PyTorch">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">深</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">深度学习学习记录：从图像张量到 CNN 与 PyTorch</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="&#x2F;2026&#x2F;10&#x2F;07&#x2F;A-star-%E4%B8%8E%E6%A0%85%E6%A0%BC%E6%B3%95%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93&#x2F;" title="A* 与栅格法学习总结">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">A</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">A* 与栅格法学习总结</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="&#x2F;2026&#x2F;09&#x2F;08&#x2F;2021-MRACon-%E7%B2%BE%E8%AF%BB%E8%AE%B2%E8%A7%A3%E6%8A%A5%E5%91%8A&#x2F;" title="有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">有</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="&#x2F;2026&#x2F;11&#x2F;04&#x2F;ACT-Action-Chunking-with-Transformers-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0&#x2F;" title="ACT（Action Chunking with Transformers）学习笔记">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">A</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">ACT（Action Chunking with Transformers）学习笔记</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="&#x2F;2026&#x2F;08&#x2F;26&#x2F;MRAC%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AC%94%E8%AE%B0&#x2F;" title="MRAC 数学基础知识点笔记">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">M</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">MRAC 数学基础知识点笔记</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="&#x2F;2026&#x2F;08&#x2F;27&#x2F;MRASC_leader_following_consensus_%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0&#x2F;" title="MRASC 领导者-跟随者一致性论文阅读笔记">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">M</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">MRASC 领导者-跟随者一致性论文阅读笔记</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="&#x2F;2026&#x2F;09&#x2F;22&#x2F;Modern-Robotics-%E7%AC%AC2%E7%AB%A0-%E6%9E%84%E5%9E%8B%E7%A9%BA%E9%97%B4%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93&#x2F;" title="Modern Robotics 第2章：构型空间学习总结">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">M</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">Modern Robotics 第2章：构型空间学习总结</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="&#x2F;2026&#x2F;08&#x2F;29&#x2F;Popov%E8%B6%85%E7%A8%B3%E5%AE%9A%E6%96%B9%E6%B3%95%E4%B8%8EMRAC-%E7%B2%BE%E7%AE%80%E7%AC%94%E8%AE%B0&#x2F;" title="基于 Popov 超稳定性理论的模型参考自适应控制器">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">基</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">基于 Popov 超稳定性理论的模型参考自适应控制器</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+    
+<a class="ui-collection__item ui-interactive card-hover card-hover--spotlight" href="&#x2F;2026&#x2F;10&#x2F;29&#x2F;ROS2%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-%E8%AF%9D%E9%A2%98%E5%8F%91%E5%B8%83%E4%B8%8E%E8%AE%A2%E9%98%85&#x2F;" title="ROS2 学习记录：Python 话题发布与订阅">
+  
+  
+  <span class="ui-collection__initial" aria-hidden="true">R</span>
+  
+    <span class="ui-collection__content">
+      
+      <span class="ui-collection__title">ROS2 学习记录：Python 话题发布与订阅</span>
+      
+      
+    </span>
+  
+  
+  
+</a>
+
+  
+</div></div>
+  
+</widget>
+
+
+</div></div>
+  </div>
+  <footer class="site-region__footer">
+    
+    <div class="site-region__system ui-collection" data-layout="inline" data-variant="nav" data-density="compact">
+      <div class="site-region__settings"><div class="widget-instance widget-instance--settings" data-widget-id="leftbar:fixed:settings" data-presentation="leftbar" data-leftbar-rail>
+<a class="settings-widget ui-collection__item ui-interactive card-hover card-hover--spotlight" href="&#x2F;settings&#x2F;" data-profile-provider="" data-profile-identity-enabled="false" data-profile-fallback-avatar="https:&#x2F;&#x2F;gcore.jsdelivr.net&#x2F;gh&#x2F;cdn-x&#x2F;placeholder@1.0.12&#x2F;avatar&#x2F;round&#x2F;3442075.svg" data-settings-placement="leftbar" data-settings-label="设置" aria-label="设置" title="设置">
+  <span class="settings-widget__avatar" aria-hidden="true">
+    <span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><path fill-rule="evenodd" d="M12.4277 2C11.3139 2 10.2995 2.6007 8.27081 3.80211L7.58466 4.20846C5.55594 5.40987 4.54158 6.01057 3.98466 7C3.42773 7.98943 3.42773 9.19084 3.42773 11.5937V12.4063C3.42773 14.8092 3.42773 16.0106 3.98466 17C4.54158 17.9894 5.55594 18.5901 7.58466 19.7915L8.27081 20.1979C10.2995 21.3993 11.3139 22 12.4277 22C13.5416 22 14.5559 21.3993 16.5847 20.1979L17.2708 19.7915C19.2995 18.5901 20.3139 17.9894 20.8708 17C21.4277 16.0106 21.4277 14.8092 21.4277 12.4063V11.5937C21.4277 9.19084 21.4277 7.98943 20.8708 7C20.3139 6.01057 19.2995 5.40987 17.2708 4.20846L16.5847 3.80211C14.5559 2.6007 13.5416 2 12.4277 2Z" clip-rule="evenodd" opacity=".5"/><path d="M12.4277 8.25C10.3567 8.25 8.67773 9.92893 8.67773 12C8.67773 14.0711 10.3567 15.75 12.4277 15.75C14.4988 15.75 16.1777 14.0711 16.1777 12C16.1777 9.92893 14.4988 8.25 12.4277 8.25Z"/></g></svg></span>
+  </span>
+  <span class="settings-widget__name ui-collection__title">设置</span>
+</a>
+</div></div>
+      <button type="button" class="leftbar-state-toggle ui-collection__item ui-interactive card-hover card-hover--spotlight is-icon-only" aria-label="Collapse leftbar" aria-expanded="true" data-shell-action="toggle-leftbar"><span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3.172 4.172C2 5.343 2 7.229 2 11v2c0 3.771 0 5.657 1.172 6.828S6.229 21 10 21h5V3h-5C6.229 3 4.343 3 3.172 4.172" clip-rule="evenodd" opacity=".5"/><path fill="currentColor" d="M5.5 9.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5zm1 4a.75.75 0 0 0 0 1.5h4a.75.75 0 0 0 0-1.5zM22 13v-2c0-3.771 0-5.657-1.172-6.828c-.974-.975-3.192-1.139-5.828-1.166v17.988c2.636-.027 4.854-.191 5.828-1.166C22 18.657 22 16.771 22 13"/></svg></span></button>
+    </div>
+  </footer></div></div></aside>
+<main data-stellar-runtime-region class="site-main" id="main">
+
+
+<div class="article-banner-wrap slide-up"><div class="article banner top">
+  <div class="content">
+    
+    <div class="top bread-nav footnote"><div class="top-row"><div class="left" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" href="/">文章</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/">技术学习</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93/">多智能体</a>
+</div></div><div class="meta-row">
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2026-08-29T02:50:00.000Z">2026-08-29</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2026-11-12T11:39:40.000Z">2026-11-12</time></span></div>
+</div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制</span></h1>
         
-      
-      const asideStatus = saveToLocal.get('aside-status')
-      if (asideStatus !== undefined) {
-        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
-      }
+      </div>
+    </div>
     
-      
-    const detectApple = () => {
-      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
-        document.documentElement.classList.add('apple')
-      }
-    }
-    detectApple()
-  
-    })()
-  </script><script>var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "https://hm.baidu.com/hm.js?aeb05b46d9af3b7840e1a58e05c8aefc";
-  var s = document.getElementsByTagName("script")[0];
-  s.parentNode.insertBefore(hm, s);
-})();
-btf.addGlobalFn('pjaxComplete', () => {
-  _hmt.push(['_trackPageview',window.location.pathname])
-}, 'baidu_analytics')
-</script><script>const GLOBAL_CONFIG = {
-  root: '/',
-  algolia: undefined,
-  localSearch: undefined,
-  translate: undefined,
-  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
-  copy: {
-    success: '复制成功',
-    error: '复制失败',
-    noSupport: '浏览器不支持'
-  },
-  relativeDate: {
-    homepage: false,
-    post: false
-  },
-  runtime: '',
-  dateSuffix: {
-    just: '刚刚',
-    min: '分钟前',
-    hour: '小时前',
-    day: '天前',
-    month: '个月前'
-  },
-  copyright: undefined,
-  lightbox: 'null',
-  Snackbar: undefined,
-  infinitegrid: {
-    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
-    buttonText: '加载更多'
-  },
-  isPhotoFigcaption: false,
-  islazyloadPlugin: false,
-  isAnchor: false,
-  percent: {
-    toc: true,
-    rightside: false,
-  },
-  autoDarkmode: false
-}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
-  title: '同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制',
-  isHighlightShrink: false,
-  isToc: true,
-  pageType: 'post'
-}</script><link rel="stylesheet" href="/css/bilibili.css"><link rel="stylesheet" href="/css/travel-gallery.css"><link rel="stylesheet" href="/css/music-profile.css"><link rel="stylesheet" href="/css/books.css"><link rel="stylesheet" href="/css/category-cover.css"><link rel="stylesheet" href="/css/skill-tree.css"><meta name="generator" content="Hexo 7.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">21</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">66</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/skill-tree/"><i class="fa-fw fas fa-list-check"></i><span> 技能树</span></a></div><div class="menus_item"><a class="site-page" href="/books/"><i class="fa-fw fas fa-book-open"></i><span> 资料</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">LenoVo的小站</span></a><a class="nav-page-title" href="/"><span class="site-name">同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制</span><span class="site-name"><i class="fa-solid fa-circle-arrow-left"></i><span>  返回首页</span></span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/skill-tree/"><i class="fa-fw fas fa-list-check"></i><span> 技能树</span></a></div><div class="menus_item"><a class="site-page" href="/books/"><i class="fa-fw fas fa-book-open"></i><span> 资料</span></a></div><div class="menus_item"><a class="site-page" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></div><div class="menus_item"><a class="site-page" href="/bilibili/"><i class="fa-fw fab fa-bilibili"></i><span> B站空间</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-images"></i><span> 照片</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/images/%E8%A7%81%E9%97%BB/"><span> 见闻</span></a></li><li><a class="site-page child" href="/images/%E6%AC%A7%E5%8D%A12/"><span> 欧卡</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">同类文献广泛检索报告：MRACon、MRASCon 与分布式自适应控制</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-08-29T02:50:00.000Z" title="发表于 2026-08-29 10:50:00">2026-08-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-08-31T02:52:56.112Z" title="更新于 2026-08-31 10:52:56">2026-08-31</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/">技术学习</a><i class="fas fa-angle-right post-meta-separator"></i><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E5%AD%A6%E4%B9%A0/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93/">多智能体</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>检索日期：2026-08-29</p>
+  </div>
+  </div></div>
+<article class="md-text content slide-up"><p>检索日期：2026-08-29</p>
 <h2 id="1-文件夹论文的共同研究画像"><a href="#1-文件夹论文的共同研究画像" class="headerlink" title="1. 文件夹论文的共同研究画像"></a>1. 文件夹论文的共同研究画像</h2><p>文件夹中的论文主要落在以下交叉方向：</p>
 <ol>
 <li>有向图或切换有向图上的多智能体一致性、同步、编队与包容控制；</li>
 <li>不确定、异构、非线性或未知动力学下的分布式自适应控制；</li>
 <li>模型参考自适应控制（MRAC）、模型参考自适应一致性（MRACon）与模型参考自适应稳定化一致性（MRASCon）；</li>
 <li>全分布式设计，即不依赖 Laplacian 特征值、网络规模等全局信息；</li>
-<li>DREM、协同持续激励&#x2F;有限时间激励、参数收敛与有限时间辨识；</li>
+<li>DREM、协同持续激励/有限时间激励、参数收敛与有限时间辨识；</li>
 <li>输出反馈、分布式观测器、包容控制；</li>
 <li>被动性分析、事件触发、滑模、未知控制方向与 Nussbaum 增益。</li>
 </ol>
-<p>最强的主题主线是：<strong>MRACon&#x2F;MRASCon + 有向支撑树 + 不确定异构线性系统 + 全分布式&#x2F;参数辨识 + 输出反馈扩展</strong>。</p>
-<h2 id="2-第一优先级：与-MRACon-MRASCon-最接近"><a href="#2-第一优先级：与-MRACon-MRASCon-最接近" class="headerlink" title="2. 第一优先级：与 MRACon &#x2F; MRASCon 最接近"></a>2. 第一优先级：与 MRACon &#x2F; MRASCon 最接近</h2><table>
+<p>最强的主题主线是：<strong>MRACon/MRASCon + 有向支撑树 + 不确定异构线性系统 + 全分布式/参数辨识 + 输出反馈扩展</strong>。</p>
+<h2 id="2-第一优先级：与-MRACon-MRASCon-最接近"><a href="#2-第一优先级：与-MRACon-MRASCon-最接近" class="headerlink" title="2. 第一优先级：与 MRACon / MRASCon 最接近"></a>2. 第一优先级：与 MRACon / MRASCon 最接近</h2><div class="md-table-scroll"><table>
 <thead>
 <tr>
 <th>年份</th>
@@ -197,72 +620,72 @@ btf.addGlobalFn('pjaxComplete', () => {
 </thead>
 <tbody><tr>
 <td>2019</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TCNS.2018.2844260">Output Synchronization of Unknown Heterogeneous Agents via Distributed Model Reference Adaptation</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TCNS.2018.2844260" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Output Synchronization of Unknown Heterogeneous Agents via Distributed Model Reference Adaptation</a></td>
 <td>分布式模型参考自适应、未知异构线性智能体、输出同步</td>
 <td>MRACon 方向的直接前身，必读</td>
 </tr>
 <tr>
 <td>2019</td>
-<td><a target="_blank" rel="noopener" href="https://www.sciencedirect.com/science/article/pii/S0016003218300826">Adaptive Synchronization of Unknown Heterogeneous Agents: An Adaptive Virtual Model Reference Approach</a></td>
+<td><a target="_blank" rel="noopener" href="https://www.sciencedirect.com/science/article/pii/S0016003218300826" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Adaptive Synchronization of Unknown Heterogeneous Agents: An Adaptive Virtual Model Reference Approach</a></td>
 <td>邻居定义虚拟参考模型、未知异构智能体、分布式匹配条件</td>
 <td>对比“每个智能体局部参考模型”的不同构造</td>
 </tr>
 <tr>
 <td>2021</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TAC.2020.3000195">Adaptive Leader-Follower Synchronization Over Heterogeneous and Uncertain Networks of Linear Systems Without Distributed Observer</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TAC.2020.3000195" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Adaptive Leader-Follower Synchronization Over Heterogeneous and Uncertain Networks of Linear Systems Without Distributed Observer</a></td>
 <td>无额外分布式观测器，同时自适应反馈增益与耦合增益</td>
-<td>对“只交换邻居状态&#x2F;输出”的论证很关键</td>
+<td>对“只交换邻居状态/输出”的论证很关键</td>
 </tr>
 <tr>
 <td>2021</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/LCSYS.2020.3045086">Closed-Loop Reference Model Based Distributed Model Reference Adaptive Control for Multi-Agent Systems</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/LCSYS.2020.3045086" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Closed-Loop Reference Model Based Distributed Model Reference Adaptive Control for Multi-Agent Systems</a></td>
 <td>闭环参考模型 CRM、分布式 MRAC、改善暂态性能</td>
 <td>可与 MRASCon 的误差反馈机制比较</td>
 </tr>
 <tr>
 <td>2022</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TCNS.2022.3141015">Closed-Loop Reference Model Based Distributed MRAC Using Cooperative Initial Excitation and Distributed Reference Input Estimation</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TCNS.2022.3141015" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Closed-Loop Reference Model Based Distributed MRAC Using Cooperative Initial Excitation and Distributed Reference Input Estimation</a></td>
 <td>CRM-DMRAC、协同初始激励、参数收敛、参考输入估计</td>
 <td>与 DREM-MRACon 的参数学习条件高度相关</td>
 </tr>
 <tr>
 <td>2022</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/CCDC55256.2022.10033441">Robust Model Reference Adaptive Consensus with Neural Networks</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/CCDC55256.2022.10033441" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Robust Model Reference Adaptive Consensus with Neural Networks</a></td>
 <td>NN-MRACon、无领导一致性、鲁棒逼近未知非线性</td>
 <td>适合作为“参数化不确定性 vs 非参数不确定性”对照</td>
 </tr>
 <tr>
 <td>2023</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1002/acs.3587">Leader-Following Consensus of a Class of Heterogeneous Uncertain Multi-Agent Systems with a Distributed Model Reference Adaptive Control Law</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1002/acs.3587" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Leader-Following Consensus of a Class of Heterogeneous Uncertain Multi-Agent Systems with a Distributed Model Reference Adaptive Control Law</a></td>
 <td>异构不确定系统、分布式 MRAC、领导跟随</td>
 <td>与文件夹中的领导跟随 MRASCon 直接对照</td>
 </tr>
 <tr>
 <td>2023</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.ifacol.2023.10.1102">D-MRACO: Decentralized Model Reference Adaptive Controller and Observer</a></td>
-<td>输出反馈、去中心化 MRAC 控制器与观测器、统一处理无领导&#x2F;领导跟随</td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.ifacol.2023.10.1102" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>D-MRACO: Decentralized Model Reference Adaptive Controller and Observer</a></td>
+<td>输出反馈、去中心化 MRAC 控制器与观测器、统一处理无领导/领导跟随</td>
 <td>文件夹“输出反馈包容控制”工作的直接基础</td>
 </tr>
 <tr>
 <td>2025</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1137/23M1620107">Distributed Output Feedback Indirect MRAC of Continuous-Time Multiagent Linear Systems</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1137/23M1620107" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Distributed Output Feedback Indirect MRAC of Continuous-Time Multiagent Linear Systems</a></td>
 <td>全分布式输出反馈间接 MRAC、未知输入输出模型、允许阶次不同</td>
 <td>目前与“输出反馈 + 异构未知系统”最强相关的期刊论文之一</td>
 </tr>
 <tr>
 <td>2025</td>
-<td><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2505.06895">Nonlinear Model Predictive Control for Leaderless UAV Formation Flying with Collision Avoidance under Directed Graphs</a></td>
-<td>直接采用 MRACon 分层框架，将参考模型与 NMPC&#x2F;安全约束结合</td>
+<td><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2505.06895" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Nonlinear Model Predictive Control for Leaderless UAV Formation Flying with Collision Avoidance under Directed Graphs</a></td>
+<td>直接采用 MRACon 分层框架，将参考模型与 NMPC/安全约束结合</td>
 <td>展示 MRACon 从理论到硬件实验的应用扩展</td>
 </tr>
 <tr>
 <td>2026</td>
-<td><a target="_blank" rel="noopener" href="https://www.sciencedirect.com/science/article/pii/S0925231226001220">Event-Triggered Coordinated Tracking for Heterogeneous Multiagent Systems with Unknown Dynamics Using Model Reference Adaptive Control</a></td>
-<td>MRAC、未知异构动力学、事件触发、状态&#x2F;输出反馈两种协议</td>
+<td><a target="_blank" rel="noopener" href="https://www.sciencedirect.com/science/article/pii/S0925231226001220" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Event-Triggered Coordinated Tracking for Heterogeneous Multiagent Systems with Unknown Dynamics Using Model Reference Adaptive Control</a></td>
+<td>MRAC、未知异构动力学、事件触发、状态/输出反馈两种协议</td>
 <td>最新且高度相关，优先跟踪正式卷期与 DOI</td>
 </tr>
-</tbody></table>
-<h2 id="3-第二优先级：全分布式有向图、自适应耦合与支撑树"><a href="#3-第二优先级：全分布式有向图、自适应耦合与支撑树" class="headerlink" title="3. 第二优先级：全分布式有向图、自适应耦合与支撑树"></a>3. 第二优先级：全分布式有向图、自适应耦合与支撑树</h2><table>
+</tbody></table></div>
+<h2 id="3-第二优先级：全分布式有向图、自适应耦合与支撑树"><a href="#3-第二优先级：全分布式有向图、自适应耦合与支撑树" class="headerlink" title="3. 第二优先级：全分布式有向图、自适应耦合与支撑树"></a>3. 第二优先级：全分布式有向图、自适应耦合与支撑树</h2><div class="md-table-scroll"><table>
 <thead>
 <tr>
 <th>年份</th>
@@ -273,54 +696,54 @@ btf.addGlobalFn('pjaxComplete', () => {
 </thead>
 <tbody><tr>
 <td>2013</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.automatica.2013.03.015">Distributed Consensus of Linear Multi-Agent Systems with Adaptive Dynamic Protocols</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.automatica.2013.03.015" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Distributed Consensus of Linear Multi-Agent Systems with Adaptive Dynamic Protocols</a></td>
 <td>自适应动态协议、消除全局拓扑增益依赖</td>
 <td>全分布式设计的经典起点</td>
 </tr>
 <tr>
 <td>2015</td>
-<td><a target="_blank" rel="noopener" href="https://www.researchgate.net/publication/259483042_Designing_Fully_Distributed_Consensus_Protocols_for_Linear_Multi-Agent_Systems_With_Directed_Graphs">Designing Fully Distributed Consensus Protocols for Linear Multi-Agent Systems With Directed Graphs</a></td>
+<td><a target="_blank" rel="noopener" href="https://www.researchgate.net/publication/259483042_Designing_Fully_Distributed_Consensus_Protocols_for_Linear_Multi-Agent_Systems_With_Directed_Graphs" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Designing Fully Distributed Consensus Protocols for Linear Multi-Agent Systems With Directed Graphs</a></td>
 <td>一般线性系统、有向图、全分布式自适应协议</td>
 <td>理解非对称 Laplacian 下 Lyapunov 构造</td>
 </tr>
 <tr>
 <td>2015</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.automatica.2015.02.033">Distributed Adaptive Consensus and Output Tracking of Unknown Linear Systems on Directed Graphs</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.automatica.2015.02.033" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Distributed Adaptive Consensus and Output Tracking of Unknown Linear Systems on Directed Graphs</a></td>
 <td>未知线性系统、有向图、输出跟踪、自适应控制</td>
-<td>输出反馈&#x2F;MRAC 的重要相邻工作</td>
+<td>输出反馈/MRAC 的重要相邻工作</td>
 </tr>
 <tr>
 <td>2016</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.automatica.2016.07.041">Distributed Adaptive Output Feedback Consensus Protocols for Linear Systems on Directed Graphs With a Leader of Bounded Input</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.automatica.2016.07.041" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Distributed Adaptive Output Feedback Consensus Protocols for Linear Systems on Directed Graphs With a Leader of Bounded Input</a></td>
 <td>输出反馈、领导者有界输入、有向支撑树、无全局信息</td>
 <td>与领导跟随 MRASCon 的观测器需求直接比较</td>
 </tr>
 <tr>
 <td>2018</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1137/16M1088685">Distributed Consensus for Multiagent Systems via Directed Spanning Tree Based Adaptive Control</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1137/16M1088685" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Distributed Consensus for Multiagent Systems via Directed Spanning Tree Based Adaptive Control</a></td>
 <td>直接以有向支撑树为核心的自适应一致性</td>
 <td>自适应耦合 MRACon 的图论基础</td>
 </tr>
 <tr>
 <td>2021</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TNNLS.2020.3009098">Neural-Network-Based Fully Distributed Adaptive Consensus for a Class of Uncertain Multiagent Systems</a></td>
-<td>未建模非线性、未知扰动、领导&#x2F;无领导&#x2F;包容、完全分布式</td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TNNLS.2020.3009098" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Neural-Network-Based Fully Distributed Adaptive Consensus for a Class of Uncertain Multiagent Systems</a></td>
+<td>未建模非线性、未知扰动、领导/无领导/包容、完全分布式</td>
 <td>与参数化 MRACon 做鲁棒性对照</td>
 </tr>
 <tr>
 <td>2021</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TCNS.2021.3050332">A Directed Spanning Tree Adaptive Control Solution to Time-Varying Formations</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TCNS.2021.3050332" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>A Directed Spanning Tree Adaptive Control Solution to Time-Varying Formations</a></td>
 <td>DST 自适应法、时变编队、有向图、不需要 Laplacian 特征值</td>
 <td>适合扩展到编队与时变参考轨迹</td>
 </tr>
 <tr>
 <td>2022</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1007/s11432-020-3129-1">Is Fully Distributed Adaptive Protocol Applicable to Graphs Containing a Directed Spanning Tree?</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1007/s11432-020-3129-1" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Is Fully Distributed Adaptive Protocol Applicable to Graphs Containing a Directed Spanning Tree?</a></td>
 <td>给出全分布式协议适用于含有向支撑树图的必要充分条件</td>
 <td>对论文中“全分布式”的理论定位非常重要</td>
 </tr>
-</tbody></table>
-<h2 id="4-第三优先级：DREM、协同激励与参数收敛"><a href="#4-第三优先级：DREM、协同激励与参数收敛" class="headerlink" title="4. 第三优先级：DREM、协同激励与参数收敛"></a>4. 第三优先级：DREM、协同激励与参数收敛</h2><table>
+</tbody></table></div>
+<h2 id="4-第三优先级：DREM、协同激励与参数收敛"><a href="#4-第三优先级：DREM、协同激励与参数收敛" class="headerlink" title="4. 第三优先级：DREM、协同激励与参数收敛"></a>4. 第三优先级：DREM、协同激励与参数收敛</h2><div class="md-table-scroll"><table>
 <thead>
 <tr>
 <th>年份</th>
@@ -331,30 +754,30 @@ btf.addGlobalFn('pjaxComplete', () => {
 </thead>
 <tbody><tr>
 <td>2014</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TAC.2013.2278135">Distributed Cooperative Adaptive Identification and Control for a Group of Continuous-Time Systems With a Cooperatively PE Condition via Consensus</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TAC.2013.2278135" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Distributed Cooperative Adaptive Identification and Control for a Group of Continuous-Time Systems With a Cooperatively PE Condition via Consensus</a></td>
 <td>协同 PE、参数一致性、指数收敛</td>
 <td>参数协同学习的经典基础</td>
 </tr>
 <tr>
 <td>2021</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TAC.2021.3056336">Cooperative Adaptive Containment Control With Parameter Convergence via Cooperative Finite-Time Excitation</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TAC.2021.3056336" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Cooperative Adaptive Containment Control With Parameter Convergence via Cooperative Finite-Time Excitation</a></td>
 <td>包容控制、协同有限时间激励、跟踪误差与参数误差指数收敛</td>
 <td>与 DREM-MRACon 的有限时间辨识直接比较</td>
 </tr>
 <tr>
 <td>2022</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TAC.2021.3115075">Diffusion-Based Distributed Parameter Estimation Through Directed Graphs With Switching Topology: Application of Dynamic Regressor Extension and Mixing</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TAC.2021.3115075" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Diffusion-Based Distributed Parameter Estimation Through Directed Graphs With Switching Topology: Application of Dynamic Regressor Extension and Mixing</a></td>
 <td>DREM、扩散式估计、切换有向图、弱于 PE 的激励条件</td>
 <td>DREM-MRACon 最重要的外部支撑文献之一</td>
 </tr>
 <tr>
 <td>2024</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1002/acs.3821">Distributed Adaptive Parameter Estimation Over Weakly Connected Digraphs Using a Relaxed Excitation Condition</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1002/acs.3821" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Distributed Adaptive Parameter Estimation Over Weakly Connected Digraphs Using a Relaxed Excitation Condition</a></td>
 <td>弱连通有向图、放宽激励条件、分布式参数估计</td>
 <td>可用于改进参数信息交互和图条件</td>
 </tr>
-</tbody></table>
-<h2 id="5-输出反馈与包容控制扩展"><a href="#5-输出反馈与包容控制扩展" class="headerlink" title="5. 输出反馈与包容控制扩展"></a>5. 输出反馈与包容控制扩展</h2><table>
+</tbody></table></div>
+<h2 id="5-输出反馈与包容控制扩展"><a href="#5-输出反馈与包容控制扩展" class="headerlink" title="5. 输出反馈与包容控制扩展"></a>5. 输出反馈与包容控制扩展</h2><div class="md-table-scroll"><table>
 <thead>
 <tr>
 <th>年份</th>
@@ -364,21 +787,21 @@ btf.addGlobalFn('pjaxComplete', () => {
 </thead>
 <tbody><tr>
 <td>2015</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.automatica.2015.02.002">Containment Control of Heterogeneous Linear Multi-Agent Systems</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.automatica.2015.02.002" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Containment Control of Heterogeneous Linear Multi-Agent Systems</a></td>
 <td>异构线性系统、动态输出包容、输出调节框架</td>
 </tr>
 <tr>
 <td>2022</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.automatica.2021.110049">Output Feedback Based Adaptive Consensus Tracking for Uncertain Heterogeneous Multi-Agent Systems With Event-Triggered Communication</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.automatica.2021.110049" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Output Feedback Based Adaptive Consensus Tracking for Uncertain Heterogeneous Multi-Agent Systems With Event-Triggered Communication</a></td>
 <td>不确定异构系统、输出反馈、有向图、事件触发</td>
 </tr>
 <tr>
 <td>2025</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1007/s11424-025-4462-3">Distributed Adaptive Output Containment Control of Unknown Heterogeneous Non-Minimum Phase Linear Multi-Agent Systems</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1007/s11424-025-4462-3" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Distributed Adaptive Output Containment Control of Unknown Heterogeneous Non-Minimum Phase Linear Multi-Agent Systems</a></td>
 <td>未知异构、非最小相位、输出包容、自适应</td>
 </tr>
-</tbody></table>
-<h2 id="6-被动性、有向图与非线性一致性支线"><a href="#6-被动性、有向图与非线性一致性支线" class="headerlink" title="6. 被动性、有向图与非线性一致性支线"></a>6. 被动性、有向图与非线性一致性支线</h2><table>
+</tbody></table></div>
+<h2 id="6-被动性、有向图与非线性一致性支线"><a href="#6-被动性、有向图与非线性一致性支线" class="headerlink" title="6. 被动性、有向图与非线性一致性支线"></a>6. 被动性、有向图与非线性一致性支线</h2><div class="md-table-scroll"><table>
 <thead>
 <tr>
 <th>年份</th>
@@ -388,26 +811,26 @@ btf.addGlobalFn('pjaxComplete', () => {
 </thead>
 <tbody><tr>
 <td>2007</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TAC.2007.902733">Passivity as a Design Tool for Group Coordination</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TAC.2007.902733" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Passivity as a Design Tool for Group Coordination</a></td>
 <td>被动性群体协调的经典基础</td>
 </tr>
 <tr>
 <td>2010</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TAC.2010.2041979">Synchronization of Interconnected Systems With Applications to Biochemical Networks: An Input-Output Approach</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1109/TAC.2010.2041979" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Synchronization of Interconnected Systems With Applications to Biochemical Networks: An Input-Output Approach</a></td>
 <td>增量被动性、输入输出同步</td>
 </tr>
 <tr>
 <td>2017</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.automatica.2017.06.001">Consensus Dynamics With Arbitrary Sign-Preserving Nonlinearities</a></td>
-<td>有向图、非线性&#x2F;不连续耦合、Port-Hamiltonian 视角</td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.automatica.2017.06.001" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Consensus Dynamics With Arbitrary Sign-Preserving Nonlinearities</a></td>
+<td>有向图、非线性/不连续耦合、Port-Hamiltonian 视角</td>
 </tr>
 <tr>
 <td>2025</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.ejcon.2025.101368">A Passivity Analysis for Nonlinear Consensus on Balanced Digraphs</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.ejcon.2025.101368" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>A Passivity Analysis for Nonlinear Consensus on Balanced Digraphs</a></td>
 <td>平衡有向图、非线性输出一致性、被动性条件</td>
 </tr>
-</tbody></table>
-<h2 id="7-事件触发、滑模与非线性鲁棒控制支线"><a href="#7-事件触发、滑模与非线性鲁棒控制支线" class="headerlink" title="7. 事件触发、滑模与非线性鲁棒控制支线"></a>7. 事件触发、滑模与非线性鲁棒控制支线</h2><table>
+</tbody></table></div>
+<h2 id="7-事件触发、滑模与非线性鲁棒控制支线"><a href="#7-事件触发、滑模与非线性鲁棒控制支线" class="headerlink" title="7. 事件触发、滑模与非线性鲁棒控制支线"></a>7. 事件触发、滑模与非线性鲁棒控制支线</h2><div class="md-table-scroll"><table>
 <thead>
 <tr>
 <th>年份</th>
@@ -417,54 +840,54 @@ btf.addGlobalFn('pjaxComplete', () => {
 </thead>
 <tbody><tr>
 <td>2024</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.jfranklin.2024.106656">Distributed Adaptive Consensus for Nonlinear Multi-Agent Systems Under Event-Triggered Communication Using a Polynomial Approach</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.jfranklin.2024.106656" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Distributed Adaptive Consensus for Nonlinear Multi-Agent Systems Under Event-Triggered Communication Using a Polynomial Approach</a></td>
 <td>事件触发信号平滑、神经网络自适应、非线性一致性</td>
 </tr>
 <tr>
 <td>2025</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.jfranklin.2025.107687">Consensus of Nonlinear Multiagent Systems on Time Scales via Event-Triggered Sliding Mode Control</a></td>
-<td>连续&#x2F;离散时间统一、动态事件触发、滑模跟踪一致性</td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.jfranklin.2025.107687" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Consensus of Nonlinear Multiagent Systems on Time Scales via Event-Triggered Sliding Mode Control</a></td>
+<td>连续/离散时间统一、动态事件触发、滑模跟踪一致性</td>
 </tr>
 <tr>
 <td>2025</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.jfranklin.2025.108261">Adaptive Event-Triggered Consensus Tracking Control for Multi-Agent Systems Based on MT-Filters</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.jfranklin.2025.108261" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Adaptive Event-Triggered Consensus Tracking Control for Multi-Agent Systems Based on MT-Filters</a></td>
 <td>输出反馈、不可测状态、未建模动态、有向图</td>
 </tr>
 <tr>
 <td>2026</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.cnsns.2025.109331">Event-Triggered Predefined-Time Sliding Mode Control for Consensus of Nonlinear Multi-Agent Systems With Disturbances</a></td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.cnsns.2025.109331" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Event-Triggered Predefined-Time Sliding Mode Control for Consensus of Nonlinear Multi-Agent Systems With Disturbances</a></td>
 <td>预定义时间、事件触发、滑模、扰动</td>
 </tr>
 <tr>
 <td>2026</td>
-<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.matcom.2026.01.018">Distributed Fixed-Time Sliding Mode Consensus Tracking Control for Multi-Agent Systems Based on Static and Dynamic Event-Triggered Mechanisms</a></td>
-<td>固定时间观测器、扰动估计、静态&#x2F;动态事件触发</td>
+<td><a target="_blank" rel="noopener" href="https://doi.org/10.1016/j.matcom.2026.01.018" data-md-link=""><span class="md-link-icon ui-icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><g fill="currentColor"><g opacity=".5"><path d="M19.7388 4.26118C17.0572 1.57961 12.7095 1.57961 10.0279 4.26118L9.30707 4.98203C9.01418 5.27492 9.01418 5.7498 9.30707 6.04269C9.59997 6.33558 10.0748 6.33558 10.3677 6.04269L11.0886 5.32184C13.1844 3.22605 16.5823 3.22605 18.6781 5.32184C20.7739 7.41763 20.7739 10.8156 18.6781 12.9114L17.9573 13.6322C17.6644 13.9251 17.6644 14.4 17.9573 14.6929C18.2502 14.9858 18.725 14.9858 19.0179 14.6929L19.7388 13.972C22.4203 11.2905 22.4203 6.94276 19.7388 4.26118Z"></path><path d="M6.04269 9.30707C6.33558 9.59997 6.33558 10.0748 6.04269 10.3677L5.32184 11.0886C3.22605 13.1844 3.22605 16.5823 5.32184 18.6781C7.41763 20.7739 10.8156 20.7739 12.9114 18.6781L13.6322 17.9573C13.9251 17.6644 14.4 17.6644 14.6929 17.9573C14.9858 18.2501 14.9858 18.725 14.6929 19.0179L13.972 19.7388C11.2905 22.4203 6.94276 22.4203 4.26118 19.7388C1.57961 17.0572 1.57961 12.7095 4.26118 10.0279L4.98203 9.30707C5.27492 9.01418 5.7498 9.01418 6.04269 9.30707Z"></path></g><path d="M14.6933 9.30707C14.9862 9.59997 14.9862 10.0748 14.6933 10.3677L10.3682 14.6928C10.0753 14.9857 9.60045 14.9857 9.30756 14.6928C9.01467 14.3999 9.01467 13.9251 9.30756 13.6322L13.6327 9.30707C13.9255 9.01418 14.4004 9.01418 14.6933 9.30707Z"></path></g></svg></span>Distributed Fixed-Time Sliding Mode Consensus Tracking Control for Multi-Agent Systems Based on Static and Dynamic Event-Triggered Mechanisms</a></td>
+<td>固定时间观测器、扰动估计、静态/动态事件触发</td>
 </tr>
-</tbody></table>
-<h2 id="8-推荐阅读顺序"><a href="#8-推荐阅读顺序" class="headerlink" title="8. 推荐阅读顺序"></a>8. 推荐阅读顺序</h2><p>若目标是继续推进文件夹中的“全分布式 MRASCon &#x2F; 输出反馈包容 &#x2F; DREM 参数辨识”研究，建议顺序为：</p>
+</tbody></table></div>
+<h2 id="8-推荐阅读顺序"><a href="#8-推荐阅读顺序" class="headerlink" title="8. 推荐阅读顺序"></a>8. 推荐阅读顺序</h2><p>若目标是继续推进文件夹中的“全分布式 MRASCon / 输出反馈包容 / DREM 参数辨识”研究，建议顺序为：</p>
 <ol>
 <li>Baldi–Yuan–Frasca 2019（分布式模型参考自适应同步）；</li>
 <li>Mei–Ren–Song 2021（MRACon，文件夹已有）；</li>
 <li>Azzollini 等 2021（无额外分布式观测器）；</li>
 <li>Goel–Garg–Roy 2022（CRM-DMRAC + 协同初始激励）；</li>
 <li>Yue 等 2023 D-MRACO（输出反馈统一框架）；</li>
-<li>Yue 等 2024&#x2F;2025 MRASCon（文件夹已有）；</li>
-<li>Matveev 等 2022 + Yuan 等 2021（DREM&#x2F;协同有限时间激励）；</li>
+<li>Yue 等 2024/2025 MRASCon（文件夹已有）；</li>
+<li>Matveev 等 2022 + Yuan 等 2021（DREM/协同有限时间激励）；</li>
 <li>Guo–Zhang–Zhang 2025（全分布式输出反馈间接 MRAC）；</li>
 <li>2025 输出包容论文与 2026 事件触发 MRAC 论文。</li>
 </ol>
 <h2 id="9-从现有文献看最值得继续做的空白"><a href="#9-从现有文献看最值得继续做的空白" class="headerlink" title="9. 从现有文献看最值得继续做的空白"></a>9. 从现有文献看最值得继续做的空白</h2><ol>
 <li><strong>全分布式无领导 MRASCon</strong>：在一般含有向支撑树图上去除左特征向量、最小非零特征值或根节点全局结构信息，同时处理不稳定参考动力学。</li>
-<li><strong>输出反馈 MRASCon</strong>：把 D-MRACO&#x2F;MRACO 与 MRASCon 结合，避免状态可测假设，并明确是否需要额外分布式观测器。</li>
-<li><strong>参数收敛型 MRASCon</strong>：用 DREM、协同 IE&#x2F;FTE 或复合学习保证真实参数收敛，而不仅是跟踪误差收敛和参数有界。</li>
+<li><strong>输出反馈 MRASCon</strong>：把 D-MRACO/MRACO 与 MRASCon 结合，避免状态可测假设，并明确是否需要额外分布式观测器。</li>
+<li><strong>参数收敛型 MRASCon</strong>：用 DREM、协同 IE/FTE 或复合学习保证真实参数收敛，而不仅是跟踪误差收敛和参数有界。</li>
 <li><strong>切换有向图与暂态性能</strong>：同时保证一致性、参数辨识和显式收敛速率，特别是统一联合连通图下的结论。</li>
-<li><strong>包容控制的 MRACO&#x2F;MRASCon 化</strong>：多领导者凸包参考模型 + 输出反馈 + 未知异构&#x2F;非最小相位动力学。</li>
-<li><strong>约束与安全</strong>：将 MRACon&#x2F;MRASCon 与 MPC、控制障碍函数、事件触发或抗攻击机制组合，并给出严格闭环证明。</li>
+<li><strong>包容控制的 MRACO/MRASCon 化</strong>：多领导者凸包参考模型 + 输出反馈 + 未知异构/非最小相位动力学。</li>
+<li><strong>约束与安全</strong>：将 MRACon/MRASCon 与 MPC、控制障碍函数、事件触发或抗攻击机制组合，并给出严格闭环证明。</li>
 </ol>
 <h2 id="10-可复用检索式"><a href="#10-可复用检索式" class="headerlink" title="10. 可复用检索式"></a>10. 可复用检索式</h2><ul>
-<li><code>&quot;model reference adaptive consensus&quot; OR MRACon OR MRASCon</code></li>
-<li><code>&quot;distributed model reference adaptive control&quot; multi-agent</code></li>
-<li><code>&quot;fully distributed&quot; adaptive consensus directed spanning tree uncertain</code></li>
+<li><code>"model reference adaptive consensus" OR MRACon OR MRASCon</code></li>
+<li><code>"distributed model reference adaptive control" multi-agent</code></li>
+<li><code>"fully distributed" adaptive consensus directed spanning tree uncertain</code></li>
 <li><code>DREM distributed parameter estimation directed graph multi-agent</code></li>
 <li><code>cooperative finite-time excitation adaptive containment control</code></li>
 <li><code>output feedback indirect MRAC multiagent</code></li>
@@ -472,5 +895,122 @@ btf.addGlobalFn('pjaxComplete', () => {
 <li><code>passivity nonlinear consensus balanced digraph</code></li>
 <li><code>event-triggered sliding-mode consensus unknown perturbations directed graph</code></li>
 </ul>
-<p>检索时应继续沿两条引用链扩展：一是从 Mei–Ren–Song 2021 向前追溯 MRAC&#x2F;MRACon 基础，向后追踪 MRASCon、D-MRACO、输出反馈与应用论文；二是从 DREM-MRACon 2025 向前追溯 DREM、协同激励与分布式参数估计，向后追踪参数收敛型一致性控制。</p>
-</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://linx29853.github.io">LenoVo</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://linx29853.github.io/2026/08/29/%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A-MRACon-MRASCon%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6/">https://linx29853.github.io/2026/08/29/%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A-MRACon-MRASCon%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://linx29853.github.io" target="_blank">LenoVo的小站</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93%E7%B3%BB%E7%BB%9F/">多智能体系统</a><a class="post-meta__tags" href="/tags/MRACon/">MRACon</a><a class="post-meta__tags" href="/tags/MRAC/">MRAC</a><a class="post-meta__tags" href="/tags/%E6%96%87%E7%8C%AE%E7%BB%BC%E8%BF%B0/">文献综述</a><a class="post-meta__tags" href="/tags/MRASCon/">MRASCon</a><a class="post-meta__tags" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6/">分布式自适应控制</a></div><div class="post-share"><div class="social-share" data-image="/img/butterfly-icon.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2026/08/30/%E7%BA%BF%E6%80%A7%E7%B3%BB%E7%BB%9F%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="线性系统基础学习笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">线性系统基础学习笔记</div></div><div class="info-2"><div class="info-item-1">1. 本章学习目标完成本章后，应能够：  将线性微分方程写成状态空间模型； 根据特征值判断连续时间线性系统的稳定性； 区分可控性和可镇定性； 理解 Hurwitz 矩阵的含义； 使用 Lyapunov 方程证明线性系统稳定； 理解连续时间代数 Riccati 方程； 使用状态反馈配置闭环极点； 独立证明：若 $P&gt;0$ 满足适当的 Riccati 方程，则  $$G&#x3D;-B_m^\top P$$ 能够使 $$A_m+B_mG$$ 成为 Hurwitz 矩阵。 这一结论是后续学习 MRAC、MRASC 和 MRASCon 的基础。  2. 状态空间模型2.1 基本形式连续时间线性时不变系统可以写成 $$\dot x(t)&#x3D;Ax(t)+Bu(t),$$ $$y(t)&#x3D;Cx(t)+Du(t).$$ 其中：    符号 含义 维数    $x(t)$ 状态向量 $\mathbb R^n$   $u(t)$ 控制输入 $\mathbb R^m$   $y(t)$ 系统输出 $\mathbb R^p$   $A$ 系统矩阵 $\mathbb R^{n\tim...</div></div></div></a><a class="pagination-related" href="/2026/08/29/Popov%E8%B6%85%E7%A8%B3%E5%AE%9A%E6%96%B9%E6%B3%95%E4%B8%8EMRAC-%E7%B2%BE%E7%AE%80%E7%AC%94%E8%AE%B0/" title="基于 Popov 超稳定性理论的模型参考自适应控制器"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">基于 Popov 超稳定性理论的模型参考自适应控制器</div></div><div class="info-2"><div class="info-item-1"> 资料来源：柴天佑等《自适应控制》第 4 章第 4.5 节，印刷页 147-163。本文按 Typora Markdown 与 LaTeX 公式语法整理，并补充直观解释、推导线索和仿真结果分析。  1. 本节要解决的问题考虑参数不完全已知的线性被控对象，希望设计一个参数随时间在线变化的控制器，使对象状态跟踪给定参考模型状态： $$\lim_{t\to\infty}e_x(t)&#x3D;\lim_{t\to\infty}\left[x_m(t)-x_s(t)\right]&#x3D;0.$$ 第 4.4 节采用 Lyapunov 方法：先构造 Lyapunov 函数，再让其导数非正，从而反推出自适应律。本节采用另一条路线：  将 MRAC 误差系统改写为一个等效反馈系统； 使正向线性环节为严格正实系统； 使反馈非线性环节满足 Popov 积分不等式； 根据 Popov 渐近超稳定性定理证明跟踪误差收敛。  核心结构可以概括为： $$\boxed{\text{严格正实线性环节}+\text{满足 Popov 不等式的自适应环节}\Longrightarrow\text{全局渐近稳定...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2026/09/08/2021-MRACon-%E7%B2%BE%E8%AF%BB%E8%AE%B2%E8%A7%A3%E6%8A%A5%E5%91%8A/" title="有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-09-08</div><div class="info-item-2">有向图下不确定多智能体系统的模型参考自适应一致性：精读讲解报告</div></div><div class="info-2"><div class="info-item-1"> 论文：A Unified Framework for Adaptive Leaderless Consensus of Uncertain Multiagent Systems Under Directed Graphs作者：Jie Mei、Wei Ren、Yongduan Song出处：IEEE Transactions on Automatic Control，66(12)，6179–6186，2021DOI：10.1109&#x2F;TAC.2021.3062594阅读依据：用户提供的完整 8 页 PDF。下文页码使用期刊页码，PDF 页码 &#x3D; 期刊页码 − 6178。报告定位：中文精读讲解，重点解释建模、控制器构造、证明逻辑及适用边界。标为“补充推导”“阅读辨析”的内容属于本报告分析，不冒充原文结论。本文未独立查阅原文所引参考文献，也未开展数值复现。  1. 先抓住论文最重要的一件事这篇论文提出 模型参考自适应一致性（model reference adaptive consensus，MRACon）：给每个智能体配置一个本地参考模型，让真实智能体跟踪它；参考...</div></div></div></a><a class="pagination-related" href="/2026/08/27/MRASC_leader_following_consensus_%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/" title="MRASC 领导者-跟随者一致性论文阅读笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-27</div><div class="info-item-2">MRASC 领导者-跟随者一致性论文阅读笔记</div></div><div class="info-2"><div class="info-item-1"> Dongdong Yue, Jiantao Shi, Ling Shi, Paolo Frasca, Simone Baldi.IEEE Transactions on Automatic Control, 70(10): 6861-6868, 2025.DOI: 10.1109&#x2F;TAC.2025.3562457  1. 一句话概括论文研究未知、异构线性多智能体的领导者-跟随者一致性问题，提出分层的 MRASC &#x2F; v-MRASC 自适应控制框架，使全体跟随者能够跟踪一个本身可不稳定、但可稳定化的领导者；同时给出针对有向通信图的钉扎节点数量下界。 它最重要的突破不是“让所有节点同步”本身，而是放松了传统 MRAC 一致性中“领导者参考模型必须稳定或中性稳定”的限制。  2. 研究背景与问题2.1 传统方法的限制在 MRAC 型领导者-跟随者一致性中，常将领导者看作参考模型。传统分析通常要求领导者状态矩阵 A₀：  Hurwitz 稳定；或 中性稳定。  但部分参考行为，例如尖峰、脉冲样模式，可能由不稳定动态产生。仅因参考模型不稳定便无法进行一致性跟踪，并不合...</div></div></div></a><a class="pagination-related" href="/2026/08/26/MRAC%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E7%82%B9%E7%AC%94%E8%AE%B0/" title="MRAC 数学基础知识点笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-26</div><div class="info-item-2">MRAC 数学基础知识点笔记</div></div><div class="info-2"><div class="info-item-1">   学习目标：为李雅普诺夫稳定性、模型参考自适应控制（MRAC）和 Popov 超稳定理论打基础。   0. 知识地图学习顺序建议：  会从物理方程建立微分方程； 会把微分方程写成状态空间模型； 会在状态空间模型与传递函数之间转换； 会用极点或特征值判断线性系统稳定性； 理解正定矩阵与二次型，能看懂李雅普诺夫函数； 理解频率响应、正实函数和严格正实函数； 再学习李雅普诺夫方法、KYP 引理、Popov 判据和 MRAC。  它们在 MRAC 中的联系是： 123456789微分方程 → 状态空间模型 → 误差状态方程                         ↓               Hurwitz 矩阵与李雅普诺夫方程                         ↓                  正定二次型 V(x)                         ↓             设计自适应律，使 V̇ ≤ 0误差传递函数 → 严格正实性 → KYP 引理 → Popov 超稳定分析   1. 状态空间模型与传递函数1.1 为什么需要两种模型控...</div></div></div></a><a class="pagination-related" href="/2026/08/29/Popov%E8%B6%85%E7%A8%B3%E5%AE%9A%E6%96%B9%E6%B3%95%E4%B8%8EMRAC-%E7%B2%BE%E7%AE%80%E7%AC%94%E8%AE%B0/" title="基于 Popov 超稳定性理论的模型参考自适应控制器"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-29</div><div class="info-item-2">基于 Popov 超稳定性理论的模型参考自适应控制器</div></div><div class="info-2"><div class="info-item-1"> 资料来源：柴天佑等《自适应控制》第 4 章第 4.5 节，印刷页 147-163。本文按 Typora Markdown 与 LaTeX 公式语法整理，并补充直观解释、推导线索和仿真结果分析。  1. 本节要解决的问题考虑参数不完全已知的线性被控对象，希望设计一个参数随时间在线变化的控制器，使对象状态跟踪给定参考模型状态： $$\lim_{t\to\infty}e_x(t)&#x3D;\lim_{t\to\infty}\left[x_m(t)-x_s(t)\right]&#x3D;0.$$ 第 4.4 节采用 Lyapunov 方法：先构造 Lyapunov 函数，再让其导数非正，从而反推出自适应律。本节采用另一条路线：  将 MRAC 误差系统改写为一个等效反馈系统； 使正向线性环节为严格正实系统； 使反馈非线性环节满足 Popov 积分不等式； 根据 Popov 渐近超稳定性定理证明跟踪误差收敛。  核心结构可以概括为： $$\boxed{\text{严格正实线性环节}+\text{满足 Popov 不等式的自适应环节}\Longrightarrow\text{全局渐近稳定...</div></div></div></a><a class="pagination-related" href="/2026/08/26/%E6%9D%8E%E9%9B%85%E6%99%AE%E8%AF%BA%E5%A4%AB%E7%A8%B3%E5%AE%9A%E6%80%A7%E4%B8%8E%E7%BA%BF%E6%80%A7%E7%B3%BB%E7%BB%9F%E6%96%B9%E6%B3%95-%E7%B2%BE%E7%AE%80%E7%AC%94%E8%AE%B0/" title="李雅普诺夫稳定性与线性系统方法：精简笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2026-08-26</div><div class="info-item-2">李雅普诺夫稳定性与线性系统方法：精简笔记</div></div><div class="info-2"><div class="info-item-1"> 目标：掌握李雅普诺夫稳定性的核心概念，并能用李雅普诺夫方程判断连续时间线性系统的稳定性。   1. 核心思想考虑自治系统： $$\dot{x}&#x3D;f(x),\qquad f(0)&#x3D;0$$ 李雅普诺夫方法不需要求出系统的显式解，而是寻找一个类似“能量”的标量函数： $$V(x)$$ 如果系统运动过程中 V 始终减小，就可以判断状态会向平衡点靠近。 直观理解：  V(x)：系统具有的能量； V(x)&gt;0：离开原点就有正能量； V̇(x)&lt;0：能量不断耗散； 最终状态趋近能量最低点，即原点。   2. 稳定性的基本概念2.1 李雅普诺夫稳定状态从原点附近出发，以后始终不会远离原点。 关键词：不跑远，但不一定回到原点。 2.2 渐近稳定系统不仅稳定，而且满足： $$\lim_{t\to\infty}x(t)&#x3D;0$$ 关键词：不跑远，并且最终回到原点。 2.3 全局渐近稳定无论初始状态从哪里出发，最终都趋于原点。 局部与全局的区别，在于结论适用的初始状态范围。  3. 李雅普诺夫直接法若能找到连续可微函数 V(x)，满足： $$V(0)&#x3D;...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/butterfly-icon.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/ loading='lazy'></div><div class="author-info-name">LenoVo</div><div class="author-info-description">记录轨道交通、公交与卡车见闻，以及技术学习笔记</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">21</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">66</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">7</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/linx29853"><i class="fab fa-github"></i><span>访问 GitHub</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LenoVo 的小站</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%96%87%E4%BB%B6%E5%A4%B9%E8%AE%BA%E6%96%87%E7%9A%84%E5%85%B1%E5%90%8C%E7%A0%94%E7%A9%B6%E7%94%BB%E5%83%8F"><span class="toc-text">1. 文件夹论文的共同研究画像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%AC%AC%E4%B8%80%E4%BC%98%E5%85%88%E7%BA%A7%EF%BC%9A%E4%B8%8E-MRACon-MRASCon-%E6%9C%80%E6%8E%A5%E8%BF%91"><span class="toc-text">2. 第一优先级：与 MRACon &#x2F; MRASCon 最接近</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E7%AC%AC%E4%BA%8C%E4%BC%98%E5%85%88%E7%BA%A7%EF%BC%9A%E5%85%A8%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%89%E5%90%91%E5%9B%BE%E3%80%81%E8%87%AA%E9%80%82%E5%BA%94%E8%80%A6%E5%90%88%E4%B8%8E%E6%94%AF%E6%92%91%E6%A0%91"><span class="toc-text">3. 第二优先级：全分布式有向图、自适应耦合与支撑树</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E7%AC%AC%E4%B8%89%E4%BC%98%E5%85%88%E7%BA%A7%EF%BC%9ADREM%E3%80%81%E5%8D%8F%E5%90%8C%E6%BF%80%E5%8A%B1%E4%B8%8E%E5%8F%82%E6%95%B0%E6%94%B6%E6%95%9B"><span class="toc-text">4. 第三优先级：DREM、协同激励与参数收敛</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E8%BE%93%E5%87%BA%E5%8F%8D%E9%A6%88%E4%B8%8E%E5%8C%85%E5%AE%B9%E6%8E%A7%E5%88%B6%E6%89%A9%E5%B1%95"><span class="toc-text">5. 输出反馈与包容控制扩展</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E8%A2%AB%E5%8A%A8%E6%80%A7%E3%80%81%E6%9C%89%E5%90%91%E5%9B%BE%E4%B8%8E%E9%9D%9E%E7%BA%BF%E6%80%A7%E4%B8%80%E8%87%B4%E6%80%A7%E6%94%AF%E7%BA%BF"><span class="toc-text">6. 被动性、有向图与非线性一致性支线</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E4%BA%8B%E4%BB%B6%E8%A7%A6%E5%8F%91%E3%80%81%E6%BB%91%E6%A8%A1%E4%B8%8E%E9%9D%9E%E7%BA%BF%E6%80%A7%E9%B2%81%E6%A3%92%E6%8E%A7%E5%88%B6%E6%94%AF%E7%BA%BF"><span class="toc-text">7. 事件触发、滑模与非线性鲁棒控制支线</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB%E9%A1%BA%E5%BA%8F"><span class="toc-text">8. 推荐阅读顺序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E4%BB%8E%E7%8E%B0%E6%9C%89%E6%96%87%E7%8C%AE%E7%9C%8B%E6%9C%80%E5%80%BC%E5%BE%97%E7%BB%A7%E7%BB%AD%E5%81%9A%E7%9A%84%E7%A9%BA%E7%99%BD"><span class="toc-text">9. 从现有文献看最值得继续做的空白</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E5%8F%AF%E5%A4%8D%E7%94%A8%E6%A3%80%E7%B4%A2%E5%BC%8F"><span class="toc-text">10. 可复用检索式</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/04/ACT-Action-Chunking-with-Transformers-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="ACT（Action Chunking with Transformers）学习笔记">ACT（Action Chunking with Transformers）学习笔记</a><time datetime="2026-11-04T00:14:24.000Z" title="发表于 2026-11-04 08:14:24">2026-11-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/11/04/%E4%BB%8E%E7%8E%B0%E5%AE%9E%E4%B8%96%E7%95%8C%E7%9A%84%E6%95%B0%E5%AD%97%E8%A1%A8%E7%A4%BA%E5%88%B0-ACT-%E4%B8%8E-VLA/" title="从现实世界的数字表示到 ACT 与 VLA">从现实世界的数字表示到 ACT 与 VLA</a><time datetime="2026-11-04T00:11:03.000Z" title="发表于 2026-11-04 08:11:03">2026-11-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/29/%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%8A%A8%E5%8A%9B%E5%AD%A6%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-1/" title="机器人动力学学习记录（1）">机器人动力学学习记录（1）</a><time datetime="2026-10-29T09:35:00.000Z" title="发表于 2026-10-29 17:35:00">2026-10-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/29/ROS2%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95-%E8%AF%9D%E9%A2%98%E5%8F%91%E5%B8%83%E4%B8%8E%E8%AE%A2%E9%98%85/" title="ROS2 学习记录：Python 话题发布与订阅">ROS2 学习记录：Python 话题发布与订阅</a><time datetime="2026-10-29T06:25:24.000Z" title="发表于 2026-10-29 14:25:24">2026-10-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/10/07/A-star-%E4%B8%8E%E6%A0%85%E6%A0%BC%E6%B3%95%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" title="A* 与栅格法学习总结">A* 与栅格法学习总结</a><time datetime="2026-10-07T08:26:15.000Z" title="发表于 2026-10-07 16:26:15">2026-10-07</time></div></div></div></div></div></div></main><footer id="footer"><div class="footer-other"><div class="footer-copyright"><span class="copyright">&copy;2025 - 2026 By LenoVo</span><span class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo 7.3.0</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly 5.4.2</a></span></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
+<p>检索时应继续沿两条引用链扩展：一是从 Mei–Ren–Song 2021 向前追溯 MRAC/MRACon 基础，向后追踪 MRASCon、D-MRACO、输出反馈与应用论文；二是从 DREM-MRACon 2025 向前追溯 DREM、协同激励与分布式参数估计，向后追踪参数收敛型一致性控制。</p>
+</article>
+<div class="article-tags slide-up"><a class="tag" href="/tags/%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93%E7%B3%BB%E7%BB%9F/"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>多智能体系统</a><a class="tag" href="/tags/MRACon/"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>MRACon</a><a class="tag" href="/tags/MRAC/"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>MRAC</a><a class="tag" href="/tags/%E6%96%87%E7%8C%AE%E7%BB%BC%E8%BF%B0/"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>文献综述</a><a class="tag" href="/tags/MRASCon/"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>MRASCon</a><a class="tag" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6/"><svg class="icon" viewBox="0 0 1 1" data-icon="default:hashtag" aria-hidden="true"></svg>分布式自适应控制</a></div>
+
+
+  <div class="article-share slide-up" id="share">
+    <div class="body">
+      <div class="social-wrap dis-select"><a class="social share-item qrcode ui-interactive is-icon-only" onclick="util.toggle(&quot;share-qrcode&quot;)" aria-label="分享文章: QR Code" title="分享文章: QR Code"><span class="share-item__icon ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><path fill="currentColor" d="M10.553 13.447c-.424-.424-.95-.596-1.535-.675c-.553-.074-1.25-.074-2.086-.074H5.827c-.58 0-1.065 0-1.459.037c-.411.04-.795.124-1.146.34c-.345.21-.634.5-.845.844c-.216.352-.3.735-.34 1.147C2 15.459 2 15.944 2 16.525v.068c0 .884 0 1.597.055 2.17c.056.592.175 1.108.459 1.571c.288.47.682.864 1.152 1.152c.463.284.979.403 1.57.46C5.81 22 6.524 22 7.407 22h.07c.58 0 1.064 0 1.458-.037c.412-.04.795-.124 1.147-.34c.344-.21.633-.5.844-.844c.216-.352.3-.736.34-1.147c.037-.394.037-.879.037-1.46v-1.104c0-.836 0-1.533-.074-2.086c-.079-.584-.251-1.111-.675-1.535m-1.62-11.41c.412.04.795.124 1.147.34c.344.21.633.5.844.845c.216.351.3.735.34 1.146c.037.394.037.879.037 1.46v1.104c0 .836 0 1.533-.074 2.086c-.079.584-.251 1.111-.675 1.535s-.95.596-1.535.675c-.553.074-1.25.074-2.086.074H5.827c-.58 0-1.065 0-1.459-.037c-.411-.04-.795-.124-1.146-.34a2.56 2.56 0 0 1-.845-.844c-.216-.352-.3-.735-.34-1.147C2 8.54 2 8.056 2 7.475v-.068c0-.884 0-1.597.055-2.17c.056-.592.175-1.108.459-1.571c.288-.47.682-.864 1.152-1.152c.463-.284.979-.403 1.57-.46C5.81 2 6.524 2 7.407 2h.07c.58 0 1.064 0 1.458.037M16.593 2h-.068c-.58 0-1.065 0-1.46.037c-.41.04-.794.124-1.146.34c-.344.21-.633.5-.844.845c-.216.351-.3.735-.34 1.146c-.037.394-.037.879-.037 1.46v1.104c0 .836 0 1.533.074 2.086c.079.584.251 1.111.675 1.535s.95.596 1.535.675c.553.074 1.25.074 2.086.074h1.105c.58 0 1.065 0 1.459-.037c.411-.04.795-.124 1.146-.34c.345-.21.634-.5.845-.844c.216-.352.3-.735.34-1.147C22 8.54 22 8.056 22 7.475v-.068c0-.884 0-1.597-.055-2.17c-.056-.592-.175-1.108-.459-1.571a3.5 3.5 0 0 0-1.152-1.152c-.463-.284-.979-.403-1.57-.46C18.19 2 17.477 2 16.594 2" opacity=".5"/><path fill="currentColor" d="M14.093 21.302a.698.698 0 1 1-1.396 0v-2.79h1.396z" opacity=".4"/><path fill="currentColor" d="M21.302 12.698a.7.7 0 0 0-.697.697v3.256H22v-3.256a.7.7 0 0 0-.698-.697" opacity=".5"/><path fill="currentColor" d="M16.076 16.617c-.076.184-.076.417-.076.883s0 .699.076.883a1 1 0 0 0 .541.54c.184.077.417.077.883.077s.699 0 .883-.076a1 1 0 0 0 .54-.541c.077-.184.077-.417.077-.883s0-.699-.076-.883a1 1 0 0 0-.541-.54C18.199 16 17.966 16 17.5 16s-.699 0-.883.076a1 1 0 0 0-.54.541"/><path fill="currentColor" d="M22 18.535v-.023h-1.396c0 .443 0 .74-.016.97c-.015.224-.043.333-.073.405a1.16 1.16 0 0 1-.629.63c-.072.029-.18.056-.405.072c-.23.015-.527.016-.97.016h-1.86V22h1.883c.414 0 .759 0 1.042-.02a2.6 2.6 0 0 0 .844-.175a2.56 2.56 0 0 0 1.384-1.384c.112-.27.156-.549.176-.844c.02-.283.02-.628.02-1.042" opacity=".7"/><path fill="currentColor" d="M12.697 16.616v.035h1.396c0-.668 0-1.116.035-1.458c.034-.33.093-.482.16-.583a1.2 1.2 0 0 1 .321-.32c.101-.068.254-.128.584-.161c.342-.035.79-.036 1.458-.036h1.86v-1.395h-1.896c-.623 0-1.142 0-1.563.043c-.44.044-.85.142-1.218.388c-.28.187-.519.426-.706.706c-.246.368-.343.777-.388 1.217c-.043.421-.043.94-.043 1.564" opacity=".6"/><path fill="currentColor" d="M5.508 18.69c.219.155.528.155 1.146.155c.619 0 .928 0 1.146-.155a.8.8 0 0 0 .2-.199c.154-.218.154-.527.154-1.146s0-.927-.155-1.146A.8.8 0 0 0 7.8 16c-.218-.155-.527-.155-1.146-.155s-.927 0-1.146.155a.8.8 0 0 0-.199.2c-.155.218-.155.527-.155 1.145c0 .619 0 .928.155 1.146a.8.8 0 0 0 .2.2M6.654 8.155c-.618 0-.927 0-1.146-.155a.8.8 0 0 1-.199-.2c-.155-.217-.155-.527-.155-1.145c0-.619 0-.928.155-1.146a.8.8 0 0 1 .2-.2c.218-.154.527-.154 1.145-.154c.619 0 .928 0 1.146.155a.8.8 0 0 1 .2.199c.154.218.154.527.154 1.146s0 .928-.155 1.146A.8.8 0 0 1 7.8 8c-.218.155-.527.155-1.146.155M16.2 8c.218.155.527.155 1.146.155s.927 0 1.146-.155a.8.8 0 0 0 .199-.199c.155-.218.155-.528.155-1.146c0-.619 0-.928-.155-1.146a.8.8 0 0 0-.2-.2c-.218-.154-.527-.154-1.145-.154c-.619 0-.928 0-1.146.155a.8.8 0 0 0-.2.199c-.154.218-.154.527-.154 1.146s0 .928.155 1.146A.8.8 0 0 0 16.2 8"/></svg></span></a><a class="social share-item weibo ui-interactive is-icon-only" href="https:&#x2F;&#x2F;service.weibo.com&#x2F;share&#x2F;share.php?url&#x3D;https%3A%2F%2Flinx29853.github.io%2F2026%2F08%2F29%2F%25E5%2590%258C%25E7%25B1%25BB%25E6%2596%2587%25E7%258C%25AE%25E5%25B9%25BF%25E6%25B3%259B%25E6%25A3%2580%25E7%25B4%25A2%25E6%258A%25A5%25E5%2591%258A-MRACon-MRASCon%25E4%25B8%258E%25E5%2588%2586%25E5%25B8%2583%25E5%25BC%258F%25E8%2587%25AA%25E9%2580%2582%25E5%25BA%2594%25E6%258E%25A7%25E5%2588%25B6%2F&amp;title&#x3D;%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A%EF%BC%9AMRACon%E3%80%81MRASCon%20%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6%20-%20LenoVo%E7%9A%84%E5%B0%8F%E7%AB%99&amp;summary&#x3D;%E5%9B%B4%E7%BB%95%20MRACon%E3%80%81MRASCon%E3%80%81%E5%85%A8%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%89%E5%90%91%E5%9B%BE%E3%80%81DREM%20%E5%8F%82%E6%95%B0%E8%BE%A8%E8%AF%86%E3%80%81%E8%BE%93%E5%87%BA%E5%8F%8D%E9%A6%88%E4%B8%8E%E4%BA%8B%E4%BB%B6%E8%A7%A6%E5%8F%91%E6%8E%A7%E5%88%B6%EF%BC%8C%E5%AF%B9%E7%9B%B8%E5%85%B3%E7%A0%94%E7%A9%B6%E8%84%89%E7%BB%9C%E3%80%81%E4%BC%98%E5%85%88%E6%96%87%E7%8C%AE%E5%92%8C%E6%BD%9C%E5%9C%A8%E7%A0%94%E7%A9%B6%E7%A9%BA%E7%99%BD%E8%BF%9B%E8%A1%8C%E7%B3%BB%E7%BB%9F%E6%95%B4%E7%90%86%E3%80%82" target="_blank" rel="external nofollow noopener noreferrer" aria-label="分享文章: Weibo" title="分享文章: Weibo"><span class="share-item__icon ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Simple Icons - https://creativecommons.org/publicdomain/zero/1.0/ --><path fill="currentColor" d="M10.098 20.323c-3.977.391-7.414-1.406-7.672-4.02-.259-2.609 2.759-5.047 6.74-5.441 3.979-.394 7.413 1.404 7.671 4.018.259 2.6-2.759 5.049-6.737 5.439l-.002.004zM9.05 17.219c-.384.616-1.208.884-1.829.602-.612-.279-.793-.991-.406-1.593.379-.595 1.176-.861 1.793-.601.622.263.82.972.442 1.592zm1.27-1.627c-.141.237-.449.353-.689.253-.236-.09-.313-.361-.177-.586.138-.227.436-.346.672-.24.239.09.315.36.18.601l.014-.028zm.176-2.719c-1.893-.493-4.033.45-4.857 2.118-.836 1.704-.026 3.591 1.886 4.21 1.983.64 4.318-.341 5.132-2.179.8-1.793-.201-3.642-2.161-4.149zm7.563-1.224c-.346-.105-.57-.18-.405-.615.375-.977.42-1.804 0-2.404-.781-1.112-2.915-1.053-5.364-.03 0 0-.766.331-.571-.271.376-1.217.315-2.224-.27-2.809-1.338-1.337-4.869.045-7.888 3.08C1.309 10.87 0 13.273 0 15.348c0 3.981 5.099 6.395 10.086 6.395 6.536 0 10.888-3.801 10.888-6.82 0-1.822-1.547-2.854-2.915-3.284v.01zm1.908-5.092c-.766-.856-1.908-1.187-2.96-.962-.436.09-.706.511-.616.932.09.42.511.691.932.602.511-.105 1.067.044 1.442.465.376.421.466.977.316 1.473-.136.406.089.856.51.992.405.119.857-.105.992-.512.33-1.021.12-2.178-.646-3.035l.03.045zm2.418-2.195c-1.576-1.757-3.905-2.419-6.054-1.968-.496.104-.812.587-.706 1.081.104.496.586.813 1.082.707 1.532-.331 3.185.15 4.296 1.383 1.112 1.246 1.429 2.943.947 4.416-.165.48.106 1.007.586 1.157.479.165.991-.104 1.157-.586.675-2.088.241-4.478-1.338-6.235l.03.045z"/></svg></span></a><a class="social share-item x ui-interactive is-icon-only" href="https:&#x2F;&#x2F;x.com&#x2F;intent&#x2F;tweet?text&#x3D;%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A%EF%BC%9AMRACon%E3%80%81MRASCon%20%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6%20-%20LenoVo%E7%9A%84%E5%B0%8F%E7%AB%99&amp;url&#x3D;https%3A%2F%2Flinx29853.github.io%2F2026%2F08%2F29%2F%25E5%2590%258C%25E7%25B1%25BB%25E6%2596%2587%25E7%258C%25AE%25E5%25B9%25BF%25E6%25B3%259B%25E6%25A3%2580%25E7%25B4%25A2%25E6%258A%25A5%25E5%2591%258A-MRACon-MRASCon%25E4%25B8%258E%25E5%2588%2586%25E5%25B8%2583%25E5%25BC%258F%25E8%2587%25AA%25E9%2580%2582%25E5%25BA%2594%25E6%258E%25A7%25E5%2588%25B6%2F" target="_blank" rel="external nofollow noopener noreferrer" aria-label="分享文章: X" title="分享文章: X"><span class="share-item__icon ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Simple Icons - https://creativecommons.org/publicdomain/zero/1.0/ --><path fill="currentColor" d="M14.234 10.162L22.977 0h-2.072l-7.591 8.824L7.251 0H.258l9.168 13.343L.258 24H2.33l8.016-9.318L16.749 24h6.993zm-2.837 3.299l-.929-1.329L3.076 1.56h3.182l5.965 8.532l.929 1.329l7.754 11.09h-3.182z"/></svg></span></a><a class="social share-item telegram ui-interactive is-icon-only" href="https:&#x2F;&#x2F;t.me&#x2F;share&#x2F;url?url&#x3D;https%3A%2F%2Flinx29853.github.io%2F2026%2F08%2F29%2F%25E5%2590%258C%25E7%25B1%25BB%25E6%2596%2587%25E7%258C%25AE%25E5%25B9%25BF%25E6%25B3%259B%25E6%25A3%2580%25E7%25B4%25A2%25E6%258A%25A5%25E5%2591%258A-MRACon-MRASCon%25E4%25B8%258E%25E5%2588%2586%25E5%25B8%2583%25E5%25BC%258F%25E8%2587%25AA%25E9%2580%2582%25E5%25BA%2594%25E6%258E%25A7%25E5%2588%25B6%2F&amp;text&#x3D;%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A%EF%BC%9AMRACon%E3%80%81MRASCon%20%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6%20-%20LenoVo%E7%9A%84%E5%B0%8F%E7%AB%99" target="_blank" rel="external nofollow noopener noreferrer" aria-label="分享文章: Telegram" title="分享文章: Telegram"><span class="share-item__icon ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Simple Icons - https://creativecommons.org/publicdomain/zero/1.0/ --><path fill="currentColor" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12a12 12 0 0 0 12-12A12 12 0 0 0 12 0zm4.962 7.224c.1-.002.321.023.465.14a.5.5 0 0 1 .171.325c.016.093.036.306.02.472c-.18 1.898-.962 6.502-1.36 8.627c-.168.9-.499 1.201-.82 1.23c-.696.065-1.225-.46-1.9-.902c-1.056-.693-1.653-1.124-2.678-1.8c-1.185-.78-.417-1.21.258-1.91c.177-.184 3.247-2.977 3.307-3.23c.007-.032.014-.15-.056-.212s-.174-.041-.249-.024q-.159.037-5.061 3.345q-.72.495-1.302.48c-.428-.008-1.252-.241-1.865-.44c-.752-.245-1.349-.374-1.297-.789q.04-.324.893-.663q5.247-2.286 6.998-3.014c3.332-1.386 4.025-1.627 4.476-1.635"/></svg></span></a><a class="social share-item whatsapp ui-interactive is-icon-only" href="https:&#x2F;&#x2F;wa.me&#x2F;?text&#x3D;%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A%EF%BC%9AMRACon%E3%80%81MRASCon%20%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6%20-%20LenoVo%E7%9A%84%E5%B0%8F%E7%AB%99%0Ahttps%3A%2F%2Flinx29853.github.io%2F2026%2F08%2F29%2F%25E5%2590%258C%25E7%25B1%25BB%25E6%2596%2587%25E7%258C%25AE%25E5%25B9%25BF%25E6%25B3%259B%25E6%25A3%2580%25E7%25B4%25A2%25E6%258A%25A5%25E5%2591%258A-MRACon-MRASCon%25E4%25B8%258E%25E5%2588%2586%25E5%25B8%2583%25E5%25BC%258F%25E8%2587%25AA%25E9%2580%2582%25E5%25BA%2594%25E6%258E%25A7%25E5%2588%25B6%2F" target="_blank" rel="external nofollow noopener noreferrer" aria-label="分享文章: WhatsApp" title="分享文章: WhatsApp"><span class="share-item__icon ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Simple Icons - https://creativecommons.org/publicdomain/zero/1.0/ --><path fill="currentColor" d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967c-.273-.099-.471-.148-.67.15c-.197.297-.767.966-.94 1.164c-.173.199-.347.223-.644.075c-.297-.15-1.255-.463-2.39-1.475c-.883-.788-1.48-1.761-1.653-2.059c-.173-.297-.018-.458.13-.606c.134-.133.298-.347.446-.52s.198-.298.298-.497c.099-.198.05-.371-.025-.52s-.669-1.612-.916-2.207c-.242-.579-.487-.5-.669-.51a13 13 0 0 0-.57-.01c-.198 0-.52.074-.792.372c-.272.297-1.04 1.016-1.04 2.479c0 1.462 1.065 2.875 1.213 3.074s2.096 3.2 5.077 4.487c.709.306 1.262.489 1.694.625c.712.227 1.36.195 1.871.118c.571-.085 1.758-.719 2.006-1.413s.248-1.289.173-1.413c-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214l-3.741.982l.998-3.648l-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884c2.64 0 5.122 1.03 6.988 2.898a9.82 9.82 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.82 11.82 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.9 11.9 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.82 11.82 0 0 0-3.48-8.413"/></svg></span></a><a class="social share-item email ui-interactive is-icon-only" href="mailto:?subject&#x3D;%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A%EF%BC%9AMRACon%E3%80%81MRASCon%20%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6%20-%20LenoVo%E7%9A%84%E5%B0%8F%E7%AB%99&amp;body&#x3D;https%3A%2F%2Flinx29853.github.io%2F2026%2F08%2F29%2F%25E5%2590%258C%25E7%25B1%25BB%25E6%2596%2587%25E7%258C%25AE%25E5%25B9%25BF%25E6%25B3%259B%25E6%25A3%2580%25E7%25B4%25A2%25E6%258A%25A5%25E5%2591%258A-MRACon-MRASCon%25E4%25B8%258E%25E5%2588%2586%25E5%25B8%2583%25E5%25BC%258F%25E8%2587%25AA%25E9%2580%2582%25E5%25BA%2594%25E6%258E%25A7%25E5%2588%25B6%2F" aria-label="分享文章: Email" title="分享文章: Email"><span class="share-item__icon ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><path fill="currentColor" fill-rule="evenodd" d="M3.172 5.172C2 6.343 2 8.229 2 12s0 5.657 1.172 6.828C4.343 20 6.229 20 10 20h4c3.771 0 5.657 0 6.828-1.172C22 17.657 22 15.771 22 12s0-5.657-1.172-6.828C19.657 4 17.771 4 14 4h-4C6.229 4 4.343 4 3.172 5.172m15.404 2.348a.75.75 0 0 1-.096 1.056l-2.196 1.83c-.887.739-1.605 1.338-2.24 1.746-.66.424-1.303.693-2.044.693s-1.384-.269-2.045-.693c-.634-.408-1.352-1.007-2.239-1.745L5.52 8.576a.75.75 0 1 1 .96-1.152l2.159 1.799c.933.777 1.58 1.315 2.128 1.667.529.34.888.455 1.233.455s.704-.115 1.233-.455c.547-.352 1.195-.89 2.128-1.667l2.159-1.8a.75.75 0 0 1 1.056.097" clip-rule="evenodd"/></svg></span></a></div>
+      <div class="share-qrcode" id="share-qrcode" style="opacity:0;height:0"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://api.qrserver.com/v1/create-qr-code/?size=256x256&amp;data=https%3A%2F%2Flinx29853.github.io%2F2026%2F08%2F29%2F%25E5%2590%258C%25E7%25B1%25BB%25E6%2596%2587%25E7%258C%25AE%25E5%25B9%25BF%25E6%25B3%259B%25E6%25A3%2580%25E7%25B4%25A2%25E6%258A%25A5%25E5%2591%258A-MRACon-MRASCon%25E4%25B8%258E%25E5%2588%2586%25E5%25B8%2583%25E5%25BC%258F%25E8%2587%25AA%25E9%2580%2582%25E5%25BA%2594%25E6%258E%25A7%25E5%2588%25B6%2F" onerror="this.onerror&#x3D;null;this.src&#x3D;&quot;&#x2F;images&#x2F;stellar-error.491ee870f4940739.svg&quot;"/></div>
+    </div>
+  </div>
+
+<div class="article-footer slide-up">
+    <section id="license">
+      <div class="header"><span>许可协议</span></div>
+      <div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div>
+    </section></div>
+
+<div class="related-wrap slide-up" id="read-next"><section class="body"><div class="item" id="prev"><div class="note"><svg class="icon" viewBox="0 0 1 1" data-icon="default:arrow-left" aria-hidden="true"></svg> 较新文章</div><a href="/2026/08/30/%E7%BA%BF%E6%80%A7%E7%B3%BB%E7%BB%9F%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">线性系统基础学习笔记</a></div><div class="item" id="next"><div class="note">较早文章 <svg class="icon" viewBox="0 0 1 1" data-icon="default:arrow-right" aria-hidden="true"></svg></div><a href="/2026/08/29/Popov%E8%B6%85%E7%A8%B3%E5%AE%9A%E6%96%B9%E6%B3%95%E4%B8%8EMRAC-%E7%B2%BE%E7%AE%80%E7%AC%94%E8%AE%B0/">基于 Popov 超稳定性理论的模型参考自适应控制器</a></div></section></div>
+
+
+
+
+
+
+<footer class="page-footer slide-up footnote"><hr><div class="text"><p>本站由 <a href="/">LenoVo</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/2.0.0">Stellar 2.0.0</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+</main>
+<aside data-stellar-runtime-region id="rightbar-region" class="site-region site-region--rightbar" data-region="rightbar" aria-label="Rightbar"><div class="site-region__surface ui-drawer-surface"><div class="site-region__viewport"><div class="widgets widget-stack widget-stack--rightbar widget-stack--rightbar"><div class="widget-instance widget-instance--toc" data-widget-id="rightbar:1:toc" data-presentation="rightbar">
+
+
+<widget class="widget-wrapper slide-up toc" id="data-toc" collapse="false">
+  
+    <div class="widget-header dis-select">
+      <span class="name">本文目录</span>
+      <button type="button" class="cap-action ui-interactive card-hover card-hover--spotlight" data-shell-action="toggle-toc" aria-label="Toggle table of contents" aria-pressed="false"><span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></span></button>
+    </div>
+  
+  <div class="widget-body"><ol class="toc ui-collection-adapter"><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#1-%E6%96%87%E4%BB%B6%E5%A4%B9%E8%AE%BA%E6%96%87%E7%9A%84%E5%85%B1%E5%90%8C%E7%A0%94%E7%A9%B6%E7%94%BB%E5%83%8F"><span class="toc-text">1. 文件夹论文的共同研究画像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#2-%E7%AC%AC%E4%B8%80%E4%BC%98%E5%85%88%E7%BA%A7%EF%BC%9A%E4%B8%8E-MRACon-MRASCon-%E6%9C%80%E6%8E%A5%E8%BF%91"><span class="toc-text">2. 第一优先级：与 MRACon &#x2F; MRASCon 最接近</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#3-%E7%AC%AC%E4%BA%8C%E4%BC%98%E5%85%88%E7%BA%A7%EF%BC%9A%E5%85%A8%E5%88%86%E5%B8%83%E5%BC%8F%E6%9C%89%E5%90%91%E5%9B%BE%E3%80%81%E8%87%AA%E9%80%82%E5%BA%94%E8%80%A6%E5%90%88%E4%B8%8E%E6%94%AF%E6%92%91%E6%A0%91"><span class="toc-text">3. 第二优先级：全分布式有向图、自适应耦合与支撑树</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#4-%E7%AC%AC%E4%B8%89%E4%BC%98%E5%85%88%E7%BA%A7%EF%BC%9ADREM%E3%80%81%E5%8D%8F%E5%90%8C%E6%BF%80%E5%8A%B1%E4%B8%8E%E5%8F%82%E6%95%B0%E6%94%B6%E6%95%9B"><span class="toc-text">4. 第三优先级：DREM、协同激励与参数收敛</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#5-%E8%BE%93%E5%87%BA%E5%8F%8D%E9%A6%88%E4%B8%8E%E5%8C%85%E5%AE%B9%E6%8E%A7%E5%88%B6%E6%89%A9%E5%B1%95"><span class="toc-text">5. 输出反馈与包容控制扩展</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#6-%E8%A2%AB%E5%8A%A8%E6%80%A7%E3%80%81%E6%9C%89%E5%90%91%E5%9B%BE%E4%B8%8E%E9%9D%9E%E7%BA%BF%E6%80%A7%E4%B8%80%E8%87%B4%E6%80%A7%E6%94%AF%E7%BA%BF"><span class="toc-text">6. 被动性、有向图与非线性一致性支线</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#7-%E4%BA%8B%E4%BB%B6%E8%A7%A6%E5%8F%91%E3%80%81%E6%BB%91%E6%A8%A1%E4%B8%8E%E9%9D%9E%E7%BA%BF%E6%80%A7%E9%B2%81%E6%A3%92%E6%8E%A7%E5%88%B6%E6%94%AF%E7%BA%BF"><span class="toc-text">7. 事件触发、滑模与非线性鲁棒控制支线</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#8-%E6%8E%A8%E8%8D%90%E9%98%85%E8%AF%BB%E9%A1%BA%E5%BA%8F"><span class="toc-text">8. 推荐阅读顺序</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#9-%E4%BB%8E%E7%8E%B0%E6%9C%89%E6%96%87%E7%8C%AE%E7%9C%8B%E6%9C%80%E5%80%BC%E5%BE%97%E7%BB%A7%E7%BB%AD%E5%81%9A%E7%9A%84%E7%A9%BA%E7%99%BD"><span class="toc-text">9. 从现有文献看最值得继续做的空白</span></a></li><li class="toc-item toc-level-2"><a class="toc-link ui-interactive" href="#10-%E5%8F%AF%E5%A4%8D%E7%94%A8%E6%A3%80%E7%B4%A2%E5%BC%8F"><span class="toc-text">10. 可复用检索式</span></a></li></ol></div>
+  <div class="widget-footer"><a class="top ui-interactive" onclick="util.scrollTop()"><span class="ui-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ --><path fill="currentColor" d="M20.536 3.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12s0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464" opacity=".5"/><path fill="currentColor" d="M9.53 12.03a.75.75 0 0 1-1.06-1.06l3-3a.75.75 0 0 1 1.06 0l3 3a.75.75 0 1 1-1.06 1.06L12 9.56z"/><path fill="currentColor" d="M9.53 16.03a.75.75 0 0 1-1.06-1.06l3-3a.75.75 0 0 1 1.06 0l3 3a.75.75 0 1 1-1.06 1.06L12 13.56z"/></svg></span><span>回到顶部</span></a></div>
+</widget>
+
+
+</div></div></div></div></aside>
+</div><button type="button" class="site-scrim" data-shell-action="dismiss-drawer" aria-label="Close navigation" tabindex="-1"></button><div data-stellar-runtime-region class="site-dock" role="group" aria-label="Layout panels">
+  <button type="button" class="site-dock__button site-dock__button--rightbar ui-interactive" aria-label="Open rightbar" aria-controls="rightbar-region" aria-expanded="false" data-shell-action="toggle-rightbar-drawer">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+  </button>
+  <button type="button" class="site-dock__button site-dock__button--leftbar ui-interactive" aria-label="Open leftbar" aria-controls="leftbar-region" aria-expanded="false" data-shell-action="toggle-leftbar-drawer">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"/><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"/></g></svg>
+  </button>
+</div>
+
+<dialog data-stellar-runtime-region class="search-dialog" id="site-search-dialog" aria-labelledby="site-search-title">
+  <div class="search-dialog__panel search-wrapper" id="site-search-wrapper" searching="false">
+    <div class="search-dialog__header">
+      <div class="search-form" role="search">
+        <span class="search-button" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><!-- Adapted from Google Material Icons by Material Design Authors - https://github.com/material-icons/material-icons/blob/master/LICENSE --><g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h3M3 13h3M3 18h8M16.83 13.83l3.76 3.76"/><circle cx="14" cy="11" r="4"/></g></svg></span>
+        <input type="search" class="search-input" id="site-search-input" aria-labelledby="site-search-title" placeholder="搜索">
+      </div>
+      <button type="button" class="search-dialog__close" data-shell-action="close-search" aria-label="关闭搜索">×</button>
+    </div>
+    
+      <div class="search-dialog__scope" role="radiogroup" aria-labelledby="site-search-title" hidden>
+        <label class="search-dialog__scope-option" data-search-scope-option="all">
+          <input class="ui-radio" type="radio" name="site-search-scope" value="all">
+          <span>全站</span>
+        </label>
+        <label class="search-dialog__scope-option" data-search-scope-option="blog" hidden>
+          <input class="ui-radio" type="radio" name="site-search-scope" value="blog">
+          <span>博客</span>
+        </label>
+        <label class="search-dialog__scope-option" data-search-scope-option="current" hidden>
+          <input class="ui-radio" type="radio" name="site-search-scope" value="current">
+          <span data-search-scope-current-label></span>
+        </label>
+      </div>
+    
+    <h2 class="search-dialog__title" id="site-search-title">站内搜索</h2>
+    <div class="search-result" id="site-search-result"></div>
+    <div class="search-no-result">没有找到内容！</div>
+  </div>
+</dialog>
+</div><div class="site-scripts">
+<script data-stellar-script="core" src="/js/stellar-icons.js?v=39c6ac17e854ffe2"></script>
+
+<script data-stellar-script="defines">
+  window.canonical = window.stellarClientData.canonical;
+  const ctx = window.stellarClientData.ctx;
+  window.canonical.param = {permalink: "https://linx29853.github.io/2026/08/29/%E5%90%8C%E7%B1%BB%E6%96%87%E7%8C%AE%E5%B9%BF%E6%B3%9B%E6%A3%80%E7%B4%A2%E6%8A%A5%E5%91%8A-MRACon-MRASCon%E4%B8%8E%E5%88%86%E5%B8%83%E5%BC%8F%E8%87%AA%E9%80%82%E5%BA%94%E6%8E%A7%E5%88%B6/", checklink: ctx.services.video.js};
+  ctx.date_suffix = {"just":"刚刚","min":"分钟前","hour":"小时前","day":"天前"};
+  if (ctx.search) Object.assign(ctx.search, {"more":"更多","no_more":"没有更多了"});
+  const def = window.stellarClientData.def;
+  window.ctx = ctx;
+  window.def = def;
+</script>
+
+
+<!-- core: 迁移期 DOM/资源兼容工具；Extension 注册与生命周期由 ESM runtime 所有 -->
+<script data-stellar-script="core" src="/js/utils.js?v=2.0.0"></script>
+<script data-stellar-script="core" src="/js/main.js?v=2.0.0" defer></script>
+<script data-stellar-script="core" defer src="/js/profile.js?v=2.0.0"></script>
+
+
+
+
+
+<script data-stellar-script="core" type="application/json" id="stellar-runtime-config">{"version":1,"root":"/","policy":{"cache":{"enabled":true,"defaultTtl":3600,"ttl":{"giscus":600,"waline":600,"artalk":600,"memos":600,"memos-user":86400,"sites":86400,"friends":86400,"friends_and_posts":86400,"siteinfo":86400},"maxEntries":200},"request":{"retries":2,"timeoutMs":5000,"idleTimeoutMs":3000,"maxCacheEntryBytes":204800},"features":{"codeCopyToastMs":2500},"providers":{"linkPrefetch":"flying_pages","lightbox":"fancybox","diagrams":"mermaid"}},"extensions":[{"id":"pin-slider","module":"/js/runtime/extensions/pin-slider.js","scope":"region","when":{"selector":".pin-slider"},"config":{}},{"id":"page-controls","module":"/js/runtime/extensions/page-controls.js","scope":"region","when":{"always":true},"config":{"highlight":"/js/search/highlight.js","tagtree":"/js/tagtree.js"}},{"id":"search","module":"/js/runtime/extensions/search.js","scope":"document","when":{"selector":".search-input"},"config":{"provider":"local","options":{"scope":"all","includeContent":true,"cacheTtlSeconds":86400},"assets":{"client":null,"provider":"/js/search/local-search.js","shortcut":"/js/search/shortcut.js"}}},{"id":"hero-parallax","module":"/js/runtime/extensions/hero-parallax.js","scope":"region","when":{"selector":".wiki-hero"},"config":{}},{"id":"hero-effect","module":"/js/runtime/extensions/hero-effect.js","scope":"region","when":{"selector":"canvas[data-hero-effect]"},"config":{}},{"id":"lazy-loading","module":"/js/runtime/extensions/lazy-loading.js","scope":"document","when":{"always":true},"config":{"asset":"https://gcore.jsdelivr.net/npm/vanilla-lazyload@19.1/dist/lazyload.min.js"}},{"id":"deferred-icons","module":"/js/runtime/extensions/deferred-icons.js","scope":"region","when":{"selector":"svg.icon[data-icon]"},"config":{}},{"id":"dropdown","module":"/js/runtime/extensions/dropdown.js","scope":"region","when":{"selector":"details.dropdown"},"config":{}},{"id":"services","module":"/js/runtime/extensions/services.js","scope":"region","when":{"selector":"#artalk_container, #twikoo_container, #waline_container, .data-service, [class*='ds-'], a[cardlink], a[data-md-link][data-siteinfo-api], .site-card [data-siteinfo-api], .voice\u003eaudio, .video\u003evideo, .chat-file"},"config":{"marked":"https://gcore.jsdelivr.net/npm/marked@13.0/lib/marked.umd.min.js"}},{"id":"settings","module":"/js/runtime/extensions/settings.js","scope":"region","when":{"selector":".settings-page"},"config":{}},{"id":"link-prefetch","module":"/js/runtime/extensions/link-prefetch.js","scope":"document","when":{"always":true},"config":{"asset":"https://gcore.jsdelivr.net/npm/flying-pages@2/flying-pages.min.js"}},{"id":"lightbox","module":"/js/runtime/extensions/lightbox.js","scope":"region","when":{"selector":"[data-fancybox]:not(.error), .with-fancybox, .ds-memos, .timenode p\u003eimg"},"config":{"enabled":true,"selector":".timenode p\u003eimg","assets":{"localCss":"/css/plugins/fancybox.css","js":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js","css":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"}}},{"id":"reveal","module":"/js/runtime/extensions/reveal.js","scope":"region","when":{"selector":".slide-up"},"config":{"enabled":true,"duration":800,"interval":200,"distance":8,"blur":4}},{"id":"code-copy","module":"/js/runtime/extensions/code-copy.js","scope":"region","when":{"selector":".code"},"config":{"assets":{"js":"/js/plugins/copycode.js"},"messages":{"label":"复制","copied":"复制成功","denied":"未获得剪贴板权限","unsupported":"当前浏览器不支持剪贴板或页面不是 HTTPS"}}},{"id":"adaptive-text","module":"/js/runtime/extensions/adaptive-text.js","scope":"region","when":{"selector":"[data-text-adaptive]"},"config":{"assets":{"colorJs":"/js/color.js","js":"/js/plugins/adaptive-text.js"}}},{"id":"swiper","module":"/js/runtime/extensions/swiper.js","scope":"region","when":{"selector":"#swiper-api"},"config":{"assets":{"localCss":"/css/plugins/swiper.css","js":"https://unpkg.com/swiper@10.3/swiper-bundle.min.js","css":"https://unpkg.com/swiper@10.3/swiper-bundle.min.css"}}}]}</script>
+<script data-stellar-script="core" type="module" src="/js/runtime/index.js?v=2.0.0&runtime=1"></script>
+
+
+<!-- inject -->
+<script defer src="/js/stellar-custom.js"></script>
+
+
+<script data-stellar-script="core" defer src="/js/navigation-init.js?v=2.0.0"></script>
+</div></body></html>
+
