@@ -32,7 +32,7 @@
       let line;
       if(home){
         target.id='latest-articles';const hero=document.createElement('section');hero.className='home-hero';
-        hero.innerHTML=`<div class="home-hero__shade"></div><div class="home-hero__content"><div class="home-hero__intro"><h1>LenoVo的小站</h1><p class="home-hero__poem" aria-live="polite"></p></div><a class="home-hero__scroll" href="#latest-articles" aria-label="向下浏览文章">⌄</a></div>`;
+        hero.innerHTML=`<video class="home-hero__video" autoplay muted loop playsinline preload="metadata" aria-hidden="true"><source src="/video/home-background.mp4" type="video/mp4"></video><div class="home-hero__shade"></div><div class="home-hero__content"><div class="home-hero__intro"><h1>LenoVo的小站</h1><p class="home-hero__poem" aria-live="polite"></p></div><a class="home-hero__scroll" href="#latest-articles" aria-label="向下浏览文章">⌄</a></div>`;
         document.body.prepend(hero);line=hero.querySelector('.home-hero__poem');
       }else{line=document.createElement('div');line.className='poem-line';line.setAttribute('aria-live','polite');target.before(line);}
       const script=document.createElement('script');script.src='https://sdk.jinrishici.com/v2/browser/jinrishici.js';
