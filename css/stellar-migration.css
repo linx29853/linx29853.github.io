@@ -41,3 +41,5 @@ body,body :where(*):not(i):not([class*="fa-"]){font-family:"Songti SC","SimSun",
 .home-hero__video{z-index:0}
 .home-hero__shade{z-index:1}
 .home-hero__content{z-index:2}
+
+.personal-avatar{background-image:url("/img/personal-avatar.jpg");background-position:center 38%}
