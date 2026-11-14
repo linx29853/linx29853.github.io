@@ -26,15 +26,18 @@
     });
   }
   const home=location.pathname==='/';
-  if(home || /^\/page\/\d+\/?$/.test(location.pathname)) {
-    const target=document.querySelector('.post-list') || document.querySelector('main');
+  {
+    const target=(home && document.querySelector('.post-list')) || document.querySelector('main');
     if(target){
       let line;
-      if(home){
-        target.id='latest-articles';const hero=document.createElement('section');hero.className='home-hero';
-        hero.innerHTML=`<video class="home-hero__video" autoplay muted loop playsinline preload="metadata" aria-hidden="true"><source src="/video/home-background.mp4" type="video/mp4"></video><div class="home-hero__shade"></div><div class="home-hero__content"><div class="home-hero__intro"><h1>LenoVo的小站</h1><p class="home-hero__poem" aria-live="polite"></p></div><a class="home-hero__scroll" href="#latest-articles" aria-label="向下浏览文章">⌄</a></div>`;
+      {
+        if(home) target.id='latest-articles';
+        const hero=document.createElement('section');hero.className='home-hero';
+        hero.innerHTML=`<video class="home-hero__video" autoplay muted loop playsinline preload="metadata" aria-hidden="true"><source src="/video/home-background.mp4" type="video/mp4"></video><div class="home-hero__shade"></div><div class="home-hero__content"><div class="home-hero__intro"><h1>LenoVo的小站</h1><p class="home-hero__poem" aria-live="polite"></p></div><a class="home-hero__scroll" href="${home ? '#latest-articles' : '#main'}" aria-label="向下浏览页面内容">⌄</a></div>`;
         document.body.prepend(hero);line=hero.querySelector('.home-hero__poem');
-      }else{line=document.createElement('div');line.className='poem-line';line.setAttribute('aria-live','polite');target.before(line);}
+        // 进入栏目时从内容开始，向上滚动即可看到首页画面。
+        if(!home && !location.hash) window.scrollTo({top:hero.offsetHeight,behavior:'instant'});
+      }
       const script=document.createElement('script');script.src='https://sdk.jinrishici.com/v2/browser/jinrishici.js';
       script.onload=()=>window.jinrishici.load(result=>{
         const poem=result?.data?.content;if(!poem){line.remove();return;}
